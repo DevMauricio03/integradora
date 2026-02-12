@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-avisos-legales',
+  selector: 'app-experiencias-completas',
   imports: [],
-  templateUrl: './avisosLegales.html',
+  templateUrl: './experienciasCompletas.html',
   styles: `
     :host {
       display: block;
@@ -11,4 +11,4 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AvisosLegales { }
+export class ExperienciasCompletas { }

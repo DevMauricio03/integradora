@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-feed-services',
+  selector: 'app-publicacion-comple',
   imports: [],
-  template: `<p>feedServices works!</p>`,
+  templateUrl: './PublicacionComple.html',
   styles: `
     :host {
       display: block;
@@ -11,4 +11,4 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeedServices { }
+export class PublicacionComple { }

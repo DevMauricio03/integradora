@@ -1,0 +1,14 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+
+@Component({
+  selector: 'app-vista-previa',
+  imports: [],
+  templateUrl: './vistaPrevia.html',
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class VistaPrevia { }

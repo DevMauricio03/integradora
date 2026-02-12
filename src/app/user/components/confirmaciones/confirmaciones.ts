@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 @Component({
   selector: 'app-confirmaciones',
   imports: [],
-  templateUrl: './Confirmaciones.html',
+  template: `<p>confirmaciones works!</p>`,
   styles: `
     :host {
       display: block;
