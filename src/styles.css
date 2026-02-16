@@ -1,1 +1,20 @@
+body {
+  margin: 0;
+  font-family: 'Lexend', sans-serif;
+}
+:root {
+  --primary: #135BEC;
+  --primary-hover: #0D4FD8;
+  --secondary-purple: #8B5CF6;
+
+  --text-main: #111318;
+  --text-secondary: #616F89;
+  --text-muted: #9CA3AF;
+
+  --border-light: #E5E7EB;
+  --card-bg: #F9FAFB;
+  --panel-bg: #F8F9FC;
+}
+
+
 /* You can add global styles to this file, and also import other style files */

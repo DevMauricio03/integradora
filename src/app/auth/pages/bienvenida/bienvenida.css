@@ -1,0 +1,369 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* ================= GENERAL ================= */
+.contenedor-bienvenida {
+  display: flex;
+  min-height: 100vh;
+  height: 100%;
+  font-family: 'Lexend', sans-serif;
+  background: #ffffff;
+}
+
+/* ================= PANEL IZQUIERDO ================= */
+.panel-izquierdo {
+  flex: 0 0 58%;
+  padding: 48px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: radial-gradient(
+    circle at top right,
+    rgba(19, 91, 236, 0.05),
+    transparent 60%
+  ),
+  #F8F9FC;
+  position: relative;
+  min-height: 100%;
+}
+
+/* Logo */
+.contenedor-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 64px;
+}
+
+.icono-logo {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary-purple) 100%);
+  border-radius: 10px;
+  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1),
+              0px 4px 6px -4px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.texto-logo {
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.6px;
+  color: var(--text-main);
+}
+
+/* Contenido Principal */
+.contenido-principal {
+  max-width: 580px;
+  margin-bottom: auto;
+}
+
+.titulo-principal {
+  font-weight: 800;
+  font-size: 52px;
+  line-height: 56px;
+  letter-spacing: -1.5px;
+  color: var(--text-main);
+  margin-bottom: 24px;
+}
+
+.titulo-principal .resaltado {
+  color: var(--primary);
+}
+
+.descripcion-principal {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 28px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  max-width: 520px;
+}
+
+/* Características */
+.grilla-caracteristicas {
+  display: flex;
+  gap: 32px;
+  margin-top: 8px;
+}
+
+.item-caracteristica {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.icono-caracteristica {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icono-caracteristica.azul {
+  background: rgba(19, 91, 236, 0.1);
+}
+
+.icono-caracteristica.morado {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.titulo-caracteristica {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.descripcion-caracteristica {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+/* Ilustración */
+.contenedor-ilustracion {
+  margin-top: auto;
+}
+
+.contenedor-ilustracion img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.leyenda-ilustracion {
+  margin-top: 12px;
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ================= PANEL DERECHO ================= */
+.panel-derecho {
+  flex: 1;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 64px 80px 24px;
+  min-height: 100%;
+}
+
+.contenido-auth {
+  max-width: 300px;
+  width: 100%;
+  margin-top: 150px;
+}
+
+.titulo-bienvenida {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 40px;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.texto-bienvenida {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+/* Botones */
+.boton {
+  width: 96%;
+  height: 52px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: none;
+}
+
+.boton:active {
+  transform: scale(0.98);
+}
+
+.boton-primario {
+  background: var(--primary);
+  color: white;
+  margin-bottom: 16px;
+  box-shadow: 0px 10px 15px -3px rgba(19, 91, 236, 0.25),
+              0px 4px 6px -4px rgba(19, 91, 236, 0.25);
+}
+
+.boton-primario:hover {
+  background: var(--primary);
+  filter: brightness(0.9);
+}
+
+.boton-secundario {
+  background: #ffffff;
+  border: 2px solid var(--border-light);
+  color: var(--text-main);
+  margin-bottom: 32px;
+}
+
+.boton-secundario:hover {
+  background: var(--card-bg);
+}
+
+/* Divisor */
+.divisor {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.linea-divisor {
+  flex: 1;
+  height: 1px;
+  background: var(--border-light);
+}
+
+.texto-divisor {
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* Enlaces Secundarios */
+.enlaces-secundarios {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.tarjeta-enlace {
+  flex: 1;
+  background: var(--card-bg);
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.tarjeta-enlace:hover {
+  filter: brightness(0.97);
+}
+
+/* Pie de Página */
+.contenedor-footer {
+  max-width: 380px;
+  width: 100%;
+  margin-top: auto;
+  padding-bottom: 12px;
+}
+
+.enlaces-footer {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.enlace-footer {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.enlace-footer:hover {
+  color: var(--primary);
+}
+
+.copyright-footer {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+/* ================= RESPONSIVE ================= */
+
+/* Tablet */
+@media (max-width: 1100px) {
+
+  .panel-izquierdo {
+    flex: 0 0 55%;
+    padding: 40px;
+  }
+
+  .titulo-principal {
+    font-size: 42px;
+    line-height: 46px;
+  }
+
+  .contenido-auth {
+    margin-top: 80px;
+  }
+
+}
+
+
+/* Móvil */
+@media (max-width: 768px) {
+
+  .contenedor-bienvenida {
+    flex-direction: column;
+  }
+
+  .panel-izquierdo {
+    flex: none;
+    width: 100%;
+    padding: 40px 24px;
+  }
+
+  .panel-derecho {
+    width: 100%;
+    padding: 40px 24px;
+  }
+
+  .contenido-auth {
+    margin-top: 0;
+    max-width: 100%;
+  }
+
+  .grilla-caracteristicas {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .titulo-principal {
+    font-size: 36px;
+    line-height: 40px;
+  }
+
+}

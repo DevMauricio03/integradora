@@ -1,14 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-bienvenida',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './bienvenida.html',
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
+  styleUrl: './bienvenida.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Bienvenida { }

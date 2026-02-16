@@ -1,0 +1,377 @@
+.contenedor-crear-cuenta {
+  min-height: 100vh;
+  font-family: 'Lexend', sans-serif;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* TARJETA */
+.tarjeta-crear-cuenta {
+  width: 700px;
+  margin-top: 80px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 24px;
+  box-shadow: 0px 20px 25px -5px rgba(0,0,0,0.1),
+              0px 8px 10px -6px rgba(0,0,0,0.1);
+  padding-bottom: 40px;
+}
+
+/* HEADER */
+.encabezado-crear-cuenta {
+  text-align: center;
+  padding: 40px;
+}
+
+.icono-crear-cuenta {
+  width: 48px;
+  height: 48px;
+  background: rgba(19,91,236,0.1);
+  border-radius: 16px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.titulo-crear-cuenta {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 8px 0;
+}
+
+.subtitulo-crear-cuenta {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* FORM */
+.formulario-crear-cuenta {
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* FILA DOBLE */
+.fila-doble {
+  display: flex;
+  gap: 15px;
+}
+
+.mitad {
+  flex: 1;
+}
+
+/* GRUPOS */
+.grupo-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.grupo-formulario label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.grupo-formulario input,
+.input-select-search {
+  width: 100%;
+  height: 45px;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  background: #F9FAFB;
+  padding: 0 16px;
+  font-size: 14px;
+  font-family: 'Lexend', sans-serif;
+  color: var(--text-main);
+  box-sizing: border-box;
+}
+
+.grupo-formulario input::placeholder,
+.input-select-search::placeholder {
+  color: var(--text-muted);
+}
+
+.grupo-formulario input:focus,
+.input-select-search:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* SELECT CON BÚSQUEDA */
+.contenedor-select-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icono-busqueda {
+  position: absolute;
+  left: 16px;
+  pointer-events: none;
+}
+
+.icono-dropdown {
+  position: absolute;
+  right: 16px;
+  pointer-events: none;
+}
+
+/* Ocultar flecha nativa del datalist en todos los navegadores */
+.input-select-search::-webkit-calendar-picker-indicator {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+.input-select-search::-webkit-list-button {
+  display: none !important;
+}
+
+.input-select-search {
+  padding: 0 44px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.grupo-formulario .input-select-search {
+  padding: 0 44px;
+}
+
+/* CONTENEDOR CONTRASEÑA CON OJO */
+.contenedor-password {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.contenedor-password input {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.boton-ojo {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boton-ojo:hover svg path,
+.boton-ojo:hover svg circle {
+  stroke: var(--text-secondary);
+}
+
+/* REQUISITOS */
+.requisitos-seguridad {
+  background: #F6F6F8;
+  border: 1px solid #DBDFE6;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.titulo-requisitos {
+  font-size: 14px;
+  font-weight: 500;
+  color: #616F89;
+  margin: 0;
+}
+
+.lista-requisitos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
+}
+
+.requisito {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #616F89;
+}
+
+.requisito svg {
+  flex-shrink: 0;
+}
+
+.requisito.activo {
+  color: #10B981;
+  font-weight: 500;
+}
+
+/* TÉRMINOS */
+.fila-terminos {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+/* BOTÓN */
+.boton-crear {
+  height: 45px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0px 10px 15px -3px rgba(19,91,236,0.25),
+              0px 4px 6px -4px rgba(19,91,236,0.25);
+}
+
+.boton-crear:hover {
+  background: #0D4FD8;
+}
+
+.boton-crear:disabled {
+  background: #A3BFFA;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* MENSAJE ERROR CONTRASEÑAS */
+.error-confirmacion {
+  font-size: 12px;
+  color: #EF4444;
+  margin-top: 4px;
+}
+
+/* MENSAJE ERROR CAMPOS */
+.error-campo {
+  font-size: 12px;
+  color: #EF4444;
+  margin-top: 4px;
+}
+
+/* LINK */
+.link {
+  color: var(--primary);
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* DIVISOR */
+.divisor {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.linea-divisor {
+  flex: 1;
+  height: 1px;
+  background: var(--border-light);
+}
+
+.divisor span {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.6px;
+}
+
+/* FOOTER */
+.pie-crear {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* COPYRIGHT */
+.derechos-autor {
+  margin-top: 40px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ================= RESPONSIVE ================= */
+
+/* Tablet */
+@media (max-width: 768px) {
+
+  .tarjeta-crear-cuenta {
+    width: 90%;
+    max-width: 700px;
+    margin-top: 40px;
+  }
+
+  .encabezado-crear-cuenta {
+    padding: 32px 24px;
+  }
+
+  .formulario-crear-cuenta {
+    padding: 0 24px;
+  }
+
+  .titulo-crear-cuenta {
+    font-size: 24px;
+  }
+
+}
+
+/* Móvil */
+@media (max-width: 580px) {
+
+  .tarjeta-crear-cuenta {
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin-top: 16px;
+  }
+
+  .encabezado-crear-cuenta {
+    padding: 24px 20px;
+  }
+
+  .formulario-crear-cuenta {
+    padding: 0 20px;
+  }
+
+  .fila-doble {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .titulo-crear-cuenta {
+    font-size: 22px;
+  }
+
+  .subtitulo-crear-cuenta {
+    font-size: 14px;
+  }
+
+  .boton-crear {
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .lista-requisitos {
+    grid-template-columns: 1fr;
+  }
+
+}
