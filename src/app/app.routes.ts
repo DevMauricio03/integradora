@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { RegistroPage } from './auth/pages/registro/registro';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
  {
@@ -14,5 +14,13 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./auth/auth.routes')
         .then(m => m.AUTH_ROUTES)
+  },
+
+  {
+    path: 'user',
+    canActivate: [AuthGuard],
+    loadChildren: () =>
+      import('./user/user.routes')
+        .then(m => m.USER_ROUTES)
   }
 ];

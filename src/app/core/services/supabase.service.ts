@@ -77,8 +77,34 @@ export class SupabaseService {
 
   // 🔹 Recuperar contraseña
   async resetPassword(email: string) {
-    const { data, error } = await this.supabase.auth.resetPasswordForEmail(email);
-    return { data, error };
+    return await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'http://localhost:4200/auth/nueva-password'
+    });
+  }
+
+  // 🔹 Iniciar sesión
+  async signIn(email: string, password: string) {
+    return await this.supabase.auth.signInWithPassword({ email, password });
+  }
+
+  // 🔹 Cerrar sesión
+  async signOut() {
+    return await this.supabase.auth.signOut();
+  }
+
+  // 🔹 Obtener sesión actual
+  async getSession() {
+    return await this.supabase.auth.getSession();
+  }
+
+  // 🔹 Escuchar cambios de autenticación
+  onAuthStateChange(callback: any) {
+    return this.supabase.auth.onAuthStateChange(callback);
+  }
+
+  // 🔹 Actualizar contraseña
+  async updatePassword(newPassword: string) {
+    return await this.supabase.auth.updateUser({ password: newPassword });
   }
 
 }

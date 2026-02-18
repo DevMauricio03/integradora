@@ -27,6 +27,24 @@ export const AUTH_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/confirmacionCorreo/confirmacionCorreo')
             .then(m => m.ConfirmacionCorreo)
+      },
+      {
+        path: 'correo-enviado',
+        loadComponent: () =>
+          import('./pages/correoEnviado/correoEnviado')
+            .then(m => m.CorreoEnviado)
+      },
+      {
+        path: 'nueva-password',
+        loadComponent: () =>
+          import('./pages/nuevaPassword/nuevaPassword')
+            .then(m => m.NuevaPassword)
+      },
+      {
+        path: 'recuperar-contrasena',
+        loadComponent: () =>
+          import('./pages/recuperarContrasena/recuperarContrasena')
+            .then(m => m.RecuperarContrasena)
       }
     ]
   }

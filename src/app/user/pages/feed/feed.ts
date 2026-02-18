@@ -1,14 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
+import { Navbar } from '../../../shared/components/navbar/navbar';
 
 @Component({
   selector: 'app-feed',
-  imports: [],
+  standalone: true,
+  imports: [Navbar],
   templateUrl: './feed.html',
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: ['./feed.css'],
 })
 export class Feed { }

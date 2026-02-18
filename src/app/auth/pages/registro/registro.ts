@@ -3,11 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Navbar } from "../../../shared/components/navbar/navbar";
+import { AvisosLegales } from '../../../shared/components/avisosLegales/avisosLegales';
+import { SuccessModal } from '../../../shared/components/successModal/successModal';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [FormsModule, Navbar, RouterLink],
+  imports: [FormsModule, Navbar, RouterLink, AvisosLegales, SuccessModal],
   templateUrl: './registro.html',
   styleUrl: './registro.css'
 })
@@ -42,6 +44,8 @@ export class RegistroPage implements OnInit {
   mostrarConfirmar = false;
   errorRegistro: string = '';
   cargando = false;
+  mostrarAviso = false;
+  mostrarSuccess = false;
 
   constructor(
     private supabaseService: SupabaseService,
@@ -57,6 +61,31 @@ export class RegistroPage implements OnInit {
 
     if (uniRes.data) this.universidades = uniRes.data;
     if (carRes.data) this.carreras = carRes.data;
+  }
+
+  // 🔹 Modal Aviso de Privacidad
+  abrirAviso(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.mostrarAviso = true;
+  }
+
+  cerrarAviso() {
+    this.mostrarAviso = false;
+  }
+
+  // 🔹 Modal Success (Cuenta creada)
+  private handleRegistroExitoso() {
+    this.mostrarSuccess = true;
+  }
+
+  cerrarSuccess() {
+    this.mostrarSuccess = false;
+  }
+
+  irALogin() {
+    this.mostrarSuccess = false;
+    this.router.navigate(['/auth/inicio-sesion']);
   }
 
   // 🔹 Cuando el usuario selecciona/escribe una universidad (case-insensitive)
@@ -173,8 +202,8 @@ export class RegistroPage implements OnInit {
         return;
       }
 
-      // Paso 4: Registro completo → redirigir a confirmación
-      this.router.navigate(['/auth/confirmacion-correo']);
+      // Paso 4: Registro completo → mostrar modal de éxito
+      this.handleRegistroExitoso();
 
     } catch (err) {
       this.errorRegistro = 'Ocurrió un error inesperado. Intenta de nuevo.';

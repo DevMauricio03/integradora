@@ -6,178 +6,313 @@ import { ModalBase } from '../modalBase/modalBase';
   standalone: true,
   imports: [ModalBase],
   template: `
-    <app-modal-base ancho="620px" (close)="cerrar()">
+    <app-modal-base ancho="680px" [mostrarCerrar]="true" (close)="cerrar()">
 
-      <div class="modal-header">
-        <div class="icono-aviso">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"
-              stroke="#135BEC" stroke-width="2"/>
-            <path d="M12 8v4M12 16h.01"
-              stroke="#135BEC" stroke-width="2" stroke-linecap="round"/>
+      <!-- HEADER -->
+      <div class="aviso-header">
+        <h2 class="aviso-titulo">Aviso de Privacidad</h2>
+        <div class="aviso-fecha">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text-muted)" stroke-width="2"/>
+            <path d="M16 2V6M8 2V6M3 10H21" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"/>
           </svg>
+          <span>Última actualización: Enero 2026</span>
         </div>
-        <h2>Aviso de Privacidad</h2>
-        <p class="actualizacion">Última actualización: Enero 2026</p>
       </div>
 
-      <div class="modal-body">
+      <!-- BODY SCROLLABLE -->
+      <div class="aviso-body">
 
-        <p class="intro">
-          En <strong>Tuunka</strong>, valoramos y protegemos la privacidad de nuestra
-          comunidad universitaria. Este aviso describe cómo recopilamos, usamos y
-          resguardamos tu información personal al registrarte y utilizar la plataforma.
+        <p class="aviso-intro">
+          En <strong class="marca">Tuunka</strong>, valoramos la privacidad de nuestra comunidad universitaria.
+          Este documento detalla de manera transparente cómo recopilamos, utilizamos y
+          protegemos su información personal para mejorar la comunicación y los
+          servicios dentro del campus.
         </p>
 
-        <div class="seccion">
-          <h3>1. Datos que recopilamos</h3>
+        <!-- 1. Datos que recopilamos -->
+        <div class="aviso-seccion">
+          <div class="seccion-header">
+            <span class="numero-seccion">1</span>
+            <h3>Datos que recopilamos</h3>
+          </div>
+          <p>
+            Recopilamos información estrictamente necesaria para validar su identidad
+            académica y facilitar la interacción en la plataforma:
+          </p>
           <ul>
             <li><strong>Identificación:</strong> Nombre completo y foto de perfil.</li>
-            <li><strong>Académicos:</strong> Correo institucional (.edu), universidad y carrera.</li>
-            <li><strong>Cuenta:</strong> Contraseña (almacenada de forma cifrada).</li>
-            <li><strong>Uso:</strong> Registros de actividad dentro de la plataforma.</li>
+            <li><strong>Académicos:</strong> Correo institucional (.edu) y matrícula.</li>
+            <li><strong>Uso:</strong> Registros de actividad para mejorar su experiencia.</li>
           </ul>
         </div>
 
-        <div class="seccion">
-          <h3>2. Uso de la información</h3>
-          <p>Tu información se utiliza exclusivamente para:</p>
+        <!-- 2. Uso de la información -->
+        <div class="aviso-seccion">
+          <div class="seccion-header">
+            <span class="numero-seccion">2</span>
+            <h3>Uso de la información</h3>
+          </div>
+          <p>
+            La información se utiliza exclusivamente para fines académicos y de comunicación
+            interna:
+          </p>
           <ul>
-            <li>Crear y administrar tu cuenta universitaria.</li>
-            <li>Verificar tu identidad como miembro de una institución educativa.</li>
-            <li>Personalizar tu experiencia dentro de la plataforma.</li>
-            <li>Enviarte notificaciones relevantes a tu actividad académica.</li>
+            <li>Verificación de pertenencia a la comunidad universitaria.</li>
+            <li>Facilitar comunicación entre estudiantes y administrativos.</li>
+            <li>Notificaciones sobre eventos y servicios del campus.</li>
           </ul>
         </div>
 
-        <div class="seccion">
-          <h3>3. Protección de datos</h3>
+        <!-- 3. Protección de datos -->
+        <div class="aviso-seccion">
+          <div class="seccion-header">
+            <span class="numero-seccion">3</span>
+            <h3>Protección de datos</h3>
+          </div>
           <p>
-            Implementamos medidas de seguridad técnicas y administrativas para proteger
-            tu información contra acceso no autorizado, pérdida o alteración. Tus datos
-            se almacenan en servidores seguros con cifrado en tránsito y en reposo.
+            Implementamos medidas de seguridad técnicas y administrativas para proteger sus
+            datos. Utilizamos encriptación SSL y servidores seguros con acceso restringido para
+            prevenir accesos no autorizados.
           </p>
         </div>
 
-        <div class="seccion">
-          <h3>4. Compartición de datos</h3>
+        <!-- 4. Derechos ARCO -->
+        <div class="aviso-seccion">
+          <div class="seccion-header">
+            <span class="numero-seccion">4</span>
+            <h3>Derechos ARCO</h3>
+          </div>
           <p>
-            <strong>No vendemos ni compartimos</strong> tu información personal con terceros
-            con fines comerciales. Solo se comparte información cuando es estrictamente
-            necesario para el funcionamiento del servicio o por requerimiento legal.
+            Usted tiene derecho a Acceder, Rectificar, Cancelar u Oponerse (Derechos ARCO) al
+            tratamiento de su información. Puede ejercer estos derechos enviando una solicitud
+            a nuestro contacto oficial.
           </p>
-        </div>
-
-        <div class="seccion">
-          <h3>5. Derechos ARCO</h3>
-          <p>
-            Tienes derecho a <strong>Acceder</strong>, <strong>Rectificar</strong>,
-            <strong>Cancelar</strong> u <strong>Oponerte</strong> al tratamiento de
-            tus datos personales. Para ejercer estos derechos, contacta a nuestro
-            equipo de soporte desde la sección de ayuda.
-          </p>
-        </div>
-
-        <div class="seccion">
-          <h3>6. Términos de Servicio</h3>
-          <p>Al crear tu cuenta en Tuunka, aceptas:</p>
-          <ul>
-            <li>Utilizar la plataforma con fines académicos y de comunidad.</li>
-            <li>No publicar contenido ofensivo, ilegal o que viole derechos de terceros.</li>
-            <li>Mantener la confidencialidad de tus credenciales de acceso.</li>
-            <li>Respetar las normas de convivencia de la comunidad universitaria.</li>
-          </ul>
         </div>
 
       </div>
 
-      <div class="modal-footer">
-        <p>Al registrarte, confirmas haber leído y aceptado este aviso.</p>
-        <span class="copyright">© 2026 Tuunka. Todos los derechos reservados.</span>
+      <!-- CONTACTO -->
+      <div class="aviso-contacto">
+        <div class="contacto-texto">
+          <strong>¿Tienes dudas sobre tu privacidad?</strong>
+          <span>Nuestro equipo está listo para ayudarte en cualquier momento.</span>
+        </div>
+        <a class="contacto-btn" href="mailto:privacidad&#64;tuunka.com">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M4 4H20V20H4V4Z" stroke="white" stroke-width="2"/>
+            <path d="M4 4L12 13L20 4" stroke="white" stroke-width="2"/>
+          </svg>
+          privacidad&#64;tuunka.com
+        </a>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="aviso-footer">
+        <span class="footer-copy">© 2026 Tuunka. Todos los derechos reservados.</span>
+        <div class="footer-links">
+          <span class="footer-link">Términos de Servicio</span>
+          <span class="footer-link">Soporte</span>
+        </div>
       </div>
 
     </app-modal-base>
   `,
   styles: `
-    .modal-header {
-      text-align: center;
+    /* HEADER */
+    .aviso-header {
       margin-bottom: 24px;
     }
 
-    .icono-aviso {
-      width: 48px;
-      height: 48px;
-      background: rgba(19, 91, 236, 0.1);
-      border-radius: 16px;
+    .aviso-titulo {
+      margin: 0 0 8px;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .aviso-fecha {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* BODY */
+    .aviso-body {
+      max-height: 55vh;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .aviso-body::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .aviso-body::-webkit-scrollbar-thumb {
+      background: var(--border-light);
+      border-radius: 3px;
+    }
+
+    .aviso-intro {
+      font-size: 14px;
+      line-height: 24px;
+      color: var(--text-secondary);
+      margin: 0 0 28px;
+    }
+
+    .marca {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* SECCIONES */
+    .aviso-seccion {
+      margin-bottom: 24px;
+    }
+
+    .seccion-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .numero-seccion {
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 16px;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
     }
 
-    h2 {
-      margin: 0 0 4px;
-      font-size: 24px;
-      font-weight: 700;
-      color: #1E293B;
-    }
-
-    .actualizacion {
-      font-size: 13px;
-      color: #9CA3AF;
+    .seccion-header h3 {
       margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
     }
 
-    .modal-body {
+    .aviso-seccion p {
       font-size: 14px;
       line-height: 22px;
-      color: #475569;
+      color: var(--text-secondary);
+      margin: 0 0 10px;
     }
 
-    .intro {
-      margin: 0 0 20px;
-    }
-
-    .seccion {
-      margin-top: 20px;
-    }
-
-    .seccion h3 {
-      font-size: 15px;
-      font-weight: 600;
-      color: #1E293B;
-      margin: 0 0 8px;
-    }
-
-    .seccion p {
-      margin: 0 0 8px;
-    }
-
-    ul {
+    .aviso-seccion ul {
       margin: 0;
       padding-left: 20px;
     }
 
-    ul li {
-      margin-bottom: 6px;
+    .aviso-seccion ul li {
+      font-size: 14px;
+      line-height: 24px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
     }
 
-    .modal-footer {
+    /* CONTACTO */
+    .aviso-contacto {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 20px 24px;
       margin-top: 28px;
-      padding-top: 20px;
-      border-top: 1px solid #E5E7EB;
-      text-align: center;
+      gap: 16px;
     }
 
-    .modal-footer p {
+    .contacto-texto {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .contacto-texto strong {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .contacto-texto span {
       font-size: 13px;
-      color: #6B7280;
-      margin: 0 0 8px;
+      color: var(--text-secondary);
     }
 
-    .copyright {
+    .contacto-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Lexend', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .contacto-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    /* FOOTER */
+    .aviso-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .footer-copy {
       font-size: 12px;
-      color: #9CA3AF;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .footer-link:hover {
+      text-decoration: underline;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 580px) {
+      .aviso-contacto {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .aviso-footer {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -157,6 +157,30 @@
   background: #0D4FD8;
 }
 
+.boton-inicio-sesion:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ERROR */
+.error-campo {
+  font-size: 13px;
+  color: #EF4444;
+  margin-top: 2px;
+}
+
+/* BOTÓN OJO */
+.boton-ojo {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
 /* DIVISOR */
 .divisor {
   margin: 24px 0 20px;

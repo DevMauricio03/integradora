@@ -270,8 +270,8 @@
       <div class="fila-terminos">
         <input type="checkbox" [(ngModel)]="aceptaTerminos" name="aceptaTerminos" />
         <span>
-          Acepto el 
-          <span class="link">Aviso de Privacidad</span>
+          Acepto el
+          <span class="link" (click)="abrirAviso($event)">Aviso de Privacidad</span>
           y los Términos de Servicio de Tuunka.
         </span>
       </div>
@@ -308,3 +308,13 @@
   </div>
 
 </div>
+
+<!-- MODAL AVISO DE PRIVACIDAD -->
+@if (mostrarAviso) {
+  <app-avisos-legales (closed)="cerrarAviso()"></app-avisos-legales>
+}
+
+<!-- MODAL CUENTA CREADA -->
+@if (mostrarSuccess) {
+  <app-success-modal (close)="cerrarSuccess()" (confirm)="irALogin()"></app-success-modal>
+}

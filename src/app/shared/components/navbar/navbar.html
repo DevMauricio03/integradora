@@ -24,6 +24,16 @@
   <!-- DERECHA: Contenido dinámico -->
   <div class="navbar-right">
     <ng-content select="[navbar-right]"></ng-content>
+    @if (showLogout) {
+      <button class="btn-logout" (click)="logout()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M9 21H5C3.89 21 3 20.1 3 19V5C3 3.89 3.89 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Salir
+      </button>
+    }
   </div>
 
 </nav>

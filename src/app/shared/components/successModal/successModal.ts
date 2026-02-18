@@ -6,27 +6,29 @@ import { ModalBase } from '../modalBase/modalBase';
   standalone: true,
   imports: [ModalBase],
   template: `
-    <app-modal-base ancho="440px" [mostrarCerrar]="false">
+    <app-modal-base ancho="440px" [mostrarCerrar]="false" (close)="emitClose()">
 
-      <div class="contenido-exito">
+      <div class="success-container">
 
         <!-- Ícono check -->
-        <div class="circulo-check">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-            <circle cx="24" cy="24" r="24" fill="#135BEC"/>
-            <path d="M15 25l6 6 12-13" stroke="#FFFFFF" stroke-width="3"
+        <div class="success-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="var(--primary)" stroke-width="2"/>
+            <path d="M8 12L11 15L16 9" stroke="var(--primary)" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
 
         <h2>¡Cuenta creada!</h2>
 
-        <p class="mensaje">
-          Tu cuenta ha sido creada con éxito. Revisa tu correo institucional
-          para verificar tu cuenta y luego inicia sesión.
+        <p>
+          Haz creado tu cuenta con éxito, inicia sesión
+          para conectarte con tu comunidad universitaria
         </p>
 
-        <button class="btn-iniciar" (click)="irLogin()">
+        <div class="divider"></div>
+
+        <button class="btn-primario" (click)="emitConfirm()">
           Inicia sesión
         </button>
 
@@ -35,59 +37,85 @@ import { ModalBase } from '../modalBase/modalBase';
     </app-modal-base>
   `,
   styles: `
-    .contenido-exito {
+    .success-container {
+      padding: 40px 32px 32px;
+      text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
-      padding: 16px 0 8px;
+      gap: 24px;
     }
 
-    .circulo-check {
-      margin-bottom: 24px;
+    .success-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: rgba(19, 91, 236, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    h2 {
-      margin: 0 0 12px;
-      font-size: 26px;
+    .success-container h2 {
+      font-size: 24px;
       font-weight: 700;
-      color: #1E293B;
+      color: var(--text-main);
+      margin: 0;
     }
 
-    .mensaje {
-      margin: 0 0 32px;
-      font-size: 15px;
-      line-height: 24px;
-      color: #64748B;
+    .success-container p {
+      font-size: 14px;
+      line-height: 23px;
+      color: var(--text-secondary);
+      margin: 0;
       max-width: 340px;
     }
 
-    .btn-iniciar {
+    .divider {
       width: 100%;
-      max-width: 320px;
-      height: 48px;
-      background: #135BEC;
-      color: #FFFFFF;
+      height: 1px;
+      background: var(--border-light);
+    }
+
+    .btn-primario {
+      width: 100%;
+      height: 45px;
+      background: var(--primary);
+      color: white;
       border: none;
       border-radius: 12px;
       font-family: 'Lexend', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
       transition: background 0.2s;
+      box-shadow:
+        0px 10px 15px -3px rgba(19, 91, 236, 0.25),
+        0px 4px 6px -4px rgba(19, 91, 236, 0.25);
     }
 
-    .btn-iniciar:hover {
-      background: #0F4FD4;
+    .btn-primario:hover {
+      background: var(--primary-hover);
+    }
+
+    @media (max-width: 480px) {
+      .success-container {
+        padding: 32px 20px;
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuccessModal {
 
-  @Output() irAlLogin = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
+  @Output() confirm = new EventEmitter<void>();
 
-  irLogin() {
-    this.irAlLogin.emit();
+  emitClose() {
+    this.close.emit();
+  }
+
+  emitConfirm() {
+    this.confirm.emit();
   }
 }
