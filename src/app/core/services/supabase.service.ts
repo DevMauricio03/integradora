@@ -75,4 +75,10 @@ export class SupabaseService {
     return { data, error };
   }
 
+  // 🔹 Recuperar contraseña
+  async resetPassword(email: string) {
+    const { data, error } = await this.supabase.auth.resetPasswordForEmail(email);
+    return { data, error };
+  }
+
 }
