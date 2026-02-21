@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+import { EditarPerfilPage } from './user/pages/editPerfil/editPerfil';
+import { PerfilPublicoPage } from './user/pages/perfil/perfil';
 
 export const routes: Routes = [
  {
@@ -14,6 +16,18 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./auth/auth.routes')
         .then(m => m.AUTH_ROUTES)
+  },
+
+  {
+    path: 'user/perfil',
+    component: PerfilPublicoPage,
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'user/perfil/editar',
+    component: EditarPerfilPage,
+    canActivate: [AuthGuard]
   },
 
   {

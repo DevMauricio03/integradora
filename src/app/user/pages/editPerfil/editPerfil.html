@@ -1,1 +1,131 @@
-<p>editPerfil works!</p>,
+<app-navbar></app-navbar>
+
+<div class="contenedor-edit">
+	<form class="contenido-edit" [formGroup]="form">
+
+		<div class="header-editar">
+			<h1>Editar Perfil</h1>
+			<p>Actualiza tu información personal y académica.</p>
+		</div>
+
+		<section class="card-seccion foto-perfil">
+
+			<div class="foto-wrapper">
+				<input
+					type="file"
+					accept="image/png, image/jpeg"
+					(change)="onFileSelected($event)"
+					hidden
+					#fileInput>
+				<img
+					[src]="perfil?.foto_url || perfil?.foto_perfil || perfil?.fotoPerfil || defaultAvatarUrl"
+					(error)="onAvatarError($event)"
+					alt="avatar">
+				<button
+					type="button"
+					class="btn-edit-foto"
+					(click)="fileInput.click()">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+						<path d="M16.862 3.487a2.12 2.12 0 0 1 2.998 0l.653.653a2.12 2.12 0 0 1 0 2.999l-9.95 9.95-3.756.758.758-3.756 9.95-9.95z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+			</div>
+
+			<div class="foto-info">
+				<h3>Foto de Perfil</h3>
+				<p>
+					Se recomienda una imagen cuadrada de al menos 400x400px.
+					JPG, PNG o GIF.
+				</p>
+				<button type="button" class="btn-outline-sm" (click)="eliminarFoto()">Eliminar foto</button>
+			</div>
+
+		</section>
+
+		<section class="card-seccion">
+
+			<h3>Información Básica</h3>
+			<p class="sub">Tu nombre real visible para la comunidad.</p>
+
+			<div class="grid-2">
+				<div class="grupo-form">
+					<label>Nombre(s)</label>
+					<input type="text" formControlName="nombre">
+				</div>
+
+				<div class="grupo-form">
+					<label>Apellidos</label>
+					<input type="text" formControlName="apellidos">
+				</div>
+			</div>
+
+		</section>
+
+		<section class="card-seccion">
+
+			<h3>Comunidad Académica</h3>
+			<p class="sub">Gestiona tu afiliación universitaria.</p>
+
+			<div class="grupo-form">
+				<label>Universidad / Institución</label>
+				<input
+					type="text"
+					[value]="perfil?.correoInstitucional?.toLowerCase()?.includes('utvco') ? 'Universidad Tecnológica de los Valles Centrales de Oaxaca' : ''"
+					disabled>
+			</div>
+
+			<div class="grid-2">
+				<div class="grupo-form">
+					<label>Rol Académico</label>
+					<input type="text" [value]="'Estudiante'" disabled>
+				</div>
+
+				<div class="grupo-form">
+					<label>Año de Graduación (Estimado)</label>
+					<input type="text" formControlName="anioGraduacion">
+				</div>
+			</div>
+
+		</section>
+
+		<div class="acciones-finales">
+			<button type="button" class="btn-link">Cancelar</button>
+			<button
+				type="button"
+				class="btn-primary"
+				(click)="guardarCambios()">
+				Guardar cambios
+			</button>
+		</div>
+
+  </form>
+</div>
+
+<app-modal-base
+	*ngIf="mostrarExito"
+	[ancho]="'420px'"
+	[mostrarCerrar]="false"
+	(close)="mostrarExito = false">
+
+	<div class="modal-exito">
+		<div class="icono-exito">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M9 12L11 14L15 10" stroke="#135BEC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+				<circle cx="12" cy="12" r="9" stroke="#135BEC" stroke-width="2"/>
+			</svg>
+		</div>
+
+		<h2>¡Cambios Guardados!</h2>
+		<p>Tu información ha sido modificada con éxito</p>
+
+		<div class="divider"></div>
+
+		<button
+			type="button"
+			class="btn-primary"
+			(click)="irPerfil()">
+			Ir a perfil
+		</button>
+	</div>
+
+</app-modal-base>

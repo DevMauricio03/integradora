@@ -1,0 +1,352 @@
+/* ============ LAYOUT ============ */
+.layout {
+  display: flex;
+  min-height: calc(100vh - 63px);
+  background: #F5F7FA;
+}
+
+/* ============ SIDEBAR ============ */
+.sidebar {
+  width: 288px;
+  background: white;
+  border-right: 1px solid var(--border-light);
+  padding: 24px 16px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar li:hover {
+  background: var(--card-bg);
+}
+
+.sidebar li.active {
+  color: var(--primary);
+  font-weight: 600;
+  background: rgba(19, 91, 236, 0.08);
+}
+
+/* ============ CONTENIDO ============ */
+.contenido {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1088px;
+}
+
+/* ============ PERFIL HEADER ============ */
+.perfil-header {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  border-top: 4px solid var(--primary);
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.perfil-info {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow:
+    0px 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0px 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.datos h1 {
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-main);
+}
+
+.meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.badge-rol {
+  background: var(--card-bg);
+  color: var(--primary);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-light);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.universidad {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.btn-secundario {
+  height: 46px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+  background: white;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* ============ TABS ============ */
+.tabs {
+  margin-top: 0;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 0 8px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 16px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.tab.active {
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+}
+
+.tabs-descripcion {
+  margin: -8px 0 0;
+  padding: 0 4px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ============ PUBLICACIONES ============ */
+.lista-publicaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-publicacion {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow:
+    0px 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0px 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 12px;
+  border-radius: 9999px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.tipo-aviso {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  color: var(--primary);
+}
+
+.card-publicacion h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.card-publicacion p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--text-secondary);
+}
+
+.acciones {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.btn-primario-sm {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  min-height: 40px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow:
+    0px 4px 6px -1px rgba(19, 91, 236, 0.2),
+    0px 2px 4px -2px rgba(19, 91, 236, 0.2);
+}
+
+.btn-outline-sm {
+  border: 1px solid var(--border-light);
+  background: var(--card-bg);
+  border-radius: 8px;
+  min-height: 36px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-secondary);
+  box-shadow:
+    0px 4px 6px -1px rgba(155, 155, 155, 0.2),
+    0px 2px 4px -2px rgba(19, 91, 236, 0.2);
+}
+
+.link-compartir {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.cargar-mas {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .contenido {
+    padding: 24px;
+  }
+
+  .datos h1 {
+    font-size: 26px;
+    line-height: 32px;
+  }
+
+  .avatar img {
+    width: 108px;
+    height: 108px;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+    padding: 16px;
+  }
+
+  .sidebar ul {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 4px;
+  }
+
+  .sidebar li {
+    white-space: nowrap;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .contenido {
+    padding: 20px 16px;
+  }
+
+  .tabs {
+    padding: 0 12px;
+  }
+
+  .perfil-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .perfil-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .avatar img {
+    width: 96px;
+    height: 96px;
+  }
+
+  .datos h1 {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .acciones {
+    gap: 8px;
+  }
+
+  .btn-primario-sm,
+  .btn-outline-sm {
+    min-height: 34px;
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+}
