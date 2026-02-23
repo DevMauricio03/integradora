@@ -9,7 +9,7 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
 @Component({
   selector: 'app-editar-perfil-page',
   standalone: true,
-  imports: [NgIf, ReactiveFormsModule, Navbar, ModalBase],
+  imports: [NgIf, ReactiveFormsModule, ModalBase],
   templateUrl: './editPerfil.html',
   styleUrls: ['./editPerfil.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

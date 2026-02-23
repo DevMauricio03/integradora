@@ -1,0 +1,50 @@
+<div class="post-card">
+
+  <div class="post-header">
+
+    <div class="user-section">
+      <div class="avatar"></div>
+
+      <div class="user-info">
+        <strong class="author">{{ author }}</strong>
+        <span class="meta">
+          {{ role }} · {{ time }}
+        </span>
+      </div>
+    </div>
+
+    @if (badge) {
+      <span class="badge">
+        {{ badge | uppercase }}
+      </span>
+    }
+
+  </div>
+
+  <h3 class="post-title">
+    {{ title }}
+  </h3>
+
+  <p class="post-content">
+    {{ content }}
+  </p>
+
+  @if (image) {
+    <div class="post-image">
+      <img [src]="image" alt="Imagen publicación" />
+    </div>
+  }
+
+  <div class="post-footer">
+  <button type="button" class="footer-btn">
+    <app-icon name="flag" [size]="16"></app-icon>
+    <span>Reportar</span>
+  </button>
+
+  <button type="button" class="footer-btn">
+    <app-icon name="flag" [size]="16"></app-icon>
+    <span>Compartir</span>
+  </button>
+</div>
+
+</div>

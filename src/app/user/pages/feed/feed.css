@@ -1,48 +1,4 @@
-/* ============ LAYOUT ============ */
-.layout {
-  display: flex;
-  min-height: calc(100vh - 63px);
-  background: #F5F7FA;
-}
 
-/* ============ SIDEBAR ============ */
-.sidebar {
-  width: 240px;
-  background: white;
-  border-right: 1px solid var(--border-light);
-  padding: 24px 16px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sidebar li {
-  font-size: 14px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  transition: background 0.15s, color 0.15s;
-}
-
-.sidebar li:hover {
-  background: var(--card-bg);
-}
-
-.sidebar li.active {
-  color: var(--primary);
-  font-weight: 600;
-  background: rgba(19, 91, 236, 0.08);
-}
 
 /* ============ CONTENIDO ============ */
 .contenido {

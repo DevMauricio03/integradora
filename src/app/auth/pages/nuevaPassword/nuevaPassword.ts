@@ -8,7 +8,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 @Component({
   selector: 'app-nueva-password',
   standalone: true,
-  imports: [FormsModule, Navbar, RouterLink, ModalBase],
+  imports: [FormsModule, Navbar, ModalBase],
   templateUrl: './nuevaPassword.html',
   styleUrls: ['./nuevaPassword.css']
 })

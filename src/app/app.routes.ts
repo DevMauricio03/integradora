@@ -18,17 +18,8 @@ export const routes: Routes = [
         .then(m => m.AUTH_ROUTES)
   },
 
-  {
-    path: 'user/perfil',
-    component: PerfilPublicoPage,
-    canActivate: [AuthGuard]
-  },
 
-  {
-    path: 'user/perfil/editar',
-    component: EditarPerfilPage,
-    canActivate: [AuthGuard]
-  },
+  
 
   {
     path: 'user',

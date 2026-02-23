@@ -1,0 +1,64 @@
+<app-navbar [title]="title()" [showLogout]="true">
+
+  <div navbar-right class="right-content">
+
+    <!-- Buscador -->
+    <input
+      type="text"
+      placeholder="Buscar..."
+      class="search-input"
+    />
+
+    <!-- Notificación -->
+    <button class="icon-btn">
+      <app-icon name="bell"></app-icon>
+    </button>
+
+    @if (showCreateButton()) {
+      <button
+        class="btn-primario-sm"
+        (click)="goToCreate()"
+      >
+        <app-icon name="plus" [size]="16"></app-icon>
+        Nueva Publicación
+      </button>
+    }
+
+  </div>
+
+</app-navbar>
+<div class="layout">
+
+  <aside class="sidebar">
+    <nav>
+      <ul>
+        <li routerLink="/user/feed" routerLinkActive="active">
+          Inicio
+        </li>
+
+        <li routerLink="/user/experiencias" routerLinkActive="active">
+          Experiencias Empresariales
+        </li>
+
+        <li>
+          Avisos Oficiales
+        </li>
+
+        <li routerLink="/user/perfil"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }">
+          Perfil
+        </li>
+
+        <li>
+          Configuración
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="contenido">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

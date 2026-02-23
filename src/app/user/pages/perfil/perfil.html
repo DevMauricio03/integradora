@@ -1,52 +1,10 @@
-<app-navbar></app-navbar>
 
-<div class="layout">
 
-	<aside class="sidebar">
-		<nav>
-			<ul>
-				<li>
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-						<path d="M3 9L12 2L21 9V20C21 21.1 20.1 22 19 22H5C3.9 22 3 21.1 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						<path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-					</svg>
-					Inicio
-				</li>
-				<li>
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-						<rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
-						<path d="M8 21H16M12 17V21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-					</svg>
-					Experiencias Empresariales
-				</li>
-				<li>
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-						<path d="M18 8A6 6 0 0 0 6 8C6 15 3 17 3 17H21S18 15 18 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						<path d="M13.73 21A2 2 0 0 1 10.27 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-					</svg>
-					Avisos Oficiales
-				</li>
-				<li routerLink="/user/perfil"
-						routerLinkActive="active"
-						[routerLinkActiveOptions]="{ exact: true }">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-						<path d="M20 21V19A4 4 0 0 0 16 15H8A4 4 0 0 0 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						<circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
-					</svg>
-					Perfil
-				</li>
-				<li>
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-						<circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
-						<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-					</svg>
-					Configuración
-				</li>
-			</ul>
-		</nav>
+	<aside>
 	</aside>
 
-	<main class="contenido">
+<main class="contenido">
+  <div class="content-wrapper">
 
 		<section class="perfil-header">
 			<div class="perfil-info">
@@ -94,7 +52,7 @@
 		<div class="cargar-mas">
 			<button class="btn-outline-sm">Cargar más publicaciones</button>
 		</div>
-
+	</div>
 	</main>
 
-</div>
+

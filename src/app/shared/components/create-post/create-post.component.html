@@ -1,0 +1,154 @@
+@if (step() === 'form') {
+<form class="create-form" [formGroup]="form" (ngSubmit)="goToPreview()">
+
+  <h2 class="form-title">Crear Publicación</h2>
+
+  <!-- Tipo -->
+  <div class="form-group">
+    <label>Tipo de publicación *</label>
+
+    <select formControlName="type">
+      <option value="aviso">Aviso</option>
+      <option value="evento">Evento</option>
+      <option value="oferta">Oferta</option>
+      <option value="experiencia">Experiencia Empresarial</option>
+    </select>
+  </div>
+
+  <!-- Título -->
+  <div class="form-group">
+    <label>Título *</label>
+    <input
+      type="text"
+      formControlName="title"
+      placeholder="Ej. Importante: Cierre de laboratorio"
+    />
+
+    @if (form.controls.title.touched && form.controls.title.invalid) {
+      <small class="error">
+        @if (form.controls.title.errors && form.controls.title.errors['minlength']) {
+          El título debe tener al menos 5 caracteres.
+        }
+        @if (form.controls.title.errors && form.controls.title.errors['maxlength']) {
+          El título no puede exceder 50 caracteres.
+        }
+      </small>
+    }
+  </div>
+
+  <!-- Descripción -->
+  <div class="form-group">
+    <label>Descripción *</label>
+    <textarea
+      rows="5"
+      formControlName="description"
+      placeholder="Escribe los detalles importantes aquí..."
+    ></textarea>
+
+    @if (form.controls.description.touched && form.controls.description.invalid) {
+      <small class="error">
+        @if (form.controls.description.errors && form.controls.description.errors['minlength']) {
+          La descripción debe tener al menos 10 caracteres.
+        }
+        @if (form.controls.description.errors && form.controls.description.errors['maxlength']) {
+          La descripción no puede exceder 100 caracteres.
+        }
+      </small>
+    }
+  </div>
+
+  <!-- Categoría -->
+  <div class="form-group">
+    <label>Categoría *</label>
+    <input
+      type="text"
+      formControlName="category"
+      placeholder="Ej. Académico"
+    />
+
+    @if (form.controls.category.touched && form.controls.category.invalid) {
+      <small class="error">
+        La categoría es obligatoria.
+      </small>
+    }
+  </div>
+
+  <!-- Fecha opcional -->
+  <div class="form-group">
+    <label>Fecha de vigencia (opcional)</label>
+    <input type="date" formControlName="expirationDate" />
+  </div>
+
+  <!-- Imagen -->
+  <div class="form-group">
+    <label>Imagen (opcional)</label>
+    <input type="file" (change)="handleFile($event)" />
+  </div>
+
+  <div class="form-actions">
+    <button
+      type="submit"
+      class="btn-primario-sm"
+    >
+      Siguiente
+    </button>
+  </div>
+
+</form>
+}
+@if (step() === 'preview') {
+
+ <div class="preview-wrapper">
+
+  <div class="preview-header">
+    <h2>Vista Previa de Publicación Final</h2>
+    <p>
+      Revisa cómo se verá tu contenido en el feed de la comunidad antes de publicarlo.
+    </p>
+  </div>
+
+  <div class="preview-card-container">
+    <app-post-card
+      [author]="'Tu Usuario'"
+      [role]="'Estudiante'"
+      [time]="'Ahora'"
+      [title]="form.value.title!"
+      [content]="form.value.description!"
+      [badge]="form.value.type!"
+      [image]="form.value.image!"
+    />
+  </div>
+
+  <div class="preview-divider"></div>
+
+  <div class="preview-actions">
+
+    <button
+      type="button"
+      class="btn-outline-sm"
+      (click)="backToForm()"
+    >
+      ← Volver a editar
+    </button>
+
+    <button
+      type="button"
+      class="btn-primario-sm"
+      (click)="publish()"
+    >
+      Publicar
+    </button>
+
+  </div>
+
+  <p class="preview-legal">
+    Al publicar, aceptas las
+    <span (click)="openRules()" class="legal-link">
+      Normas de la Comunidad
+    </span>
+    de Tuunka.
+  </p>
+
+</div>
+
+}

@@ -6,7 +6,7 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
 @Component({
   selector: 'app-perfil-publico-page',
   standalone: true,
-  imports: [Navbar, RouterLink, RouterLinkActive],
+  imports: [RouterLink],
   templateUrl: './perfil.html',
   styleUrls: ['./perfil.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
