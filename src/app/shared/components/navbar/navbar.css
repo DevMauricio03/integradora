@@ -1,38 +1,31 @@
 .navbar {
   width: 100%;
-  height: 40px;
-  padding: 12px 0px;
-
+  height: 64px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   background: #ffffff;
   border-bottom: 1px solid #F3F4F6;
-
   font-family: 'Lexend', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-sizing: border-box;
 }
 
 /* ===== LEFT ===== */
 .navbar-left {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
 .logo-contenedor {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   cursor: pointer;
-}
-
-.logo-icono {
-  width: 32px;
-  height: 32px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .logo-texto {
@@ -42,11 +35,10 @@
   color: #111318;
 }
 
-/* ===== CENTER ===== */
-.navbar-center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+.v-divider {
+  width: 1px;
+  height: 24px;
+  background: #E5E7EB;
 }
 
 .navbar-title {
@@ -55,34 +47,19 @@
   color: #111318;
 }
 
+/* ===== CENTER ===== */
+.navbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 600px;
+}
+
 /* ===== RIGHT ===== */
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 16px;
-  white-space: nowrap;
-}
-
-.btn-logout {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  padding: 6px 14px;
-  font-family: 'Lexend', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.btn-logout:hover {
-  background: #FEE2E2;
-  color: #EF4444;
-  border-color: #FECACA;
 }
 
 .navbar-help {
@@ -90,4 +67,25 @@
   font-size: 14px;
   color: #64748B;
   cursor: pointer;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .navbar {
+    height: 56px;
+    padding: 0 16px;
+  }
+
+  .logo-texto {
+    font-size: 18px;
+  }
+
+  .v-divider,
+  .navbar-title {
+    display: none;
+  }
+
+  .navbar-left {
+    gap: 8px;
+  }
 }

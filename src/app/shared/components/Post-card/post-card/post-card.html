@@ -3,20 +3,27 @@
   <div class="post-header">
 
     <div class="user-section">
-      <div class="avatar"></div>
+      <div class="avatar-container">
+        @if (avatar) {
+        <img [src]="avatar" class="avatar-img" alt="Avatar">
+        } @else {
+        <div class="avatar-placeholder">{{ author.charAt(0) | uppercase }}</div>
+        }
+      </div>
 
       <div class="user-info">
         <strong class="author">{{ author }}</strong>
         <span class="meta">
-          {{ role }} · {{ time }}
+          {{ role }} · {{ time }} @if (category) { · {{ category }} }
         </span>
       </div>
     </div>
 
     @if (badge) {
-      <span class="badge">
-        {{ badge | uppercase }}
-      </span>
+    <div class="badge-container" [class]="badge.toLowerCase().replace(' ', '-')">
+      <app-icon name="megaphone" [size]="14"></app-icon>
+      <span class="badge-text">{{ badge | uppercase }}</span>
+    </div>
     }
 
   </div>
@@ -29,22 +36,29 @@
     {{ content }}
   </p>
 
+  @if (expirationDate) {
+  <div class="expiration-info">
+    <app-icon name="bell" [size]="16"></app-icon>
+    <span>{{ expirationDate }}</span>
+  </div>
+  }
+
   @if (image) {
-    <div class="post-image">
-      <img [src]="image" alt="Imagen publicación" />
-    </div>
+  <div class="post-image">
+    <img [src]="image" alt="Imagen publicación" />
+  </div>
   }
 
   <div class="post-footer">
-  <button type="button" class="footer-btn">
-    <app-icon name="flag" [size]="16"></app-icon>
-    <span>Reportar</span>
-  </button>
+    <button type="button" class="footer-btn report">
+      <app-icon name="flag" [size]="18"></app-icon>
+      <span>Reportar</span>
+    </button>
 
-  <button type="button" class="footer-btn">
-    <app-icon name="flag" [size]="16"></app-icon>
-    <span>Compartir</span>
-  </button>
-</div>
+    <button type="button" class="footer-btn share">
+      <app-icon name="plus" [size]="18" style="transform: rotate(45deg);"></app-icon>
+      <span>Compartir</span>
+    </button>
+  </div>
 
 </div>

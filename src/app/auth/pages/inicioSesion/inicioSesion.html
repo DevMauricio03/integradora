@@ -16,7 +16,7 @@
       <div class="icono-inicio-sesion">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
           <path d="M12 3L1 9L12 15L21 10.09V17H23V9L12 3ZM5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
-            fill="var(--primary)"/>
+            fill="var(--primary)" />
         </svg>
       </div>
 
@@ -32,7 +32,7 @@
     </div>
 
     <!-- FORM -->
-    <form class="formulario-inicio-sesion">
+    <form class="formulario-inicio-sesion" (submit)="onSubmit($event)" novalidate>
 
       <!-- EMAIL -->
       <div class="grupo-formulario">
@@ -41,24 +41,18 @@
         <div class="contenedor-input">
 
           <svg class="icono-input" width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M4 4H20V20H4V4Z"
-              stroke="var(--text-muted)"
-              stroke-width="2"/>
-            <path d="M4 4L12 13L20 4"
-              stroke="var(--text-muted)"
-              stroke-width="2"/>
+            <path d="M4 4H20V20H4V4Z" stroke="var(--text-muted)" stroke-width="2" />
+            <path d="M4 4L12 13L20 4" stroke="var(--text-muted)" stroke-width="2" />
           </svg>
 
-          <input
-            type="email"
-            placeholder="nombre.apellido@universidad.edu.com"
-            [(ngModel)]="email"
-            name="email"
-          />
+          <input type="email" placeholder="nombre.apellido@universidad.edu.com" [formField]="loginForm.email" />
 
         </div>
-        @if (errorMensaje) {
-          <span class="error-campo">{{ errorMensaje }}</span>
+        @if (loginForm.email().touched() && loginForm.email().invalid()) {
+        <span class="error-campo">{{ loginForm.email().errors()[0].message }}</span>
+        }
+        @if (errorMensaje()) {
+        <span class="error-campo">{{ errorMensaje() }}</span>
         }
       </div>
 
@@ -69,43 +63,43 @@
         <div class="contenedor-input">
 
           <svg class="icono-input" width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="11" width="18" height="10"
-              stroke="var(--text-muted)"
-              stroke-width="2"/>
-            <path d="M7 11V7A5 5 0 0 1 17 7V11"
-              stroke="var(--text-muted)"
-              stroke-width="2"/>
+            <rect x="3" y="11" width="18" height="10" stroke="var(--text-muted)" stroke-width="2" />
+            <path d="M7 11V7A5 5 0 0 1 17 7V11" stroke="var(--text-muted)" stroke-width="2" />
           </svg>
 
-          <input
-            [type]="mostrarPassword ? 'text' : 'password'"
-            placeholder="••••••••"
-            [(ngModel)]="password"
-            name="password"
-          />
+          <input [type]="mostrarPassword() ? 'text' : 'password'" placeholder="••••••••"
+            [formField]="loginForm.password" />
 
-          <button type="button" class="boton-ojo" (click)="mostrarPassword = !mostrarPassword">
+          <button type="button" class="boton-ojo" (click)="mostrarPassword.set(!mostrarPassword())">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              @if (mostrarPassword) {
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M1 1L23 23" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              @if (mostrarPassword()) {
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"
+                stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="var(--text-muted)" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M1 1L23 23" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"
+                stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               } @else {
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="12" cy="12" r="3" stroke="var(--text-muted)" stroke-width="2"/>
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="var(--text-muted)" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="12" cy="12" r="3" stroke="var(--text-muted)" stroke-width="2" />
               }
             </svg>
           </button>
 
         </div>
+        @if (loginForm.password().touched() && loginForm.password().invalid()) {
+        <span class="error-campo">{{ loginForm.password().errors()[0].message }}</span>
+        }
       </div>
 
       <!-- ACTION ROW -->
       <div class="fila-acciones">
 
         <label class="recordarme">
-          <input type="checkbox" />
+          <input type="checkbox" [formField]="loginForm.recordarme" />
           Recordarme
         </label>
 
@@ -116,11 +110,11 @@
       </div>
 
       <!-- BOTÓN -->
-      <button type="button" class="boton-inicio-sesion" [disabled]="loading" (click)="onSubmit()">
-        @if (loading) {
-          Ingresando...
+      <button type="submit" class="boton-inicio-sesion" [disabled]="loading() || loginForm().pending()">
+        @if (loading()) {
+        Ingresando...
         } @else {
-          Entrar
+        Entrar
         }
       </button>
 

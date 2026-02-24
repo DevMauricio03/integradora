@@ -1,57 +1,58 @@
-<app-navbar [title]="title()" [showLogout]="true">
+<app-navbar [title]="title()">
+
+  <!-- Buscador en el centro -->
+  <div navbar-center class="center-content">
+    <div class="search-container">
+      <app-icon name="search" [size]="18" class="search-icon"></app-icon>
+      <input type="text" placeholder="Buscar..." class="search-input" />
+    </div>
+  </div>
 
   <div navbar-right class="right-content">
-
-    <!-- Buscador -->
-    <input
-      type="text"
-      placeholder="Buscar..."
-      class="search-input"
-    />
-
     <!-- Notificación -->
     <button class="icon-btn">
-      <app-icon name="bell"></app-icon>
+      <app-icon name="bell" [size]="20"></app-icon>
+      <span class="notification-dot"></span>
     </button>
 
     @if (showCreateButton()) {
-      <button
-        class="btn-primario-sm"
-        (click)="goToCreate()"
-      >
-        <app-icon name="plus" [size]="16"></app-icon>
-        Nueva Publicación
-      </button>
+    <button class="btn-nueva-pub" (click)="goToCreate()">
+      <app-icon name="plus" [size]="18"></app-icon>
+      <span>Nueva Publicación</span>
+    </button>
     }
-
   </div>
 
 </app-navbar>
+
 <div class="layout">
 
   <aside class="sidebar">
     <nav>
       <ul>
         <li routerLink="/user/feed" routerLinkActive="active">
-          Inicio
+          <app-icon name="home"></app-icon>
+          <span>Inicio</span>
         </li>
 
         <li routerLink="/user/experiencias" routerLinkActive="active">
-          Experiencias Empresariales
+          <app-icon name="briefcase"></app-icon>
+          <span>Experiencias Empresariales</span>
         </li>
 
         <li>
-          Avisos Oficiales
+          <app-icon name="megaphone"></app-icon>
+          <span>Avisos Oficiales</span>
         </li>
 
-        <li routerLink="/user/perfil"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }">
-          Perfil
+        <li routerLink="/user/perfil" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <app-icon name="user"></app-icon>
+          <span>Perfil</span>
         </li>
 
-        <li>
-          Configuración
+        <li class="config-item">
+          <app-icon name="settings"></app-icon>
+          <span>Configuración</span>
         </li>
       </ul>
     </nav>

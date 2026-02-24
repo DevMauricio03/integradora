@@ -1,154 +1,133 @@
-@if (step() === 'form') {
-<form class="create-form" [formGroup]="form" (ngSubmit)="goToPreview()">
+<main class="creation-container">
 
-  <h2 class="form-title">Crear Publicación</h2>
+  @if (step() === 'form') {
+  <div class="form-card">
+    <div class="form-header">
+      <h2 class="main-title">Crear Aviso</h2>
+      <p class="subtitle">Comparte noticias, eventos o servicios con tu comunidad universitaria.</p>
+    </div>
 
-  <!-- Tipo -->
-  <div class="form-group">
-    <label>Tipo de publicación *</label>
+    <form [formGroup]="form" class="main-form" (ngSubmit)="goToPreview()">
 
-    <select formControlName="type">
-      <option value="aviso">Aviso</option>
-      <option value="evento">Evento</option>
-      <option value="oferta">Oferta</option>
-      <option value="experiencia">Experiencia Empresarial</option>
-    </select>
+      <!-- Tipo de Publicación -->
+      <div class="section-group">
+        <h3 class="section-label">TIPO DE PUBLICACIÓN</h3>
+        <div class="type-grid">
+          @for (type of types; track type.id) {
+          <div class="type-card" [class.selected]="form.value.type === type.id" (click)="selectType(type.id)">
+            <div class="type-icon-wrapper">
+              <app-icon [name]="$any(type.icon)" [size]="24"></app-icon>
+              @if (form.value.type === type.id) {
+              <div class="check-badge">
+                <app-icon name="check" [size]="12"></app-icon>
+              </div>
+              }
+            </div>
+            <span class="type-name">{{type.name}}</span>
+            <span class="type-desc">{{type.desc}}</span>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Título -->
+      <div class="form-field">
+        <label>Título de la publicación *</label>
+        <input type="text" formControlName="title" placeholder="Ej: Importante: Cierre de laboratorio de química"
+          [class.error-border]="form.controls.title.touched && form.controls.title.invalid">
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-field">
+        <label>Descripción *</label>
+        <textarea rows="4" formControlName="description"
+          placeholder="Escribe los detalles importantes del aviso aquí..."
+          [class.error-border]="form.controls.description.touched && form.controls.description.invalid"></textarea>
+      </div>
+
+      <!-- Categoría y Fecha -->
+      <div class="form-row">
+        <div class="form-field">
+          <label>Categoría del aviso *</label>
+          <div class="select-container">
+            <app-icon name="tag" [size]="18" class="field-icon"></app-icon>
+            <select formControlName="category">
+              <option value="" disabled selected>Selecciona categoría</option>
+              @for (cat of categories; track cat) {
+              <option [value]="cat">{{cat}}</option>
+              }
+            </select>
+            <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Fecha de vigencia (opcional)</label>
+          <div class="select-container">
+            <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
+            <input type="date" formControlName="expirationDate">
+          </div>
+        </div>
+      </div>
+
+      <!-- Imágenes -->
+      <div class="section-group">
+        <h3 class="section-label">Imágenes o Documentos</h3>
+        <div class="upload-zone" (click)="fileInput.click()">
+          <input type="file" #fileInput (change)="handleFile($event)" style="display: none">
+          <div class="upload-content">
+            <div class="upload-icon-circle">
+              <app-icon name="upload" [size]="20"></app-icon>
+            </div>
+            <h4>Haz clic para subir o arrastra archivos aquí</h4>
+            <p>Soporta JPG, PNG, PDF (Max 10MB)</p>
+            @if (form.value.image) {
+            <div class="file-ready">
+              <app-icon name="check" [size]="14"></app-icon>
+              <span>Imagen lista para subir</span>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancelar" (click)="cancel()">Cancelar</button>
+        <button type="submit" class="btn-siguiente">Siguiente</button>
+      </div>
+
+    </form>
   </div>
+  }
 
-  <!-- Título -->
-  <div class="form-group">
-    <label>Título *</label>
-    <input
-      type="text"
-      formControlName="title"
-      placeholder="Ej. Importante: Cierre de laboratorio"
-    />
+  @if (step() === 'preview') {
+  <div class="preview-wrapper fade-in">
+    <div class="preview-header">
+      <h2>Vista Previa</h2>
+      <p>Revisa tu aviso antes de publicarlo.</p>
+    </div>
 
-    @if (form.controls.title.touched && form.controls.title.invalid) {
-      <small class="error">
-        @if (form.controls.title.errors && form.controls.title.errors['minlength']) {
-          El título debe tener al menos 5 caracteres.
-        }
-        @if (form.controls.title.errors && form.controls.title.errors['maxlength']) {
-          El título no puede exceder 50 caracteres.
-        }
-      </small>
-    }
+    <div class="preview-card-box">
+      <app-post-card [author]="'Tu Perfil'" [role]="'Estudiante'" [time]="'Ahora'" [title]="form.value.title!"
+        [content]="form.value.description!" [badge]="form.value.type!" [category]="form.value.category!"
+        [image]="form.value.image!" />
+    </div>
+
+    <div class="preview-footer-actions">
+      <button type="button" class="btn-cancelar" (click)="backToForm()">Editar</button>
+      <button type="button" class="btn-siguiente" (click)="publish()" [disabled]="isPublishing()">
+        {{ isPublishing() ? 'Publicando...' : 'Publicar Ahora' }}
+      </button>
+    </div>
   </div>
+  }
 
-  <!-- Descripción -->
-  <div class="form-group">
-    <label>Descripción *</label>
-    <textarea
-      rows="5"
-      formControlName="description"
-      placeholder="Escribe los detalles importantes aquí..."
-    ></textarea>
+  <footer class="legal-footer">
+    Al publicar, aceptas las <span (click)="openRules()" class="rules-link">Normas de la Comunidad</span> de Tuunka.
+  </footer>
 
-    @if (form.controls.description.touched && form.controls.description.invalid) {
-      <small class="error">
-        @if (form.controls.description.errors && form.controls.description.errors['minlength']) {
-          La descripción debe tener al menos 10 caracteres.
-        }
-        @if (form.controls.description.errors && form.controls.description.errors['maxlength']) {
-          La descripción no puede exceder 100 caracteres.
-        }
-      </small>
-    }
-  </div>
+</main>
 
-  <!-- Categoría -->
-  <div class="form-group">
-    <label>Categoría *</label>
-    <input
-      type="text"
-      formControlName="category"
-      placeholder="Ej. Académico"
-    />
-
-    @if (form.controls.category.touched && form.controls.category.invalid) {
-      <small class="error">
-        La categoría es obligatoria.
-      </small>
-    }
-  </div>
-
-  <!-- Fecha opcional -->
-  <div class="form-group">
-    <label>Fecha de vigencia (opcional)</label>
-    <input type="date" formControlName="expirationDate" />
-  </div>
-
-  <!-- Imagen -->
-  <div class="form-group">
-    <label>Imagen (opcional)</label>
-    <input type="file" (change)="handleFile($event)" />
-  </div>
-
-  <div class="form-actions">
-    <button
-      type="submit"
-      class="btn-primario-sm"
-    >
-      Siguiente
-    </button>
-  </div>
-
-</form>
-}
-@if (step() === 'preview') {
-
- <div class="preview-wrapper">
-
-  <div class="preview-header">
-    <h2>Vista Previa de Publicación Final</h2>
-    <p>
-      Revisa cómo se verá tu contenido en el feed de la comunidad antes de publicarlo.
-    </p>
-  </div>
-
-  <div class="preview-card-container">
-    <app-post-card
-      [author]="'Tu Usuario'"
-      [role]="'Estudiante'"
-      [time]="'Ahora'"
-      [title]="form.value.title!"
-      [content]="form.value.description!"
-      [badge]="form.value.type!"
-      [image]="form.value.image!"
-    />
-  </div>
-
-  <div class="preview-divider"></div>
-
-  <div class="preview-actions">
-
-    <button
-      type="button"
-      class="btn-outline-sm"
-      (click)="backToForm()"
-    >
-      ← Volver a editar
-    </button>
-
-    <button
-      type="button"
-      class="btn-primario-sm"
-      (click)="publish()"
-    >
-      Publicar
-    </button>
-
-  </div>
-
-  <p class="preview-legal">
-    Al publicar, aceptas las
-    <span (click)="openRules()" class="legal-link">
-      Normas de la Comunidad
-    </span>
-    de Tuunka.
-  </p>
-
-</div>
-
+@if (showRules()) {
+<app-normas-comunidad (close)="closeRules()"></app-normas-comunidad>
 }

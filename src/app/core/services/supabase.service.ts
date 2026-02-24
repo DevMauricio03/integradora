@@ -5,9 +5,9 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
   providedIn: 'root'
 })
 export class SupabaseService {
-  private supabase:SupabaseClient;
+  private supabase: SupabaseClient;
 
-  constructor() { 
+  constructor() {
     this.supabase = createClient(
       'https://osdecmrfyxxieyrmtugv.supabase.co',
       'sb_publishable_ui93Xiqzl7OAoaY0nNanBw_xFpJtWst'
@@ -213,6 +213,35 @@ export class SupabaseService {
     }
 
     return true;
+  }
+
+  // 🔹 Publicaciones
+  async createPost(post: any) {
+    const { data: { user } } = await this.supabase.auth.getUser();
+    if (!user) throw new Error('Usuario no autenticado');
+
+    const { data, error } = await this.supabase
+      .from('publicaciones')
+      .insert({
+        titulo: post.title,
+        descripcion: post.description,
+        tipo: post.type,
+        autor_id: user.id,
+        estado: 'activo',
+        imagen_url: post.image || null,
+        categoria: post.category
+      });
+
+    return { data, error };
+  }
+
+  async getPosts() {
+    const { data, error } = await this.supabase
+      .from('publicaciones')
+      .select('*, perfiles(nombre, apellidos, foto_url, roles(nombre))')
+      .order('creado', { ascending: false });
+
+    return { data, error };
   }
 
 }

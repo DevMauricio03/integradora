@@ -1,77 +1,30 @@
-  
-  <main>
+<main class="feed-container">
 
-     <section class="header-universidad">
-    <h1>Universidad Tecnológica de los Valles Centrales de Oaxaca</h1>
-    <p>● Comunidad activa · 12.5k estudiantes y docentes</p>
+  <section class="header-universidad">
+    <h1 class="uni-title">Universidad Tecnológica de los Valles Centrales de Oaxaca</h1>
+    <div class="uni-status">
+      <span class="status-dot"></span>
+      <p>Comunidad activa · 12.5k estudiantes y docentes</p>
+    </div>
   </section>
 
-  <section class="feed-list">
+  <div class="feed-content">
 
-    @for (post of posts(); track post) {
-
-      <app-post-card
-        [author]="'Tu Usuario'"
-        [role]="'Estudiante'"
-        [time]="'Ahora'"
-        [title]="post.title"
-        [content]="post.description"
-        [badge]="post.type"
-      />
-
+    @if (posts().length === 0) {
+    <div class="empty-state">
+      <app-icon name="megaphone" [size]="48"></app-icon>
+      <p>No hay publicaciones aún. ¡Sé el primero en compartir algo!</p>
+    </div>
     }
 
-  </section>
+    <section class="feed-list">
+      @for (post of posts(); track post.id) {
+      <app-post-card [author]="post.author || 'Usuario'" [role]="post.role || 'Estudiante'"
+        [time]="post.time || 'Ahora'" [title]="post.title" [content]="post.description" [badge]="post.type"
+        [image]="post.image" [avatar]="post.avatar" [category]="post.category" [expirationDate]="post.expirationDate" />
+      }
+    </section>
 
-      <!-- Card 1: Aviso Oficial -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-avatar">
-            <span class="avatar-placeholder">U</span>
-            <div class="card-meta">
-              <strong>UTVCO</strong>
-              <span>Institucional · 1 h</span>
-            </div>
-          </div>
-          <span class="badge badge-aviso">📢 AVISO OFICIAL</span>
-        </div>
-        <h3>Convocatoria de Becas Alimentarias 2026</h3>
-        <p>
-          El Comité de Becas abre la recepción de solicitudes para el programa de apoyo alimentario del
-          semestre actual. Consulta los lineamientos y el formato de registro oficial.
-        </p>
-        <span class="card-fecha">🕐 4 Mar - 25 Marzo 12:00 hrs</span>
-        <div class="card-acciones">
-          <span>🚩 Reportar</span>
-          <span>↗ Compartir</span>
-        </div>
-      </div>
+  </div>
 
-      <!-- Card 2: Aviso -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-avatar">
-            <span class="avatar-placeholder">L</span>
-            <div class="card-meta">
-              <strong>Ing. Luis Flores</strong>
-              <span>Docente · 2 h</span>
-            </div>
-          </div>
-          <span class="badge badge-aviso">📢 AVISO</span>
-        </div>
-        <h3>Cambio de Aula – Metodologías Ágiles</h3>
-        <p>
-          Les informo que la clase de hoy se llevará a cabo en el laboratorio de cómputo L-3 en lugar del aula 14 por
-          mantenimiento en la red eléctrica.
-        </p>
-        <div class="card-acciones">
-          <span>🚩 Reportar</span>
-          <span>↗ Compartir</span>
-        </div>
-      </div>
-
-  
-
-  </main>
-
-
+</main>

@@ -1,187 +1,91 @@
-
-
-/* ============ CONTENIDO ============ */
-.contenido {
-  flex: 1;
-  padding: 32px 40px;
+.feed-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  max-width: 800px;
+  gap: 32px;
 }
 
-/* ============ HEADER UNIVERSIDAD ============ */
-.header-universidad h1 {
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--text-main);
-  margin: 0;
+.header-universidad {
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.header-universidad p {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin: 6px 0 0;
+.uni-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
 }
 
-/* ============ FEED LIST ============ */
-.feed-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* ============ CARD ============ */
-.card {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid var(--border-light);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow:
-    0px 10px 15px -3px rgba(0, 0, 0, 0.05),
-    0px 4px 6px -4px rgba(0, 0, 0, 0.05);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.card-avatar {
+.uni-status {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.avatar-placeholder {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(19, 91, 236, 0.1);
-  color: var(--primary);
-  font-weight: 700;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.card-meta strong {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.card-meta span {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* ============ BADGES ============ */
-.badge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 6px;
-  white-space: nowrap;
-}
-
-.badge-aviso {
-  background: rgba(19, 91, 236, 0.08);
-  color: var(--primary);
-}
-
-/* ============ CARD BODY ============ */
-.card h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.card p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 22px;
-  color: var(--text-secondary);
-}
-
-.card-fecha {
-  font-size: 13px;
-  color: var(--primary);
+  gap: 8px;
+  color: #6b7280;
+  font-size: 15px;
   font-weight: 500;
 }
 
-/* ============ CARD ACCIONES ============ */
-.card-acciones {
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.feed-content {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.feed-list {
   display: flex;
-  justify-content: flex-end;
-  gap: 20px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border-light);
+  flex-direction: column;
 }
 
-.card-acciones span {
-  font-size: 13px;
-  color: var(--text-muted);
-  cursor: pointer;
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: #9ca3af;
+  gap: 16px;
+  text-align: center;
 }
 
-.card-acciones span:hover {
-  color: var(--text-main);
+.empty-state p {
+  font-size: 16px;
+  max-width: 300px;
 }
-
-/* ============ RESPONSIVE ============ */
 
 @media (max-width: 1024px) {
-  .sidebar {
-    width: 200px;
+  .uni-title {
+    font-size: 24px;
   }
 
-  .contenido {
-    padding: 24px 28px;
+  .feed-content {
+    max-width: 100%;
   }
 }
 
 @media (max-width: 768px) {
-  .layout {
-    flex-direction: column;
+  .uni-title {
+    font-size: 20px;
+    margin-bottom: 4px;
   }
 
-  .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--border-light);
-    padding: 16px;
-  }
-
-  .sidebar ul {
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 4px;
-  }
-
-  .sidebar li {
-    white-space: nowrap;
-    padding: 8px 12px;
+  .uni-status {
     font-size: 13px;
   }
 
-  .contenido {
-    padding: 20px 16px;
+  .header-universidad {
+    padding-bottom: 16px;
   }
 
-  .header-universidad h1 {
-    font-size: 20px;
+  .feed-container {
+    gap: 20px;
   }
 }

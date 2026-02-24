@@ -1,66 +1,79 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Navbar } from '../../../shared/components/navbar/navbar';
+import { form, required, email, pattern, submit, FormField, SchemaPathTree } from '@angular/forms/signals';
+
+/**
+ * Modelo para el formulario de recuperación.
+ */
+interface RecoverFormModel {
+  email: string;
+}
 
 @Component({
   selector: 'app-recuperar-contrasena',
   standalone: true,
-  imports: [FormsModule, RouterLink, Navbar],
+  imports: [RouterLink, Navbar, FormField],
   templateUrl: './recuperarContrasena.html',
   styleUrl: './recuperarContrasena.css'
 })
 export class RecuperarContrasena {
 
-  email = '';
-  cargando = false;
-  emailEnviado = false;
-  errorEnvio = '';
+  /** Modelado de datos reactivo con Signals */
+  recoverModel = signal<RecoverFormModel>({
+    email: ''
+  });
 
-  constructor(private supabaseService: SupabaseService) {}
+  /** Esquema de formulario con validaciones Signal Forms */
+  recoverForm = form(this.recoverModel, (schema: SchemaPathTree<RecoverFormModel>) => {
+    required(schema.email, { message: 'El correo es obligatorio' });
+    email(schema.email, { message: 'Formato de correo inválido' });
+    // Filtro estricto institucional .edu
+    pattern(schema.email, /^[^\s@]+@[^\s@]+\.edu(\.[a-z]+)?$/i, { message: 'Usa un correo institucional (.edu)' });
+  });
 
-  get emailValido(): boolean {
-    return /^[^\s@]+@utvco\.edu\.mx$/i.test(this.email);
-  }
+  cargando = signal(false);
+  emailEnviado = signal(false);
+  errorEnvio = signal('');
 
-  // Limpiar error al escribir
-  onInputChange() {
-    if (this.errorEnvio) {
-      this.errorEnvio = '';
-    }
-    if (this.emailEnviado) {
-      this.emailEnviado = false;
-    }
-  }
+  constructor(private supabaseService: SupabaseService) { }
 
-  async onEnviar() {
-    if (!this.emailValido || this.cargando) return;
+  /**
+   * Procesa el envío del enlace de recuperación.
+   */
+  async onEnviar(event: Event) {
+    event.preventDefault();
 
-    this.cargando = true;
-    this.errorEnvio = '';
-    this.emailEnviado = false;
+    if (this.recoverForm().pending()) return;
 
-    try {
-      const { error } = await this.supabaseService.resetPassword(this.email);
+    this.errorEnvio.set('');
+    this.emailEnviado.set(false);
 
-      if (error) {
-        const msg = error.message?.toLowerCase() ?? '';
-        if (msg.includes('rate limit') || msg.includes('too many')) {
-          this.errorEnvio = 'Demasiados intentos. Espera unos minutos.';
-        } else if (msg.includes('network') || msg.includes('fetch')) {
-          this.errorEnvio = 'Error de conexión. Verifica tu internet.';
+    /** 'submit' asegura que el formulario sea válido antes de disparar la acción */
+    submit(this.recoverForm, async () => {
+      this.cargando.set(true);
+
+      try {
+        const { email } = this.recoverModel();
+        const { error } = await this.supabaseService.resetPassword(email);
+
+        if (error) {
+          const msg = error.message?.toLowerCase() ?? '';
+          if (msg.includes('rate limit')) {
+            this.errorEnvio.set('Demasiados intentos. Espera unos minutos.');
+          } else {
+            // No revelamos si el correo existe por seguridad, marcamos éxito
+            this.emailEnviado.set(true);
+          }
         } else {
-          // No revelar si el correo existe o no (seguridad)
-          this.emailEnviado = true;
+          this.emailEnviado.set(true);
         }
-      } else {
-        this.emailEnviado = true;
+      } catch {
+        this.errorEnvio.set('Ocurrió un error inesperado.');
+      } finally {
+        this.cargando.set(false);
       }
-    } catch {
-      this.errorEnvio = 'Ocurrió un error inesperado. Intenta de nuevo.';
-    } finally {
-      this.cargando = false;
-    }
+    });
   }
 }

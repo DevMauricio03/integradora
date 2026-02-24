@@ -1,215 +1,238 @@
-import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Navbar } from "../../../shared/components/navbar/navbar";
 import { AvisosLegales } from '../../../shared/components/avisosLegales/avisosLegales';
 import { SuccessModal } from '../../../shared/components/successModal/successModal';
+import { form, required, email, submit, FormField, SchemaPathTree, pattern, validate, maxLength } from '@angular/forms/signals';
+
+/**
+ * Estructura de datos para el formulario de registro.
+ */
+interface RegisterFormModel {
+  nombre: string;
+  apellidos: string;
+  email: string;
+  universidad: string;
+  carrera: string;
+  password: string;
+  confirmarPassword: string;
+  aceptaTerminos: boolean;
+}
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [FormsModule, Navbar, RouterLink, AvisosLegales, SuccessModal],
+  imports: [Navbar, RouterLink, AvisosLegales, SuccessModal, FormField],
   templateUrl: './registro.html',
   styleUrl: './registro.css'
 })
 export class RegistroPage implements OnInit {
 
-  nombre: string = '';
-  apellidos: string = '';
-  email: string = '';
-  password: string = '';
-  confirmarPassword: string = '';
-  aceptaTerminos: boolean = false;
+  /**
+   * Signal principal que mantiene el estado del modelo.
+   */
+  registerModel = signal<RegisterFormModel>({
+    nombre: '',
+    apellidos: '',
+    email: '',
+    universidad: '',
+    carrera: '',
+    password: '',
+    confirmarPassword: '',
+    aceptaTerminos: false
+  });
 
-  // 🔹 Selección de universidad y carrera (texto visible + id)
-  universidadTexto: string = '';
-  universidadId: string = '';
-  carreraTexto: string = '';
-  carreraId: string = '';
+  /**
+   * Esquema de validación del registro.
+   * Centraliza toda la lógica de validación de forma declarativa.
+   */
+  registroForm = form(this.registerModel, (schema: SchemaPathTree<RegisterFormModel>) => {
+    // Nombre y Apellidos: Obligatorios, solo letras y límite de 50 caracteres
+    required(schema.nombre, { message: 'El nombre es obligatorio' });
+    pattern(schema.nombre, /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, { message: 'Solo se permiten letras' });
+    maxLength(schema.nombre, 50, { message: 'Máximo 50 caracteres' });
 
-  // 🔹 Listas cargadas desde BD
-  universidades: { id: string; nombre: string; acronimo: string }[] = [];
-  carreras: { id: string; nombre: string }[] = [];
+    required(schema.apellidos, { message: 'Los apellidos son obligatorios' });
+    pattern(schema.apellidos, /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, { message: 'Solo se permiten letras' });
+    maxLength(schema.apellidos, 50, { message: 'Máximo 50 caracteres' });
 
-  // 🔹 Variables reactivas para requisitos
-  reqLength = false;
-  reqUppercase = false;
-  reqNumber = false;
-  reqSpecial = false;
+    // Email Institucional: Obligatorio, formato válido, filtro .edu y límite de 25 caracteres
+    required(schema.email, { message: 'El correo es obligatorio' });
+    email(schema.email, { message: 'Formato de correo inválido' });
+    pattern(schema.email, /^[^\s@]+@[^\s@]+\.edu(\.[a-z]+)?$/i, { message: 'Usa un correo institucional (.edu)' });
+    maxLength(schema.email, 25, { message: 'Máximo 25 caracteres' });
 
-  // 🔹 Estado del formulario
-  passwordsCoinciden = true;
-  mostrarPassword = false;
-  mostrarConfirmar = false;
-  errorRegistro: string = '';
-  cargando = false;
-  mostrarAviso = false;
-  mostrarSuccess = false;
+    // Universidad y Carrera: Campos obligatorios
+    required(schema.universidad);
+    required(schema.carrera);
+
+    // Password: Validación de fortaleza compleja
+    required(schema.password);
+    maxLength(schema.password, 50, { message: 'La contraseña no puede exceder 50 caracteres' });
+    validate(schema.password, (ctx) => {
+      const val = ctx.value();
+      if (val.length < 8) return { kind: 'length', message: 'Mínimo 8 caracteres' };
+      if (!/[A-Z]/.test(val)) return { kind: 'upper', message: 'Una mayúscula' };
+      if (!/[0-9]/.test(val)) return { kind: 'number', message: 'Un número' };
+      if (!/[^A-Za-z0-9]/.test(val)) return { kind: 'special', message: 'Un carácter especial' };
+      return null;
+    });
+
+    // Confirmación: Debe coincidir con el campo de contraseña
+    required(schema.confirmarPassword);
+    validate(schema.confirmarPassword, (ctx) => {
+      const pass = ctx.valueOf(schema.password);
+      return ctx.value() === pass ? null : { kind: 'mismatch', message: 'Las contraseñas no coinciden' };
+    });
+
+    // Términos: Validación personalizada para boolean obligatorio
+    validate(schema.aceptaTerminos, (ctx) => {
+      return ctx.value() ? null : { kind: 'required', message: 'Debes aceptar los términos' };
+    });
+  });
+
+  // Requisitos calculados para la UI
+  reqLength = computed(() => this.registerModel().password.length >= 8);
+  reqUppercase = computed(() => /[A-Z]/.test(this.registerModel().password));
+  reqNumber = computed(() => /[0-9]/.test(this.registerModel().password));
+  reqSpecial = computed(() => /[^A-Za-z0-9]/.test(this.registerModel().password));
+
+  universidades = signal<{ id: string; nombre: string; acronimo: string }[]>([]);
+  carreras = signal<{ id: string; nombre: string }[]>([]);
+
+  universidadId = signal('');
+  carreraId = signal('');
+
+  mostrarPassword = signal(false);
+  mostrarConfirmar = signal(false);
+  errorRegistro = signal('');
+  cargando = signal(false);
+  mostrarAviso = signal(false);
+  mostrarSuccess = signal(false);
 
   constructor(
     private supabaseService: SupabaseService,
     private router: Router
-  ) {}
+  ) { }
 
   async ngOnInit() {
-    // Cargar universidades y carreras desde Supabase
     const [uniRes, carRes] = await Promise.all([
       this.supabaseService.getUniversidades(),
       this.supabaseService.getCarreras()
     ]);
 
-    if (uniRes.data) this.universidades = uniRes.data;
-    if (carRes.data) this.carreras = carRes.data;
+    if (uniRes.data) this.universidades.set(uniRes.data);
+    if (carRes.data) this.carreras.set(carRes.data);
   }
 
   // 🔹 Modal Aviso de Privacidad
   abrirAviso(event: Event) {
     event.preventDefault();
     event.stopPropagation();
-    this.mostrarAviso = true;
+    this.mostrarAviso.set(true);
   }
 
   cerrarAviso() {
-    this.mostrarAviso = false;
+    this.mostrarAviso.set(false);
   }
 
-  // 🔹 Modal Success (Cuenta creada)
   private handleRegistroExitoso() {
-    this.mostrarSuccess = true;
+    this.mostrarSuccess.set(true);
   }
 
   cerrarSuccess() {
-    this.mostrarSuccess = false;
+    this.mostrarSuccess.set(false);
   }
 
   irALogin() {
-    this.mostrarSuccess = false;
+    this.mostrarSuccess.set(false);
     this.router.navigate(['/auth/inicio-sesion']);
   }
 
   // 🔹 Cuando el usuario selecciona/escribe una universidad (case-insensitive)
   onUniversidadChange() {
-    const texto = this.universidadTexto.toLowerCase();
-    const encontrada = this.universidades.find(
+    const texto = this.registerModel().universidad.toLowerCase();
+    const encontrada = this.universidades().find(
       u => u.nombre.toLowerCase() === texto || u.acronimo?.toLowerCase() === texto
     );
-    this.universidadId = encontrada ? encontrada.id : '';
+    this.universidadId.set(encontrada ? encontrada.id : '');
   }
 
-  // 🔹 Cuando el usuario selecciona/escribe una carrera (case-insensitive)
   onCarreraChange() {
-    const texto = this.carreraTexto.toLowerCase();
-    const encontrada = this.carreras.find(c => c.nombre.toLowerCase() === texto);
-    this.carreraId = encontrada ? encontrada.id : '';
+    const texto = this.registerModel().carrera.toLowerCase();
+    const encontrada = this.carreras().find(c => c.nombre.toLowerCase() === texto);
+    this.carreraId.set(encontrada ? encontrada.id : '');
   }
 
-  // 🔹 Validación reactiva de contraseña
-  validarPassword(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.password = value;
+  /**
+   * Lógica principal de creación de cuenta.
+   * Se ejecuta en dos fases: 1. Auth (Supabase) 2. Perfil (Base de datos).
+   */
+  async onRegister(event?: Event) {
+    event?.preventDefault();
+    if (this.registroForm().pending()) return;
 
-    this.reqLength = value.length >= 8;
-    this.reqUppercase = /[A-Z]/.test(value);
-    this.reqNumber = /[0-9]/.test(value);
-    this.reqSpecial = /[^A-Za-z0-9]/.test(value);
+    this.errorRegistro.set('');
 
-    if (this.confirmarPassword.length > 0) {
-      this.passwordsCoinciden = this.password === this.confirmarPassword;
-    }
-  }
+    /**
+     * 'submit' es una utilidad de Signal Forms que marca campos como tocados
+     * y solo se ejecuta si el esquema es válido.
+     */
+    submit(this.registroForm, async () => {
+      this.cargando.set(true);
 
-  // 🔹 Validar que las contraseñas coincidan
-  validarConfirmacion(event: Event) {
-    this.confirmarPassword = (event.target as HTMLInputElement).value;
-    this.passwordsCoinciden = this.password === this.confirmarPassword;
-  }
+      try {
+        const model = this.registerModel();
 
-  // 🔹 Verificar si todos los requisitos se cumplen
-  get passwordValida(): boolean {
-    return this.reqLength && this.reqUppercase && this.reqNumber && this.reqSpecial;
-  }
+        // FASE 1: Registro en Supabase Auth
+        const { data, error } = await this.supabaseService.register(model.email, model.password);
 
-  // 🔹 Validar que el email sea institucional (.edu, .edu.mx, .edu.co, etc)
-  get emailInstitucionalValido(): boolean {
-    return /^[^\s@]+@[^\s@]+\.edu(\.[a-z]+)?$/i.test(this.email);
-  }
-
-  // 🔹 Verificar si el formulario es válido
-  get formularioValido(): boolean {
-    return (
-      this.nombre.trim() !== '' &&
-      this.apellidos.trim() !== '' &&
-      this.email.trim() !== '' &&
-      this.emailInstitucionalValido &&
-      this.universidadId !== '' &&
-      this.carreraId !== '' &&
-      this.password.trim() !== '' &&
-      this.passwordValida &&
-      this.passwordsCoinciden &&
-      this.aceptaTerminos
-    );
-  }
-
-  async onRegister() {
-    if (!this.formularioValido) return;
-
-    this.errorRegistro = '';
-    this.cargando = true;
-
-    try {
-      // Paso 1: Crear usuario en auth
-      const { data, error } = await this.supabaseService.register(
-        this.email,
-        this.password
-      );
-
-      if (error) {
-        if (error.message.includes('User already registered')) {
-          this.errorRegistro = 'Este correo ya está registrado.';
-        } else {
-          this.errorRegistro = error.message;
+        if (error) {
+          this.errorRegistro.set(error.message.includes('User already registered')
+            ? 'Este correo ya está registrado.'
+            : error.message);
+          return;
         }
-        return;
+
+        if (!data?.user) {
+          this.errorRegistro.set('No se pudo crear el usuario.');
+          return;
+        }
+
+        // FASE 2: Creación del perfil con datos adicionales
+
+        // Obtención del rol de alumno
+        const { data: rolData, error: rolError } = await this.supabaseService.getRolByNombre('alumno');
+        if (rolError || !rolData) {
+          this.errorRegistro.set('Error al asignar el rol.');
+          return;
+        }
+
+        // Guardado de la información extendida del perfil
+        const { error: profileError } = await this.supabaseService.createProfile({
+          id: data.user.id,
+          nombre: model.nombre,
+          apellidos: model.apellidos,
+          correoInstitucional: model.email,
+          rol_id: rolData.id,
+          universidad_id: this.universidadId(),
+          carrera_id: this.carreraId()
+        });
+
+        if (profileError) {
+          this.errorRegistro.set('Error al guardar el perfil: ' + profileError.message);
+          return;
+        }
+
+        // Éxito: Mostrar modal de confirmación
+        this.handleRegistroExitoso();
+      } catch (err) {
+        this.errorRegistro.set('Ocurrió un error inesperado');
+      } finally {
+        this.cargando.set(false);
       }
-
-      if (!data?.user) {
-        this.errorRegistro = 'No se pudo crear el usuario.';
-        return;
-      }
-
-      // Paso 2: Obtener rol_id de "alumno"
-      const { data: rolData, error: rolError } = await this.supabaseService.getRolByNombre('alumno');
-
-      if (rolError || !rolData) {
-        this.errorRegistro = 'Error al asignar el rol.';
-        return;
-      }
-
-      // Paso 3: Guardar perfil en tabla perfiles
-      const { error: profileError } = await this.supabaseService.createProfile({
-        id: data.user.id,
-        nombre: this.nombre,
-        apellidos: this.apellidos,
-        correoInstitucional: this.email,
-        rol_id: rolData.id,
-        universidad_id: this.universidadId,
-        carrera_id: this.carreraId
-      });
-
-      if (profileError) {
-        this.errorRegistro = 'Error al guardar el perfil: ' + profileError.message;
-        return;
-      }
-
-      // Paso 4: Registro completo → mostrar modal de éxito
-      this.handleRegistroExitoso();
-
-    } catch (err) {
-      this.errorRegistro = 'Ocurrió un error inesperado. Intenta de nuevo.';
-    } finally {
-      this.cargando = false;
-    }
+    });
   }
 
 }
