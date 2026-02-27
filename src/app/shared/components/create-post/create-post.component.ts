@@ -1,16 +1,48 @@
-import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, signal, inject, computed } from '@angular/core';
 import { PostCardComponent } from '../Post-card/post-card/post-card';
 import { PostStoreService } from '../../../core/services/post-store.service';
 import { Router } from '@angular/router';
 import { NormasComunidad } from '../avisosLegales/normasComunidad';
 import { IconComponent } from '../icon/icon.component';
 import { CommonModule } from '@angular/common';
+import { form, required, submit, FormField, SchemaPathTree, maxLength, validate } from '@angular/forms/signals';
+
+interface PostFormModel {
+  type: string;
+  subtype: string | null;
+  title: string;
+  description: string;
+  category: string;
+  image: string;
+
+  // Evento fields
+  startDate: string;
+  endDate: string;
+  modality: string;
+  location: string;
+  cost: string;
+
+  // Oferta fields
+  price: string;
+  priceUnit: string;
+  productStatus: string;
+  availability: string;
+  serviceType: string;
+  availableHours: string;
+  contactMethod: string;
+  phoneNumber: string;
+
+  // Experiencia fields
+  company: string;
+  area: string;
+  period: string;
+  recommendation: string;
+}
 
 @Component({
   selector: 'app-create-post',
   standalone: true,
-  imports: [ReactiveFormsModule, PostCardComponent, NormasComunidad, IconComponent, CommonModule],
+  imports: [PostCardComponent, NormasComunidad, IconComponent, CommonModule, FormField],
   templateUrl: './create-post.component.html',
   styleUrls: ['./create-post.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,7 +54,6 @@ export class CreatePostComponent {
   isPublishing = signal(false);
   selectedSubtype = signal<'producto' | 'servicio' | null>(null);
 
-  private fb = inject(FormBuilder);
   private postStore = inject(PostStoreService);
   private router = inject(Router);
 
@@ -44,52 +75,70 @@ export class CreatePostComponent {
   contactMethods = ['WhatsApp', 'Llamada', 'Mensaje interno', 'Correo'];
   priceUnits = ['c.u', 'paquete', 'hora', 'servicio'];
 
-  form = this.fb.group({
-    type: ['aviso', Validators.required],
-    subtype: [null as string | null],
-    title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
-    description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
-    category: ['General'],
-    image: [''],
-
-    // Evento fields
-    startDate: [''],
-    endDate: [''],
-    modality: ['Presencial'],
-    location: [''],
-    cost: [''],
-
-    // Oferta (Producto/Servicio) fields
-    price: [''],
-    priceUnit: ['c.u'],
-    productStatus: ['Nuevo'],
-    availability: ['Entrega inmediata'],
-    serviceType: [''],
-    availableHours: [''],
-    contactMethod: ['WhatsApp'],
-    phoneNumber: [''],
-
-    // Exp. Empresarial fields
-    company: [''],
-    area: [''],
-    period: [''],
-    recommendation: ['']
+  postModel = signal<PostFormModel>({
+    type: 'aviso',
+    subtype: null,
+    title: '',
+    description: '',
+    category: 'General',
+    image: '',
+    startDate: '',
+    endDate: '',
+    modality: 'Presencial',
+    location: '',
+    cost: '',
+    price: '',
+    priceUnit: 'c.u',
+    productStatus: 'Nuevo',
+    availability: 'Entrega inmediata',
+    serviceType: '',
+    availableHours: '',
+    contactMethod: 'WhatsApp',
+    phoneNumber: '',
+    company: '',
+    area: '',
+    period: '',
+    recommendation: ''
   });
 
+  postForm = form(this.postModel, (schema: SchemaPathTree<PostFormModel>) => {
+    // Validaciones declarativas
+    required(schema.type, { message: 'Selecciona un tipo de publicación' });
+
+    required(schema.title, { message: 'El título es obligatorio' });
+    maxLength(schema.title, 100, { message: 'Máximo 100 caracteres' });
+    validate(schema.title, (ctx) => {
+      const val = ctx.value() || '';
+      return val.length >= 5 ? null : { kind: 'minLength', message: 'Mínimo 5 caracteres' };
+    });
+
+    required(schema.description, { message: 'La descripción es obligatoria' });
+    maxLength(schema.description, 1000, { message: 'Máximo 1000 caracteres' });
+    validate(schema.description, (ctx) => {
+      const val = ctx.value() || '';
+      return val.length >= 10 ? null : { kind: 'minLength', message: 'Mínimo 10 caracteres' };
+    });
+  });
+
+  currentType = computed(() => this.postModel().type);
+
   selectType(typeId: string) {
-    this.form.patchValue({ type: typeId });
-    if (typeId !== 'oferta') {
-      this.selectedSubtype.set(null);
-      this.form.patchValue({ subtype: null });
-    } else if (!this.selectedSubtype()) {
-      this.selectedSubtype.set('producto');
-      this.form.patchValue({ subtype: 'producto' });
-    }
+    this.postModel.update(m => {
+      const newModel = { ...m, type: typeId };
+      if (typeId !== 'oferta') {
+        newModel.subtype = null;
+        this.selectedSubtype.set(null);
+      } else if (!this.selectedSubtype()) {
+        newModel.subtype = 'producto';
+        this.selectedSubtype.set('producto');
+      }
+      return newModel;
+    });
   }
 
   selectSubtype(subtypeId: 'producto' | 'servicio') {
     this.selectedSubtype.set(subtypeId);
-    this.form.patchValue({ subtype: subtypeId });
+    this.postModel.update(m => ({ ...m, subtype: subtypeId }));
   }
 
   cancel() {
@@ -108,12 +157,17 @@ export class CreatePostComponent {
     this.showRules.set(false);
   }
 
-  goToPreview() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-    this.step.set('preview');
+  goToPreview(event: Event) {
+    event.preventDefault();
+
+    // Si hay validaciones asíncronas pendientes, esperamos
+    if (this.postForm().pending()) return;
+
+    // submit() evalúa el esquema del form, toca los campos si hay error
+    // y solo ejecuta el callback si es 100% válido.
+    submit(this.postForm, async () => {
+      this.step.set('preview');
+    });
   }
 
   backToForm() {
@@ -121,13 +175,13 @@ export class CreatePostComponent {
   }
 
   async publish() {
-    if (this.form.invalid || this.isPublishing()) return;
+    if (this.isPublishing()) return;
 
     this.isPublishing.set(true);
 
     try {
-      const postData = this.form.value;
-      await this.postStore.addPost(postData as any);
+      const postData = this.postModel();
+      await this.postStore.addPost(postData);
       this.router.navigate(['/user/feed']);
     } catch (err: any) {
       console.error('Error detallado al publicar:', err?.message || err);
@@ -145,14 +199,11 @@ export class CreatePostComponent {
     const reader = new FileReader();
 
     reader.onload = () => {
-      this.form.patchValue({
+      this.postModel.update(m => ({
+        ...m,
         image: reader.result as string
-      });
+      }));
     };
     reader.readAsDataURL(file);
-  }
-
-  get currentType() {
-    return this.form.get('type')?.value;
   }
 }
