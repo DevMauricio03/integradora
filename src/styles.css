@@ -1,7 +1,9 @@
 body {
   margin: 0;
   font-family: 'Lexend', sans-serif;
+  overflow-x: hidden;
 }
+
 :root {
   --primary: #135BEC;
   --primary-hover: #0D4FD8;
@@ -14,8 +16,9 @@ body {
   --border-light: #E5E7EB;
   --card-bg: #F9FAFB;
   --panel-bg: #F8F9FC;
-  
+
 }
+
 /* =========================
    BOTONES GLOBALES TUUNKA
 ========================= */
@@ -45,6 +48,7 @@ body {
 .btn-primario-sm:hover {
   background: var(--primary-hover);
 }
+
 .icon-btn {
   background: transparent;
   border: none;

@@ -3,13 +3,27 @@
   @if (step() === 'form') {
   <div class="form-card">
     <div class="form-header">
-      <h2 class="main-title">Crear Aviso</h2>
-      <p class="subtitle">Comparte noticias, eventos o servicios con tu comunidad universitaria.</p>
+      <h2 class="main-title">
+        @switch (currentType) {
+        @case ('aviso') { Crear Aviso }
+        @case ('evento') { Crear Evento }
+        @case ('oferta') { Crear Oferta }
+        @case ('experiencia') { Crear Experiencia }
+        }
+      </h2>
+      <p class="subtitle">
+        @switch (currentType) {
+        @case ('aviso') { Comparte noticias y anuncios con tu comunidad. }
+        @case ('evento') { Organiza un evento e invita a tu comunidad universitaria. }
+        @case ('oferta') { Ofrece servicios o vende productos. }
+        @case ('experiencia') { Comparte tu trayectoria profesional y consejos. }
+        }
+      </p>
     </div>
 
     <form [formGroup]="form" class="main-form" (ngSubmit)="goToPreview()">
 
-      <!-- Tipo de Publicación -->
+      <!-- TIPO DE PUBLICACIÓN -->
       <div class="section-group">
         <h3 class="section-label">TIPO DE PUBLICACIÓN</h3>
         <div class="type-grid">
@@ -30,44 +44,239 @@
         </div>
       </div>
 
-      <!-- Título -->
-      <div class="form-field">
-        <label>Título de la publicación *</label>
-        <input type="text" formControlName="title" placeholder="Ej: Importante: Cierre de laboratorio de química"
-          [class.error-border]="form.controls.title.touched && form.controls.title.invalid">
+      <!-- SECCIÓN DINÁMICA: OFERTA (SUBTIPOS) -->
+      @if (currentType === 'oferta') {
+      <div class="section-group fade-in">
+        <h3 class="section-label">¿QUÉ OFRECES?</h3>
+        <div class="subtype-grid">
+          @for (st of subtypes; track st.id) {
+          <div class="subtype-card" [class.selected]="selectedSubtype() === st.id" (click)="selectSubtype($any(st.id))">
+            <div class="subtype-icon">
+              <app-icon [name]="$any(st.icon)" [size]="20"></app-icon>
+            </div>
+            <div class="subtype-info">
+              <span class="st-name">{{st.name}}</span>
+              <span class="st-desc">{{st.desc}}</span>
+            </div>
+          </div>
+          }
+        </div>
       </div>
+      }
 
-      <!-- Descripción -->
-      <div class="form-field">
-        <label>Descripción *</label>
-        <textarea rows="4" formControlName="description"
-          placeholder="Escribe los detalles importantes del aviso aquí..."
-          [class.error-border]="form.controls.description.touched && form.controls.description.invalid"></textarea>
-      </div>
+      <!-- CAMPOS COMUNES SEGÚN TIPO -->
+      <div class="form-fields-container fade-in">
 
-      <!-- Categoría y Fecha -->
-      <div class="form-row">
+        <!-- Título Dinámico -->
         <div class="form-field">
-          <label>Categoría del aviso *</label>
+          <label>
+            @switch (currentType) {
+            @case ('evento') { Título del evento * }
+            @case ('oferta') { Título del {{ selectedSubtype() }} * }
+            @default { Título de la publicación * }
+            }
+          </label>
+          <input type="text" formControlName="title"
+            [placeholder]="currentType === 'evento' ? 'Ej: RoboTICup 2026' : 'Ej: Importante: Cierre de laboratorio'"
+            [class.error-border]="form.controls.title.touched && form.controls.title.invalid">
+        </div>
+
+        <!-- Descripción Dinámica -->
+        <div class="form-field">
+          <label>Descripción *</label>
+          <textarea rows="4" formControlName="description"
+            [placeholder]="currentType === 'evento' ? 'Detalles del evento, ponentes, agenda...' : 'Escribe los detalles importantes aquí...'"
+            [class.error-border]="form.controls.description.touched && form.controls.description.invalid"></textarea>
+        </div>
+
+        <!-- CAMPOS ESPECÍFICOS: EVENTO -->
+        @if (currentType === 'evento') {
+        <div class="form-row">
+          <div class="form-field">
+            <label>Fecha y hora de inicio *</label>
+            <div class="input-with-icon">
+              <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
+              <input type="datetime-local" formControlName="startDate">
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Fecha y hora de fin *</label>
+            <div class="input-with-icon">
+              <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
+              <input type="datetime-local" formControlName="endDate">
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Modalidad *</label>
+            <div class="select-container">
+              <app-icon name="check" [size]="18" class="field-icon"></app-icon>
+              <select formControlName="modality">
+                @for (mod of modalities; track mod) {
+                <option [value]="mod">{{mod}}</option>
+                }
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Ubicación *</label>
+            <div class="input-with-icon">
+              <app-icon name="map-pin" [size]="18" class="field-icon"></app-icon>
+              <input type="text" formControlName="location" placeholder="Ej: Auditorio Principal">
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Costo (opcional)</label>
+          <div class="input-with-icon">
+            <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
+            <input type="text" formControlName="cost" placeholder="Ej: Gratuito o $50.00">
+          </div>
+        </div>
+        }
+
+        <!-- CAMPOS ESPECÍFICOS: OFERTA - PRODUCTO -->
+        @if (currentType === 'oferta' && selectedSubtype() === 'producto') {
+        <div class="form-row">
+          <div class="form-field">
+            <label>Precio *</label>
+            <div class="price-input-group">
+              <div class="input-with-icon">
+                <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
+                <input type="number" formControlName="price" placeholder="0.00">
+              </div>
+              <select formControlName="priceUnit" class="unit-select">
+                <option value="c.u">/ c.u</option>
+                <option value="paquete">/ paquete</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Estado del producto</label>
+            <div class="select-container">
+              <app-icon name="check" [size]="18" class="field-icon"></app-icon>
+              <select formControlName="productStatus">
+                @for (status of productStatuses; track status) {
+                <option [value]="status">{{status}}</option>
+                }
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Disponibilidad</label>
+            <div class="select-container">
+              <app-icon name="clock" [size]="18" class="field-icon"></app-icon>
+              <select formControlName="availability">
+                @for (av of availabilities; track av) {
+                <option [value]="av">{{av}}</option>
+                }
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Método de contacto *</label>
+            <div class="select-container">
+              <app-icon name="user" [size]="18" class="field-icon"></app-icon>
+              <select formControlName="contactMethod">
+                @for (method of contactMethods; track method) {
+                <option [value]="method">{{method}}</option>
+                }
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Número</label>
+          <div class="input-with-icon">
+            <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
+            <input type="text" formControlName="phoneNumber" placeholder="951 123 4455">
+          </div>
+        </div>
+        }
+
+        <!-- CAMPOS ESPECÍFICOS: OFERTA - SERVICIO -->
+        @if (currentType === 'oferta' && selectedSubtype() === 'servicio') {
+        <div class="form-field">
+          <label>Tipo de servicio *</label>
           <div class="select-container">
             <app-icon name="tag" [size]="18" class="field-icon"></app-icon>
-            <select formControlName="category">
-              <option value="" disabled selected>Selecciona categoría</option>
-              @for (cat of categories; track cat) {
-              <option [value]="cat">{{cat}}</option>
-              }
+            <select formControlName="serviceType">
+              <option value="" disabled>Selecciona una categoría</option>
+              <option value="asesoria">Asesoría Académica</option>
+              <option value="tecnico">Servicio Técnico</option>
+              <option value="otros">Otros</option>
             </select>
             <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
           </div>
         </div>
-
         <div class="form-field">
-          <label>Fecha de vigencia (opcional)</label>
-          <div class="select-container">
-            <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
-            <input type="date" formControlName="expirationDate">
+          <label>Precio *</label>
+          <div class="price-input-group">
+            <div class="input-with-icon">
+              <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
+              <input type="number" formControlName="price" placeholder="0.00">
+            </div>
+            <select formControlName="priceUnit" class="unit-select">
+              <option value="hora">/ hora</option>
+              <option value="servicio">/ servicio</option>
+            </select>
           </div>
         </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Horarios disponibles</label>
+            <div class="input-with-icon">
+              <app-icon name="clock" [size]="18" class="field-icon"></app-icon>
+              <input type="text" formControlName="availableHours" placeholder="Ej: Lun-Vie 14:00 - 18:00">
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Método de contacto *</label>
+            <div class="select-container">
+              <app-icon name="user" [size]="18" class="field-icon"></app-icon>
+              <select formControlName="contactMethod">
+                @for (method of contactMethods; track method) {
+                <option [value]="method">{{method}}</option>
+                }
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Número</label>
+          <div class="input-with-icon">
+            <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
+            <input type="text" formControlName="phoneNumber" placeholder="951 123 4455">
+          </div>
+        </div>
+        }
+
+        <!-- CAMPOS ESPECÍFICOS: EXPERIENCIA -->
+        @if (currentType === 'experiencia') {
+        <div class="form-row">
+          <div class="form-field">
+            <label>Empresa *</label>
+            <input type="text" formControlName="company" placeholder="Nombre de la empresa">
+          </div>
+          <div class="form-field">
+            <label>Área *</label>
+            <input type="text" formControlName="area" placeholder="Ej: Desarrollo Web">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Periodo *</label>
+          <input type="text" formControlName="period" placeholder="Ej: Enero 2024 - Junio 2024">
+        </div>
+        }
+
       </div>
 
       <!-- Imágenes -->
@@ -84,7 +293,7 @@
             @if (form.value.image) {
             <div class="file-ready">
               <app-icon name="check" [size]="14"></app-icon>
-              <span>Imagen lista para subir</span>
+              <span>Archivo cargado</span>
             </div>
             }
           </div>
@@ -110,7 +319,7 @@
     <div class="preview-card-box">
       <app-post-card [author]="'Tu Perfil'" [role]="'Estudiante'" [time]="'Ahora'" [title]="form.value.title!"
         [content]="form.value.description!" [badge]="form.value.type!" [category]="form.value.category!"
-        [image]="form.value.image!" />
+        [image]="form.value.image!" [details]="form.value" />
     </div>
 
     <div class="preview-footer-actions">

@@ -1,4 +1,4 @@
-<div class="post-card">
+<div class="post-card" [class.experiencia]="badge?.toLowerCase() === 'experiencia'">
 
   <div class="post-header">
 
@@ -20,9 +20,9 @@
     </div>
 
     @if (badge) {
-    <div class="badge-container" [class]="badge.toLowerCase().replace(' ', '-')">
-      <app-icon name="megaphone" [size]="14"></app-icon>
-      <span class="badge-text">{{ badge | uppercase }}</span>
+    <div class="badge-container" [class]="getBadgeClass()">
+      <app-icon [name]="getBadgeIcon()" [size]="14"></app-icon>
+      <span class="badge-text">{{ getBadgeText() | uppercase }}</span>
     </div>
     }
 
@@ -35,6 +35,67 @@
   <p class="post-content">
     {{ content }}
   </p>
+
+  <!-- Detalles Dinámicos -->
+  @if (details && badge === 'evento') {
+  <div class="details-section">
+    <div class="detail-item">
+      <app-icon name="calendar" [size]="14"></app-icon>
+      <span>{{ details.startDate | date:'short' }} - {{ details.endDate | date:'short' }}</span>
+    </div>
+    @if (details.location) {
+    <div class="detail-item">
+      <app-icon name="map-pin" [size]="14"></app-icon>
+      <span>{{ details.location }}</span>
+    </div>
+    }
+    @if (details.cost) {
+    <div class="detail-item price-tag">
+      <app-icon name="dollar-sign" [size]="14"></app-icon>
+      <span>{{ details.cost }}</span>
+    </div>
+    }
+  </div>
+  }
+
+  @if (details && badge === 'experiencia') {
+  <div class="details-section">
+    <div class="detail-item">
+      <app-icon name="building" [size]="14"></app-icon>
+      <strong>{{ details.company }}</strong>
+    </div>
+    <div class="detail-item">
+      <span>Área: {{ details.area }}</span>
+    </div>
+    <div class="detail-item">
+      <app-icon name="calendar" [size]="14"></app-icon>
+      <span>Periodo: {{ details.period }}</span>
+    </div>
+  </div>
+  }
+
+  @if (details && badge === 'oferta') {
+  <div class="details-section">
+    @if (details.price) {
+    <div class="detail-item price-tag">
+      <app-icon name="dollar-sign" [size]="14"></app-icon>
+      <span>{{ details.price }} / {{ details.priceUnit }}</span>
+    </div>
+    }
+    @if (details.availability || details.productStatus) {
+    <div class="detail-item">
+      <app-icon name="clock" [size]="14"></app-icon>
+      <span>{{ details.availability || details.productStatus }}</span>
+    </div>
+    }
+    @if (details.phoneNumber) {
+    <div class="detail-item contact-info">
+      <app-icon name="phone" [size]="14"></app-icon>
+      <span>{{ details.phoneNumber }} ({{ details.contactMethod }})</span>
+    </div>
+    }
+  </div>
+  }
 
   @if (expirationDate) {
   <div class="expiration-info">
@@ -50,10 +111,23 @@
   }
 
   <div class="post-footer">
+    @if (!showControls) {
     <button type="button" class="footer-btn report">
       <app-icon name="flag" [size]="18"></app-icon>
       <span>Reportar</span>
     </button>
+    } @else {
+    <div class="management-btns">
+      <button type="button" class="footer-btn edit">
+        <app-icon name="settings" [size]="18"></app-icon>
+        <span>Editar</span>
+      </button>
+      <button type="button" class="footer-btn delete">
+        <app-icon name="ban" [size]="18"></app-icon>
+        <span>Eliminar</span>
+      </button>
+    </div>
+    }
 
     <button type="button" class="footer-btn share">
       <app-icon name="plus" [size]="18" style="transform: rotate(45deg);"></app-icon>

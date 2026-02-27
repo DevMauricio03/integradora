@@ -179,6 +179,88 @@
   pointer-events: none;
 }
 
+/* Subtype Grid */
+.subtype-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.subtype-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 2px solid #f3f4f6;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.subtype-card:hover {
+  border-color: #2563eb33;
+  background: white;
+}
+
+.subtype-card.selected {
+  border-color: #2563eb;
+  background: #f0f7ff;
+}
+
+.subtype-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: white;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.subtype-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.st-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #111827;
+}
+
+.st-desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Form Utils */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon input,
+.input-with-icon select {
+  padding-left: 44px !important;
+}
+
+.price-input-group {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  gap: 8px;
+}
+
+.unit-select {
+  background: #f3f4f6 !important;
+  font-weight: 600;
+  color: #4b5563;
+}
+
 /* Upload Zone */
 .upload-zone {
   border: 2px dashed #e5e7eb;

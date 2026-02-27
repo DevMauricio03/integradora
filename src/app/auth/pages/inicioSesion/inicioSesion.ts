@@ -86,6 +86,7 @@ export class InicioSesion {
      */
     submit(this.loginForm, async () => {
       this.loading.set(true);
+      this.errorMensaje.set('');
 
       try {
         const { email, password, recordarme } = this.loginModel();
@@ -94,7 +95,14 @@ export class InicioSesion {
         const { error } = await this.supabaseService.signIn(email, password);
 
         if (error) {
-          this.errorMensaje.set('Credenciales incorrectas');
+          // Si hay error en Supabase, verificamos si es por el correo o la contraseña
+          const { exists } = await this.supabaseService.checkIfUserExists(email);
+
+          if (!exists) {
+            this.errorMensaje.set('El correo electrónico no está registrado.');
+          } else {
+            this.errorMensaje.set('La contraseña es incorrecta. Inténtalo de nuevo.');
+          }
           return;
         }
 
@@ -108,7 +116,7 @@ export class InicioSesion {
         // Navegación al dashboard tras éxito
         this.router.navigate(['/user/feed']);
       } catch (err) {
-        this.errorMensaje.set('Ocurrió un error inesperado');
+        this.errorMensaje.set('Ocurrió un error inesperado. Inténtalo más tarde.');
       } finally {
         this.loading.set(false);
       }

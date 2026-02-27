@@ -1,6 +1,6 @@
 <!-- NAVBAR REUTILIZABLE -->
 <app-navbar title="Inicia Sesión">
-  <span navbar-right class="navbar-help">
+  <span navbar-right class="navbar-help" routerLink="/auth/soporte" style="cursor: pointer;">
     ¿Necesitas ayuda?
   </span>
 </app-navbar>
@@ -51,7 +51,7 @@
         @if (loginForm.email().touched() && loginForm.email().invalid()) {
         <span class="error-campo">{{ loginForm.email().errors()[0].message }}</span>
         }
-        @if (errorMensaje()) {
+        @if (errorMensaje() && errorMensaje().includes('correo')) {
         <span class="error-campo">{{ errorMensaje() }}</span>
         }
       </div>
@@ -92,6 +92,9 @@
         </div>
         @if (loginForm.password().touched() && loginForm.password().invalid()) {
         <span class="error-campo">{{ loginForm.password().errors()[0].message }}</span>
+        }
+        @if (errorMensaje() && errorMensaje().includes('contraseña')) {
+        <span class="error-campo">{{ errorMensaje() }}</span>
         }
       </div>
 

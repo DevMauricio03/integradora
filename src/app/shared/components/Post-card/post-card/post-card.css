@@ -12,6 +12,37 @@
   transform: translateY(-2px);
 }
 
+/* Experiencia Empresarial Dark Mode */
+.post-card.experiencia {
+  background: #2E3192;
+  color: white;
+  border: none;
+}
+
+.post-card.experiencia .post-title,
+.post-card.experiencia .post-content,
+.post-card.experiencia .author {
+  color: white;
+}
+
+.post-card.experiencia .meta,
+.post-card.experiencia .detail-item {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.post-card.experiencia .details-section {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.post-card.experiencia .footer-btn {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.post-card.experiencia .footer-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
 .post-header {
   display: flex;
   justify-content: space-between;
@@ -77,14 +108,60 @@
   font-size: 11px;
 }
 
-.badge-container.aviso-oficial {
-  background: #f5f3ff;
-  color: #7c3aed;
+.details-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 12px;
 }
 
-.badge-container.aviso {
-  background: #fff7ed;
-  color: #ea580c;
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.price-tag {
+  color: #059669;
+  background: #ecfdf5;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.contact-info {
+  color: #2563eb;
+}
+
+.badge-container.badge-evento {
+  background: #EEF2FF;
+  color: #4F46E5;
+}
+
+.badge-container.badge-producto {
+  background: #F5F3FF;
+  color: #8B5CF6;
+}
+
+.badge-container.badge-servicio {
+  background: #FFF7ED;
+  color: #C2410C;
+}
+
+.badge-container.badge-experiencia {
+  background: white;
+  color: #4F46E5;
+  border: 1px solid #E5E7EB;
+}
+
+.badge-container.badge-aviso {
+  background: #F5F3FF;
+  color: #7C3AED;
 }
 
 .post-title {
@@ -168,6 +245,22 @@
 
 .footer-btn.share:hover {
   color: #2563eb;
+}
+
+.management-btns {
+  display: flex;
+  gap: 8px;
+  margin-right: auto;
+}
+
+.footer-btn.delete:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+.footer-btn.edit:hover {
+  color: #7c3aed;
+  background: #f5f3ff;
 }
 
 /* Media Queries */

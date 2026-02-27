@@ -109,12 +109,11 @@ export class SupabaseService {
 
   async getPerfilActual() {
     const { data: { user } } = await this.supabase.auth.getUser();
-
     if (!user) return null;
 
     const { data, error } = await this.supabase
       .from('perfiles')
-      .select('*')
+      .select('*, roles(nombre)')
       .eq('id', user.id)
       .single();
 
@@ -126,9 +125,17 @@ export class SupabaseService {
     return data;
   }
 
+  async checkIfUserExists(email: string) {
+    const { data, error } = await this.supabase
+      .from('perfiles')
+      .select('id')
+      .eq('correoInstitucional', email)
+      .maybeSingle();
+    return { exists: !!data, error };
+  }
+
   async updatePerfil(datos: any) {
     const { data: { user } } = await this.supabase.auth.getUser();
-
     if (!user) throw new Error('Usuario no autenticado');
 
     const { error } = await this.supabase
@@ -151,28 +158,23 @@ export class SupabaseService {
 
   async subirAvatar(file: File) {
     const { data: { user } } = await this.supabase.auth.getUser();
-
     if (!user) throw new Error('Usuario no autenticado');
 
     const userId = user.id;
-    // Nombre único con timestamp para evitar caché del navegador en cada nuevo upload
     const fileName = `avatars/${userId}-${Date.now()}.jpg`;
 
-    // Subir archivo con nombre único (no necesita upsert)
     const { error: uploadError } = await this.supabase.storage
       .from('avatars')
       .upload(fileName, file);
 
     if (uploadError) throw uploadError;
 
-    // Obtener URL pública del archivo recién subido
     const { data: publicUrlData } = this.supabase.storage
       .from('avatars')
       .getPublicUrl(fileName);
 
     const publicUrl = publicUrlData.publicUrl;
 
-    // Actualizar perfil con la nueva URL (sin riesgos de caché)
     let { error: updateError } = await this.supabase
       .from('perfiles')
       .update({ foto_url: publicUrl })
@@ -220,6 +222,34 @@ export class SupabaseService {
     const { data: { user } } = await this.supabase.auth.getUser();
     if (!user) throw new Error('Usuario no autenticado');
 
+    const detalles: any = {};
+    if (post.type === 'evento') {
+      detalles.startDate = post.startDate;
+      detalles.endDate = post.endDate;
+      detalles.modality = post.modality;
+      detalles.location = post.location;
+      detalles.cost = post.cost;
+    } else if (post.type === 'oferta') {
+      detalles.subtype = post.subtype;
+      detalles.price = post.price;
+      detalles.priceUnit = post.priceUnit;
+      detalles.contactMethod = post.contactMethod;
+      detalles.phoneNumber = post.phoneNumber;
+
+      if (post.subtype === 'producto') {
+        detalles.productStatus = post.productStatus;
+        detalles.availability = post.availability;
+      } else {
+        detalles.serviceType = post.serviceType;
+        detalles.availableHours = post.availableHours;
+      }
+    } else if (post.type === 'experiencia') {
+      detalles.company = post.company;
+      detalles.area = post.area;
+      detalles.period = post.period;
+      detalles.recommendation = post.recommendation;
+    }
+
     const { data, error } = await this.supabase
       .from('publicaciones')
       .insert({
@@ -229,7 +259,8 @@ export class SupabaseService {
         autor_id: user.id,
         estado: 'activo',
         imagen_url: post.image || null,
-        categoria: post.category
+        categoria: post.category,
+        detalles: detalles // Columna JSONB
       });
 
     return { data, error };
@@ -243,5 +274,4 @@ export class SupabaseService {
 
     return { data, error };
   }
-
 }

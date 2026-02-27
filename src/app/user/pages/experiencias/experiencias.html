@@ -1,1 +1,31 @@
-<p>experiencias works!</p>,
+<main class="feed-container">
+
+    <section class="header-universidad">
+        <h1 class="uni-title">Experiencias Empresariales</h1>
+        <div class="uni-status">
+            <app-icon name="briefcase" [size]="16"></app-icon>
+            <p>Prácticas profesionales y testimonios laborales de nuestra comunidad</p>
+        </div>
+    </section>
+
+    <div class="feed-content">
+
+        @if (posts().length === 0) {
+        <div class="empty-state">
+            <app-icon name="briefcase" [size]="48"></app-icon>
+            <p>No hay experiencias compartidas aún. ¡Sé el primero en contar la tuya!</p>
+        </div>
+        }
+
+        <section class="feed-list">
+            @for (post of posts(); track post.id) {
+            <app-post-card [author]="post.author || 'Usuario'" [role]="post.role || 'Estudiante'"
+                [time]="post.time || 'Ahora'" [title]="post.title" [content]="post.description" [badge]="post.type"
+                [image]="post.image" [avatar]="post.avatar" [category]="post.category" [details]="post.details"
+                [expirationDate]="post.expirationDate" />
+            }
+        </section>
+
+    </div>
+
+</main>

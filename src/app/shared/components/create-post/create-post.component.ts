@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { PostCardComponent } from '../Post-card/post-card/post-card';
 import { PostStoreService } from '../../../core/services/post-store.service';
 import { Router } from '@angular/router';
@@ -20,6 +20,7 @@ export class CreatePostComponent {
   step = signal<'form' | 'preview'>('form');
   showRules = signal(false);
   isPublishing = signal(false);
+  selectedSubtype = signal<'producto' | 'servicio' | null>(null);
 
   private fb = inject(FormBuilder);
   private postStore = inject(PostStoreService);
@@ -32,26 +33,63 @@ export class CreatePostComponent {
     { id: 'experiencia', name: 'Exp. Empresarial', desc: 'Práctica y empleo', icon: 'briefcase' }
   ];
 
-  categories = [
-    'Académico',
-    'Deportes',
-    'Cultura',
-    'Avisos Oficiales',
-    'Bolsa de Trabajo',
-    'Ventas/Servicios'
+  subtypes = [
+    { id: 'producto', name: 'Producto', desc: 'Artículo físico tangible', icon: 'package' },
+    { id: 'servicio', name: 'Servicio', desc: 'Habilidad o asistencia', icon: 'tool' }
   ];
+
+  modalities = ['Presencial', 'Virtual', 'Híbrido'];
+  productStatuses = ['Nuevo', 'Usado - Como nuevo', 'Usado - Buen estado', 'Usado - Aceptable'];
+  availabilities = ['Entrega inmediata', 'Bajo pedido', 'Próximamente'];
+  contactMethods = ['WhatsApp', 'Llamada', 'Mensaje interno', 'Correo'];
+  priceUnits = ['c.u', 'paquete', 'hora', 'servicio'];
 
   form = this.fb.group({
     type: ['aviso', Validators.required],
-    title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
-    description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
-    category: ['', Validators.required],
-    expirationDate: [''],
-    image: ['']
+    subtype: [null as string | null],
+    title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
+    description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
+    category: ['General'],
+    image: [''],
+
+    // Evento fields
+    startDate: [''],
+    endDate: [''],
+    modality: ['Presencial'],
+    location: [''],
+    cost: [''],
+
+    // Oferta (Producto/Servicio) fields
+    price: [''],
+    priceUnit: ['c.u'],
+    productStatus: ['Nuevo'],
+    availability: ['Entrega inmediata'],
+    serviceType: [''],
+    availableHours: [''],
+    contactMethod: ['WhatsApp'],
+    phoneNumber: [''],
+
+    // Exp. Empresarial fields
+    company: [''],
+    area: [''],
+    period: [''],
+    recommendation: ['']
   });
 
   selectType(typeId: string) {
     this.form.patchValue({ type: typeId });
+    if (typeId !== 'oferta') {
+      this.selectedSubtype.set(null);
+      this.form.patchValue({ subtype: null });
+    } else if (!this.selectedSubtype()) {
+      this.selectedSubtype.set('producto');
+      this.form.patchValue({ subtype: 'producto' });
+    }
+  }
+
+  selectSubtype(subtypeId: 'producto' | 'servicio') {
+    this.selectedSubtype.set(subtypeId);
+    this.form.patchValue({ subtype: subtypeId });
   }
 
   cancel() {
@@ -112,5 +150,9 @@ export class CreatePostComponent {
       });
     };
     reader.readAsDataURL(file);
+  }
+
+  get currentType() {
+    return this.form.get('type')?.value;
   }
 }

@@ -168,6 +168,10 @@
   .sidebar {
     width: 240px;
   }
+
+  .center-content {
+    display: none !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -176,12 +180,14 @@
   }
 
   .contenido {
-    padding: 20px 16px;
+    padding: 16px;
+    width: 100%;
+    margin: 0 auto;
+    overflow-x: hidden;
   }
 
   .center-content {
-    display: none;
-    /* Hide search in navbar on small screens */
+    display: none !important;
   }
 
   .btn-nueva-pub span {

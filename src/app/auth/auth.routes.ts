@@ -45,6 +45,12 @@ export const AUTH_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/recuperarContrasena/recuperarContrasena')
             .then(m => m.RecuperarContrasena)
+      },
+      {
+        path: 'soporte',
+        loadComponent: () =>
+          import('./pages/soporte/soporte')
+            .then(m => m.SoporteAuth)
       }
     ]
   }

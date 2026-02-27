@@ -1,30 +1,49 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, computed } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
-import { Navbar } from '../../../shared/components/navbar/navbar';
+import { PostStoreService } from '../../../core/services/post-store.service';
+import { PostCardComponent } from '../../../shared/components/Post-card/post-card/post-card';
+import { CommonModule } from '@angular/common';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-perfil-publico-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, PostCardComponent, CommonModule, IconComponent],
   templateUrl: './perfil.html',
   styleUrls: ['./perfil.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PerfilPublicoPage implements OnInit {
-  perfil: any;
+  private supabaseService = inject(SupabaseService);
+  private postStore = inject(PostStoreService);
+  private cdr = inject(ChangeDetectorRef);
+
+  public perfil: any;
   cargando = true;
   readonly defaultAvatarUrl = 'https://i.pinimg.com/236x/6c/55/d4/6c55d49dd6839b5b79e84a1aa6d2260d.jpg';
 
-  constructor(
-    private supabaseService: SupabaseService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  // Filtramos los posts para mostrar solo los que pertenecen al usuario actual
+  misPosts = computed(() => {
+    const allPosts = this.postStore.posts();
+    const userId = this.perfil?.id;
 
-  // Obtiene el perfil autenticado y actualiza la vista pública.
+    if (!userId) return [];
+
+    return allPosts.filter(post =>
+      String(post.authorId).toLowerCase() === String(userId).toLowerCase()
+    );
+  });
+
   async ngOnInit() {
     try {
       this.perfil = await this.supabaseService.getPerfilActual();
+      // Aseguramos que los posts se carguen después de tener el perfil
+      await this.postStore.loadPosts();
+
+      this.cdr.markForCheck();
+    } catch (e) {
+      console.error('Error en ngOnInit Perfil:', e);
     } finally {
       this.cargando = false;
       this.cdr.markForCheck();

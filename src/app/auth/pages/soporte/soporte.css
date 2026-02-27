@@ -1,0 +1,356 @@
+.soporte-container {
+    min-height: 100vh;
+    background-color: #f8fafc;
+    padding-bottom: 60px;
+}
+
+.soporte-content {
+    max-width: 1100px;
+    margin: 40px auto;
+    display: flex;
+    background: white;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* ============ FORMULARIO (IZQUIERDA) ============ */
+.formulario-card {
+    flex: 1.4;
+    padding: 60px;
+}
+
+.formulario-card h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+
+.subtitulo {
+    color: #6b7280;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 40px;
+    line-height: 1.5;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.grupo-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.grupo-input label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.input-wrapper input,
+.input-wrapper select,
+.input-wrapper textarea {
+    width: 100%;
+    padding: 14px 18px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-wrapper input::placeholder {
+    color: #9ca3af;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus,
+.input-wrapper textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+textarea {
+    min-height: 160px;
+    resize: none;
+}
+
+.btn-enviar {
+    margin-top: 16px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.btn-enviar:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+}
+
+/* ============ SIDEBAR (DERECHA) ============ */
+.sidebar-contacto {
+    flex: 0.8;
+    background: #3b82f6;
+    /* Azul sólido imagen 2 */
+    padding: 60px 40px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.sidebar-contacto h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.item-contacto {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.icon-bg {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: white;
+}
+
+.info-contacto {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info-contacto span {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    opacity: 0.7;
+}
+
+.info-contacto p {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ============ ÉXITO ============ */
+.contenedor-exito {
+    width: 100%;
+    padding: 80px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.success-card {
+    max-width: 520px;
+    width: 100%;
+    background: white;
+    border-radius: 32px;
+    padding: 48px;
+    text-align: center;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: #eff6ff;
+    color: #2563eb;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 32px;
+}
+
+.success-card h2 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+}
+
+.success-card p {
+    color: #6b7280;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.ticket-info {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    text-align: left;
+    margin-bottom: 40px;
+}
+
+.info-text {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.info-text strong {
+    color: #1e293b;
+}
+
+.btn-volver-footer {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: fit-content;
+    margin: 0 auto;
+    transition: all 0.2s;
+}
+
+.btn-volver-footer:hover {
+    color: #0f172a;
+    transform: translateX(-4px);
+}
+
+/* ============ NAVBAR PERSONALIZADO ============ */
+.custom-header {
+    height: 80px;
+    background: white;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-text {
+    font-size: 20px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.divider {
+    width: 1px;
+    height: 24px;
+    background: #e2e8f0;
+}
+
+.page-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.btn-volver-top {
+    padding: 10px 20px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 100px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-volver-top:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 968px) {
+    .soporte-content {
+        flex-direction: column;
+        margin: 20px;
+    }
+
+    .sidebar-contacto {
+        padding: 40px;
+    }
+
+    .formulario-card {
+        padding: 40px;
+    }
+}
+
+@media (max-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+
+    .formulario-card h1 {
+        font-size: 28px;
+    }
+
+    .custom-header {
+        padding: 0 20px;
+    }
+}

@@ -2,17 +2,20 @@ import { Injectable, signal, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 
 export interface Post {
-  id?: string;
-  type: string;
+  id: string;
   title: string;
   description: string;
+  type: string;
   category: string;
   expirationDate?: string;
   image?: string;
-  author?: string;
-  role?: string;
-  time?: string;
+  author: string;
+  authorId: string;
+  role: string;
+  time: string;
   avatar?: string;
+  // Dynamic fields
+  details?: any;
 }
 
 @Injectable({
@@ -22,7 +25,7 @@ export class PostStoreService {
   private supabase = inject(SupabaseService);
 
   private _posts = signal<Post[]>([]);
-  posts = this._posts.asReadonly();
+  public posts = this._posts.asReadonly();
 
   async loadPosts() {
     const { data, error } = await this.supabase.getPosts();
@@ -40,37 +43,35 @@ export class PostStoreService {
         type: p.tipo,
         category: p.categoria || 'General',
         expirationDate: undefined,
-        image: p.imagen_url, // Se mantiene por si añades la columna
+        image: p.imagen_url,
         author: `${p.perfiles?.nombre} ${p.perfiles?.apellidos}`,
+        authorId: p.autor_id,
         role: p.perfiles?.roles?.nombre || 'Miembro',
         time: this.formatTime(p.creado),
-        avatar: p.perfiles?.foto_url
+        avatar: p.perfiles?.foto_url,
+        details: p.detalles // Assuming a JSONB column or similar
       }));
       this._posts.set(formattedPosts);
     }
   }
 
-  async addPost(post: Post) {
-    const { error } = await this.supabase.createPost(post);
-    if (error) {
-      console.error('Error al crear post:', error);
-      throw error;
-    }
+  async addPost(postData: any) {
+    const { data, error } = await this.supabase.createPost(postData);
+    if (error) throw error;
     await this.loadPosts();
+    return data;
   }
 
   private formatTime(dateStr: string): string {
-    if (!dateStr) return 'Ahora';
     const date = new Date(dateStr);
     const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInMins = Math.floor(diffInMs / (1000 * 60));
-    const diffInHours = Math.floor(diffInMins / 60);
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 600);
+    const diffDays = Math.floor(diffHours / 24);
 
-    if (diffInMins < 1) return 'Ahora';
-    if (diffInMins < 60) return `${diffInMins} m`;
-    if (diffInHours < 24) return `${diffInHours} h`;
-    return date.toLocaleDateString();
+    if (diffMins < 60) return `${diffMins} min`;
+    if (diffHours < 24) return `${diffHours} h`;
+    return `${diffDays} d`;
   }
-
 }

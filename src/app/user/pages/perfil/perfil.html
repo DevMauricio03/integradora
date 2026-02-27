@@ -1,58 +1,59 @@
+<main class="feed-container">
 
-
-	<aside>
-	</aside>
-
-<main class="contenido">
-  <div class="content-wrapper">
-
-		<section class="perfil-header">
-			<div class="perfil-info">
-				<div class="avatar">
-					<img
-						[src]="perfil?.foto_url || perfil?.foto_perfil || perfil?.fotoPerfil || defaultAvatarUrl"
-						(error)="onAvatarError($event)"
-						alt="avatar">
-				</div>
-
-				<div class="datos">
-					<h1>{{ (perfil?.nombre || 'Usuario') + ' ' + (perfil?.apellidos || '') }}</h1>
-
-					<div class="meta">
-						<span class="badge-rol">Estudiante</span>
-						<span class="universidad">{{ perfil?.correoInstitucional || 'Sin correo institucional' }}</span>
-					</div>
-				</div>
+	<section class="perfil-header">
+		<div class="perfil-info">
+			<div class="avatar">
+				<img [src]="perfil?.foto_url || perfil?.foto_perfil || perfil?.fotoPerfil || defaultAvatarUrl"
+					(error)="onAvatarError($event)" alt="avatar">
 			</div>
 
-			<button class="btn-secundario" routerLink="/user/perfil/editar">Editar perfil</button>
-		</section>
+			<div class="datos">
+				<h1>{{ (perfil?.nombre || 'Usuario') + ' ' + (perfil?.apellidos || '') }}</h1>
+
+				<div class="meta">
+					<span class="badge-rol">{{ perfil?.roles?.nombre || 'Estudiante' }}</span>
+					<span class="universidad">{{ perfil?.correoInstitucional || 'Sin correo institucional' }}</span>
+				</div>
+			</div>
+		</div>
+
+		<button class="btn-secundario" routerLink="/user/perfil/editar">
+			<app-icon name="settings" [size]="18"></app-icon>
+			Editar perfil
+		</button>
+	</section>
+
+	<div class="feed-content">
 
 		<section class="tabs">
 			<button class="tab active">Publicaciones</button>
+			<button class="tab">Información</button>
 		</section>
 
 		<p class="tabs-descripcion">Mostrando avisos, eventos y ofertas publicadas.</p>
 
-		<section class="lista-publicaciones">
-			<div class="card-publicacion">
-				<span class="badge tipo-aviso">AVISO</span>
-				<h3>Hackathon 2026: Innovación Social</h3>
-				<p>Únete a nosotros para 48 horas de código...</p>
-
-				<div class="acciones">
-					<button class="btn-primario-sm">Impulsar</button>
-					<button class="btn-outline-sm">Editar</button>
-					<button class="btn-outline-sm">Eliminar</button>
-					<span class="link-compartir">Compartir</span>
-				</div>
+		<section class="feed-list">
+			@if (misPosts().length === 0) {
+			<div class="empty-state">
+				<app-icon name="megaphone" [size]="48"></app-icon>
+				<p>Aún no has realizado ninguna publicación.</p>
 			</div>
+			} @else {
+			@for (post of misPosts(); track post.id) {
+			<app-post-card [author]="post.author" [role]="post.role" [time]="post.time" [title]="post.title"
+				[content]="post.description" [badge]="post.type" [image]="post.image" [avatar]="post.avatar"
+				[category]="post.category" [details]="post.details" [expirationDate]="post.expirationDate"
+				[showControls]="true" />
+			}
+			}
 		</section>
 
+		@if (misPosts().length > 5) {
 		<div class="cargar-mas">
 			<button class="btn-outline-sm">Cargar más publicaciones</button>
 		</div>
+		}
+
 	</div>
-	</main>
 
-
+</main>

@@ -21,7 +21,8 @@
       @for (post of posts(); track post.id) {
       <app-post-card [author]="post.author || 'Usuario'" [role]="post.role || 'Estudiante'"
         [time]="post.time || 'Ahora'" [title]="post.title" [content]="post.description" [badge]="post.type"
-        [image]="post.image" [avatar]="post.avatar" [category]="post.category" [expirationDate]="post.expirationDate" />
+        [image]="post.image" [avatar]="post.avatar" [category]="post.category" [details]="post.details"
+        [expirationDate]="post.expirationDate" />
       }
     </section>
 

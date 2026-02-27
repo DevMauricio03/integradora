@@ -1,1 +1,146 @@
-<p>soporte works!</p>,
+<header class="custom-header">
+    <div class="header-left">
+        <div class="logo-wrap">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3L1 9L12 15L21 10.09V17H23V9L12 3ZM5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
+                    fill="#135BEC" />
+            </svg>
+            <span class="logo-text">Tuunka</span>
+        </div>
+        <div class="divider"></div>
+        <span class="page-title">Vista Previa</span>
+    </div>
+
+    <button class="btn-volver-top" (click)="volver()">
+        <app-icon name="arrow-left" [size]="16"></app-icon>
+        Volver
+    </button>
+</header>
+
+<main class="soporte-container">
+
+    @if (!enviado()) {
+    <div class="soporte-content">
+        <!-- FORMULARIO -->
+        <section class="formulario-card">
+            <h1>¿Cómo podemos ayudarte hoy?</h1>
+            <p class="subtitulo">Completa el formulario y nuestro equipo académico te responderá en menos de 24 horas.
+            </p>
+
+            <form (submit)="enviarMensaje($event)">
+                <div class="form-grid">
+                    <div class="grupo-input">
+                        <label>Nombre completo</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="Ej. Juan Pérez García" required>
+                        </div>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label>Correo institucional</label>
+                        <div class="input-wrapper">
+                            <input type="email" placeholder="ej. juan.p@tuunka.edu.mx" required>
+                        </div>
+                    </div>
+
+                    <div class="grupo-input full-width">
+                        <label>Tipo de solicitud</label>
+                        <div class="input-wrapper">
+                            <select required>
+                                <option value="" disabled selected>Selecciona una categoría</option>
+                                <option value="acceso">Problemas de acceso</option>
+                                <option value="error">Reportar un error</option>
+                                <option value="sugerencia">Sugerencia</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grupo-input full-width">
+                        <label>Asunto</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="Resume brevemente tu consulta" required>
+                        </div>
+                    </div>
+
+                    <div class="grupo-input full-width">
+                        <label>Descripción detallada</label>
+                        <div class="input-wrapper">
+                            <textarea placeholder="Cuéntanos más sobre tu problema o duda..." required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-enviar">
+                    <app-icon name="megaphone" [size]="18"></app-icon>
+                    Enviar mensaje
+                </button>
+            </form>
+        </section>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar-contacto">
+            <div class="header-sidebar">
+                <h2>Contacto Directo</h2>
+            </div>
+
+            <div class="item-contacto">
+                <div class="icon-bg">
+                    <app-icon name="bell" [size]="22"></app-icon>
+                </div>
+                <div class="info-contacto">
+                    <span>Email Institucional</span>
+                    <p>soporte@tuunka.edu</p>
+                </div>
+            </div>
+
+            <div class="item-contacto">
+                <div class="icon-bg">
+                    <app-icon name="clock" [size]="22"></app-icon>
+                </div>
+                <div class="info-contacto">
+                    <span>Horario de atención</span>
+                    <p>Lun - Vie, 8:00 - 18:00</p>
+                    <p style="font-size: 13px; opacity: 0.7; margin-top: 4px;">Sábados: 9:00 - 13:00</p>
+                </div>
+            </div>
+
+            <div class="item-contacto">
+                <div class="icon-bg">
+                    <app-icon name="map-pin" [size]="22"></app-icon>
+                </div>
+                <div class="info-contacto">
+                    <span>Oficina</span>
+                    <p>Edificio A, Planta Baja</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+    } @else {
+    <!-- ÉXITO -->
+    <div class="contenedor-exito">
+        <section class="success-card">
+            <div class="success-icon">
+                <app-icon name="bell" [size]="40"></app-icon>
+            </div>
+            <h2>¡Mensaje enviado!</h2>
+            <p>Hemos recibido tu mensaje. Nuestro equipo de soporte se pondrá en contacto contigo a través de tu correo
+                institucional.</p>
+
+            <div class="ticket-info">
+                <app-icon name="check" [size]="20" style="color: #2563eb"></app-icon>
+                <div class="info-text">
+                    Tu número de ticket de seguimiento es <strong>{{ ticketNumber() }}</strong>. Se ha enviado una copia
+                    de este mensaje a tu bandeja de entrada.
+                </div>
+            </div>
+
+            <button class="btn-volver-footer" (click)="volver()">
+                <app-icon name="arrow-left" [size]="18"></app-icon>
+                Volver
+            </button>
+        </section>
+    </div>
+    }
+
+</main>
