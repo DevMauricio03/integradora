@@ -1,30 +1,85 @@
 <main class="feed-container">
 
-  <section class="header-universidad">
-    <h1 class="uni-title">Universidad Tecnológica de los Valles Centrales de Oaxaca</h1>
-    <div class="uni-status">
-      <span class="status-dot"></span>
-      <p>Comunidad activa · 12.5k estudiantes y docentes</p>
+  <div class="feed-header-wrapper">
+    <div class="header-top">
+      <div class="feed-content">
+        <section class="header-universidad">
+          <h1 class="uni-title">Universidad Tecnológica de los Valles Centrales de Oaxaca</h1>
+          <div class="uni-status">
+            <span class="status-dot"></span>
+            <p>Comunidad activa · 12.5k estudiantes y docentes</p>
+          </div>
+        </section>
+      </div>
     </div>
-  </section>
+
+    <div class="header-bottom">
+      <div class="feed-content">
+        <div class="feed-filters">
+          <div class="filter-btn select-wrapper">
+            <app-icon name="shapes" [size]="18" class="filter-icon"></app-icon>
+            <select class="native-select" (change)="onTipoChange($event)">
+              <option value="todas">Tipo: Todas</option>
+              <option value="avisos">Avisos generales</option>
+              <option value="eventos">Eventos</option>
+              <option value="servicios">Servicios</option>
+              <option value="productos">Productos</option>
+            </select>
+            <app-icon name="chevron-down" [size]="16" class="chevron"></app-icon>
+          </div>
+
+          <div class="filter-btn select-wrapper">
+            <app-icon name="calendar" [size]="18" class="filter-icon"></app-icon>
+            <select class="native-select" (change)="onFechaChange($event)">
+              <option value="todas">Fecha: Todas</option>
+              <option value="este dia">Este día</option>
+              <option value="esta semana">Esta semana</option>
+              <option value="este mes">Este mes</option>
+              <option value="este ano">Este año</option>
+            </select>
+            <app-icon name="chevron-down" [size]="16" class="chevron"></app-icon>
+          </div>
+
+          <div class="filter-btn select-wrapper">
+            <app-icon name="graduation" [size]="18" class="filter-icon"></app-icon>
+            <select class="native-select" (change)="onCarreraChange($event)">
+              <option value="todas">Carrera: Todas</option>
+              @for (carrera of carreras(); track carrera.id) {
+              <option [value]="carrera.id">{{ carrera.nombre }}</option>
+              }
+            </select>
+            <app-icon name="chevron-down" [size]="16" class="chevron"></app-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="feed-content">
 
-    @if (posts().length === 0) {
+    @if (isLoading()) {
+    <div class="feed-list">
+      @for (i of [1,2,3]; track i) {
+      <app-post-skeleton></app-post-skeleton>
+      }
+    </div>
+    } @else {
+    @if (filteredPosts().length === 0) {
     <div class="empty-state">
       <app-icon name="megaphone" [size]="48"></app-icon>
-      <p>No hay publicaciones aún. ¡Sé el primero en compartir algo!</p>
+      <p>No hay publicaciones que coincidan con estos filtros.</p>
     </div>
     }
 
     <section class="feed-list">
-      @for (post of posts(); track post.id) {
+      @for (post of filteredPosts(); track post.id) {
       <app-post-card [author]="post.author || 'Usuario'" [role]="post.role || 'Estudiante'"
         [time]="post.time || 'Ahora'" [title]="post.title" [content]="post.description" [badge]="post.type"
         [image]="post.image" [avatar]="post.avatar" [category]="post.category" [details]="post.details"
         [expirationDate]="post.expirationDate" />
       }
     </section>
+    }
 
   </div>
 

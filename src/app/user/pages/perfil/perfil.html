@@ -33,6 +33,13 @@
 		<p class="tabs-descripcion">Mostrando avisos, eventos y ofertas publicadas.</p>
 
 		<section class="feed-list">
+			@if (isLoading()) {
+			<div class="skeleton-container">
+				@for (i of [1,2,3]; track i) {
+				<app-post-skeleton></app-post-skeleton>
+				}
+			</div>
+			} @else {
 			@if (misPosts().length === 0) {
 			<div class="empty-state">
 				<app-icon name="megaphone" [size]="48"></app-icon>
@@ -44,6 +51,7 @@
 				[content]="post.description" [badge]="post.type" [image]="post.image" [avatar]="post.avatar"
 				[category]="post.category" [details]="post.details" [expirationDate]="post.expirationDate"
 				[showControls]="true" />
+			}
 			}
 			}
 		</section>

@@ -5,18 +5,18 @@
     <div class="form-header">
       <h2 class="main-title">
         @switch (currentType()) {
-          @case ('aviso') { Crear Aviso }
-          @case ('evento') { Crear Evento }
-          @case ('oferta') { Crear Oferta }
-          @case ('experiencia') { Crear Experiencia }
+        @case ('aviso') { Crear Aviso }
+        @case ('evento') { Crear Evento }
+        @case ('oferta') { Crear Oferta }
+        @case ('experiencia') { Crear Experiencia }
         }
       </h2>
       <p class="subtitle">
         @switch (currentType()) {
-          @case ('aviso') { Comparte noticias y anuncios con tu comunidad. }
-          @case ('evento') { Organiza un evento e invita a tu comunidad universitaria. }
-          @case ('oferta') { Ofrece servicios o vende productos. }
-          @case ('experiencia') { Comparte tu trayectoria profesional y consejos. }
+        @case ('aviso') { Comparte noticias y anuncios con tu comunidad. }
+        @case ('evento') { Organiza un evento e invita a tu comunidad universitaria. }
+        @case ('oferta') { Ofrece servicios o vende productos. }
+        @case ('experiencia') { Comparte tu trayectoria profesional y consejos. }
         }
       </p>
     </div>
@@ -47,41 +47,42 @@
 
       <!-- SECCIÓN DINÁMICA: OFERTA (SUBTIPOS) -->
       @if (currentType() === 'oferta') {
-        <div class="section-group fade-in">
-          <h3 class="section-label">¿QUÉ OFRECES?</h3>
-          <div class="subtype-grid">
-            @for (st of subtypes; track st.id) {
-              <div class="subtype-card" [class.selected]="selectedSubtype() === st.id" (click)="selectSubtype($any(st.id))">
-                <div class="subtype-icon">
-                  <app-icon [name]="$any(st.icon)" [size]="20"></app-icon>
-                </div>
-                <div class="subtype-info">
-                  <span class="st-name">{{st.name}}</span>
-                  <span class="st-desc">{{st.desc}}</span>
-                </div>
-              </div>
-            }
+      <div class="section-group fade-in">
+        <h3 class="section-label">¿QUÉ OFRECES?</h3>
+        <div class="subtype-grid">
+          @for (st of subtypes; track st.id) {
+          <div class="subtype-card" [class.selected]="selectedSubtype() === st.id" (click)="selectSubtype($any(st.id))">
+            <div class="subtype-icon">
+              <app-icon [name]="$any(st.icon)" [size]="20"></app-icon>
+            </div>
+            <div class="subtype-info">
+              <span class="st-name">{{st.name}}</span>
+              <span class="st-desc">{{st.desc}}</span>
+            </div>
           </div>
+          }
         </div>
+      </div>
       }
 
       <!-- CAMPOS COMUNES SEGÚN TIPO -->
       <div class="form-fields-container fade-in">
-        
+
         <!-- Título Dinámico -->
         <div class="form-field">
           <label>
             @switch (currentType()) {
-              @case ('evento') { Título del evento * }
-              @case ('oferta') { Título del {{ selectedSubtype() }} * }
-              @default { Título de la publicación * }
+            @case ('evento') { Título del evento * }
+            @case ('oferta') { Título del {{ selectedSubtype() }} * }
+            @default { Título de la publicación * }
             }
           </label>
-          <input type="text" [formField]="postForm.title" 
+          <input type="text" [formField]="postForm.title"
             [placeholder]="currentType() === 'evento' ? 'Ej: RoboTICup 2026' : 'Ej: Importante: Cierre de laboratorio'"
             [class.error-border]="postForm.title().touched() && postForm.title().invalid()">
           @if (postForm.title().touched() && postForm.title().invalid()) {
-            <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{ postForm.title().errors()[0].message }}</span>
+          <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{
+            postForm.title().errors()[0].message }}</span>
           }
         </div>
 
@@ -92,137 +93,62 @@
             [placeholder]="currentType() === 'evento' ? 'Detalles del evento, ponentes, agenda...' : 'Escribe los detalles importantes aquí...'"
             [class.error-border]="postForm.description().touched() && postForm.description().invalid()"></textarea>
           @if (postForm.description().touched() && postForm.description().invalid()) {
-            <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{ postForm.description().errors()[0].message }}</span>
+          <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{
+            postForm.description().errors()[0].message }}</span>
           }
         </div>
 
         <!-- CAMPOS ESPECÍFICOS: EVENTO -->
         @if (currentType() === 'evento') {
-          <div class="form-row">
-            <div class="form-field">
-              <label>Fecha y hora de inicio *</label>
-              <div class="input-with-icon">
-                <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
-                <input type="datetime-local" [formField]="postForm.startDate">
-              </div>
-            </div>
-            <div class="form-field">
-              <label>Fecha y hora de fin *</label>
-              <div class="input-with-icon">
-                <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
-                <input type="datetime-local" [formField]="postForm.endDate">
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label>Modalidad *</label>
-              <div class="select-container">
-                <app-icon name="check" [size]="18" class="field-icon"></app-icon>
-                <select [formField]="postForm.modality">
-                  @for (mod of modalities; track mod) {
-                    <option [value]="mod">{{mod}}</option>
-                  }
-                </select>
-                <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
-              </div>
-            </div>
-            <div class="form-field">
-              <label>Ubicación *</label>
-              <div class="input-with-icon">
-                <app-icon name="map-pin" [size]="18" class="field-icon"></app-icon>
-                <input type="text" [formField]="postForm.location" placeholder="Ej: Auditorio Principal">
-              </div>
-            </div>
-          </div>
+        <div class="form-row">
           <div class="form-field">
-            <label>Costo (opcional)</label>
+            <label>Fecha y hora de inicio *</label>
             <div class="input-with-icon">
-              <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
-              <input type="text" [formField]="postForm.cost" placeholder="Ej: Gratuito o $50.00">
-            </div>
-          </div>
-        }
-
-        <!-- CAMPOS ESPECÍFICOS: OFERTA - PRODUCTO -->
-        @if (currentType() === 'oferta' && selectedSubtype() === 'producto') {
-          <div class="form-row">
-            <div class="form-field">
-              <label>Precio *</label>
-              <div class="price-input-group">
-                <div class="input-with-icon">
-                  <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
-                  <input type="number" [formField]="postForm.price" placeholder="0.00">
-                </div>
-                <select [formField]="postForm.priceUnit" class="unit-select">
-                  <option value="c.u">/ c.u</option>
-                  <option value="paquete">/ paquete</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-field">
-              <label>Estado del producto</label>
-              <div class="select-container">
-                <app-icon name="check" [size]="18" class="field-icon"></app-icon>
-                <select [formField]="postForm.productStatus">
-                  @for (status of productStatuses; track status) {
-                    <option [value]="status">{{status}}</option>
-                  }
-                </select>
-                <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label>Disponibilidad</label>
-              <div class="select-container">
-                <app-icon name="clock" [size]="18" class="field-icon"></app-icon>
-                <select [formField]="postForm.availability">
-                  @for (av of availabilities; track av) {
-                    <option [value]="av">{{av}}</option>
-                  }
-                </select>
-                <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
-              </div>
-            </div>
-            <div class="form-field">
-              <label>Método de contacto *</label>
-              <div class="select-container">
-                <app-icon name="user" [size]="18" class="field-icon"></app-icon>
-                <select [formField]="postForm.contactMethod">
-                  @for (method of contactMethods; track method) {
-                    <option [value]="method">{{method}}</option>
-                  }
-                </select>
-                <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
-              </div>
+              <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
+              <input type="datetime-local" [formField]="postForm.startDate">
             </div>
           </div>
           <div class="form-field">
-            <label>Número</label>
+            <label>Fecha y hora de fin *</label>
             <div class="input-with-icon">
-              <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
-              <input type="text" [formField]="postForm.phoneNumber" placeholder="951 123 4455">
+              <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
+              <input type="datetime-local" [formField]="postForm.endDate">
             </div>
           </div>
-        }
-
-        <!-- CAMPOS ESPECÍFICOS: OFERTA - SERVICIO -->
-        @if (currentType() === 'oferta' && selectedSubtype() === 'servicio') {
+        </div>
+        <div class="form-row">
           <div class="form-field">
-            <label>Tipo de servicio *</label>
+            <label>Modalidad *</label>
             <div class="select-container">
-              <app-icon name="tag" [size]="18" class="field-icon"></app-icon>
-              <select [formField]="postForm.serviceType">
-                <option value="" disabled>Selecciona una categoría</option>
-                <option value="asesoria">Asesoría Académica</option>
-                <option value="tecnico">Servicio Técnico</option>
-                <option value="otros">Otros</option>
+              <app-icon name="check" [size]="18" class="field-icon"></app-icon>
+              <select [formField]="postForm.modality">
+                @for (mod of modalities; track mod) {
+                <option [value]="mod">{{mod}}</option>
+                }
               </select>
               <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
             </div>
           </div>
+          <div class="form-field">
+            <label>Ubicación *</label>
+            <div class="input-with-icon">
+              <app-icon name="map-pin" [size]="18" class="field-icon"></app-icon>
+              <input type="text" [formField]="postForm.location" placeholder="Ej: Auditorio Principal">
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Costo (opcional)</label>
+          <div class="input-with-icon">
+            <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
+            <input type="text" [formField]="postForm.cost" placeholder="Ej: Gratuito o $50.00">
+          </div>
+        </div>
+        }
+
+        <!-- CAMPOS ESPECÍFICOS: OFERTA - PRODUCTO -->
+        @if (currentType() === 'oferta' && selectedSubtype() === 'producto') {
+        <div class="form-row">
           <div class="form-field">
             <label>Precio *</label>
             <div class="price-input-group">
@@ -230,58 +156,140 @@
                 <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
                 <input type="number" [formField]="postForm.price" placeholder="0.00">
               </div>
-              <select [formField]="postForm.priceUnit" class="unit-select">
-                <option value="hora">/ hora</option>
-                <option value="servicio">/ servicio</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label>Horarios disponibles</label>
-              <div class="input-with-icon">
-                <app-icon name="clock" [size]="18" class="field-icon"></app-icon>
-                <input type="text" [formField]="postForm.availableHours" placeholder="Ej: Lun-Vie 14:00 - 18:00">
-              </div>
-            </div>
-            <div class="form-field">
-              <label>Método de contacto *</label>
               <div class="select-container">
-                <app-icon name="user" [size]="18" class="field-icon"></app-icon>
-                <select [formField]="postForm.contactMethod">
-                  @for (method of contactMethods; track method) {
-                    <option [value]="method">{{method}}</option>
-                  }
+                <select [formField]="postForm.priceUnit" class="unit-select">
+                  <option value="c.u">/ c.u</option>
+                  <option value="paquete">/ paquete</option>
                 </select>
                 <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
               </div>
             </div>
           </div>
           <div class="form-field">
-            <label>Número</label>
-            <div class="input-with-icon">
-              <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
-              <input type="text" [formField]="postForm.phoneNumber" placeholder="951 123 4455">
+            <label>Estado del producto</label>
+            <div class="select-container">
+              <app-icon name="check" [size]="18" class="field-icon"></app-icon>
+              <select [formField]="postForm.productStatus">
+                @for (status of productStatuses; track status) {
+                <option [value]="status">{{status}}</option>
+                }
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
             </div>
           </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Disponibilidad</label>
+            <div class="select-container">
+              <app-icon name="clock" [size]="18" class="field-icon"></app-icon>
+              <select [formField]="postForm.availability">
+                @for (av of availabilities; track av) {
+                <option [value]="av">{{av}}</option>
+                }
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Método de contacto *</label>
+            <div class="select-container">
+              <app-icon name="user" [size]="18" class="field-icon"></app-icon>
+              <select [formField]="postForm.contactMethod">
+                @for (method of contactMethods; track method) {
+                <option [value]="method">{{method}}</option>
+                }
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Número</label>
+          <div class="input-with-icon">
+            <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
+            <input type="text" [formField]="postForm.phoneNumber" placeholder="951 123 4455">
+          </div>
+        </div>
+        }
+
+        <!-- CAMPOS ESPECÍFICOS: OFERTA - SERVICIO -->
+        @if (currentType() === 'oferta' && selectedSubtype() === 'servicio') {
+        <div class="form-field">
+          <label>Tipo de servicio *</label>
+          <div class="select-container">
+            <app-icon name="tag" [size]="18" class="field-icon"></app-icon>
+            <select [formField]="postForm.serviceType">
+              <option value="" disabled>Selecciona una categoría</option>
+              <option value="asesoria">Asesoría Académica</option>
+              <option value="tecnico">Servicio Técnico</option>
+              <option value="otros">Otros</option>
+            </select>
+            <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Precio *</label>
+          <div class="price-input-group">
+            <div class="input-with-icon">
+              <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
+              <input type="number" [formField]="postForm.price" placeholder="0.00">
+            </div>
+            <div class="select-container">
+              <select [formField]="postForm.priceUnit" class="unit-select">
+                <option value="hora">/ hora</option>
+                <option value="servicio">/ servicio</option>
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Horarios disponibles</label>
+            <div class="input-with-icon">
+              <app-icon name="clock" [size]="18" class="field-icon"></app-icon>
+              <input type="text" [formField]="postForm.availableHours" placeholder="Ej: Lun-Vie 14:00 - 18:00">
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Método de contacto *</label>
+            <div class="select-container">
+              <app-icon name="user" [size]="18" class="field-icon"></app-icon>
+              <select [formField]="postForm.contactMethod">
+                @for (method of contactMethods; track method) {
+                <option [value]="method">{{method}}</option>
+                }
+              </select>
+              <app-icon name="chevron-down" [size]="16" class="chevron-icon"></app-icon>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Número</label>
+          <div class="input-with-icon">
+            <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
+            <input type="text" [formField]="postForm.phoneNumber" placeholder="951 123 4455">
+          </div>
+        </div>
         }
 
         <!-- CAMPOS ESPECÍFICOS: EXPERIENCIA -->
         @if (currentType() === 'experiencia') {
-          <div class="form-row">
-            <div class="form-field">
-              <label>Empresa *</label>
-              <input type="text" [formField]="postForm.company" placeholder="Nombre de la empresa">
-            </div>
-            <div class="form-field">
-              <label>Área *</label>
-              <input type="text" [formField]="postForm.area" placeholder="Ej: Desarrollo Web">
-            </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Empresa *</label>
+            <input type="text" [formField]="postForm.company" placeholder="Nombre de la empresa">
           </div>
           <div class="form-field">
-            <label>Periodo *</label>
-            <input type="text" [formField]="postForm.period" placeholder="Ej: Enero 2024 - Junio 2024">
+            <label>Área *</label>
+            <input type="text" [formField]="postForm.area" placeholder="Ej: Desarrollo Web">
           </div>
+        </div>
+        <div class="form-field">
+          <label>Periodo *</label>
+          <input type="text" [formField]="postForm.period" placeholder="Ej: Enero 2024 - Junio 2024">
+        </div>
         }
 
       </div>
@@ -331,7 +339,8 @@
 
     <div class="preview-footer-actions">
       <button type="button" class="btn-cancelar" (click)="backToForm()">Editar</button>
-      <button type="button" class="btn-siguiente" (click)="publish()" [disabled]="postForm().pending() || isPublishing()">
+      <button type="button" class="btn-siguiente" (click)="publish()"
+        [disabled]="postForm().pending() || isPublishing()">
         {{ isPublishing() ? 'Publicando...' : 'Publicar Ahora' }}
       </button>
     </div>

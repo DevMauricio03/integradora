@@ -24,7 +24,7 @@ interface LoginFormModel {
 export class InicioSesion {
 
   /** 
-   * Signal que almacena el estado crudo del formulario. 
+   * Signal que almacena el estado del formulario. 
    */
   loginModel = signal<LoginFormModel>({
     email: '',
@@ -32,10 +32,7 @@ export class InicioSesion {
     recordarme: false
   });
 
-  /**
-   * Definición declarativa del formulario usando Signal Forms (Angular 21+).
-   * 'form' crea una estructura reactiva vinculada al 'loginModel'.
-   */
+
   loginForm = form(this.loginModel, (schema: SchemaPathTree<LoginFormModel>) => {
     // Validaciones para el correo: Oligatorio, formato email y filtro institucional .edu
     required(schema.email, { message: 'El correo electrónico es obligatorio' });

@@ -269,7 +269,7 @@ export class SupabaseService {
   async getPosts() {
     const { data, error } = await this.supabase
       .from('publicaciones')
-      .select('*, perfiles(nombre, apellidos, foto_url, roles(nombre))')
+      .select('*, perfiles(nombre, apellidos, foto_url, carrera_id, roles(nombre))')
       .order('creado', { ascending: false });
 
     return { data, error };

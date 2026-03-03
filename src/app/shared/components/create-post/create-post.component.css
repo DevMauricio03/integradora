@@ -137,6 +137,9 @@
   font-family: inherit;
   transition: all 0.2s;
   box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 .form-field input:focus,
@@ -168,13 +171,18 @@
 }
 
 .select-container select,
-.select-container input[type="date"] {
-  padding-left: 44px;
+.select-container input[type="datetime-local"] {
+  padding-right: 36px !important;
+}
+
+.select-container .field-icon+select,
+.select-container .field-icon+input {
+  padding-left: 44px !important;
 }
 
 .chevron-icon {
   position: absolute;
-  right: 16px;
+  right: 12px;
   color: #9ca3af;
   pointer-events: none;
 }
@@ -251,7 +259,7 @@
 
 .price-input-group {
   display: grid;
-  grid-template-columns: 1fr 100px;
+  grid-template-columns: 1fr 125px;
   gap: 8px;
 }
 

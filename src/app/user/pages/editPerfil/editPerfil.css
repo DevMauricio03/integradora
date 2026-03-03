@@ -164,6 +164,26 @@ select:focus {
   cursor: pointer;
 }
 
+.btn-outline-danger {
+  border: 1px solid #fee2e2;
+  background: white;
+  border-radius: 8px;
+  min-height: 36px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-danger:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+}
+
 .acciones-finales {
   display: flex;
   justify-content: flex-end;

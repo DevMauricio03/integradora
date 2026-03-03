@@ -43,12 +43,14 @@
 }
 
 .sidebar li.active {
-  background: #eff6ff;
-  color: #2563eb;
+  background: #f3f4f6 !important;
+  color: #2563eb !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .sidebar li.active app-icon {
-  color: #2563eb;
+  color: #2563eb !important;
 }
 
 .config-item {
@@ -57,21 +59,15 @@
 
 .contenido {
   flex: 1;
-  padding: 32px;
+  padding: 16px 32px 32px 32px;
   max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
-/* Navbar Center */
-.center-content {
-  width: 100%;
-  max-width: 500px;
-}
-
 .search-container {
   position: relative;
-  width: 100%;
+  width: 450px;
 }
 
 .search-icon {
@@ -91,6 +87,7 @@
   background: #f9fafb;
   transition: all 0.2s;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
 .search-input:focus {
@@ -104,7 +101,7 @@
 .right-content {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .icon-btn {
@@ -112,28 +109,37 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #6b7280;
+  color: #4b5563;
+  /* Gris más oscuro como en la imagen */
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 8px;
   border-radius: 50%;
   transition: background 0.2s;
 }
 
+.icon-btn app-icon {
+  stroke-width: 2.2;
+  /* Campana un poco más gruesa */
+}
+
 .icon-btn:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: #f1f5f9;
+  color: #1e293b;
 }
 
 .notification-dot {
   position: absolute;
-  top: 8px;
+  top: 6px;
   right: 8px;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: #ef4444;
+  /* Rojo vibrante */
   border-radius: 50%;
-  border: 2px solid white;
+  /* Borde blanco para separarlo de la campana si se superpone */
+  border: 1.5px solid white;
 }
 
 .btn-nueva-pub {
@@ -169,8 +175,8 @@
     width: 240px;
   }
 
-  .center-content {
-    display: none !important;
+  .search-container {
+    width: 280px;
   }
 }
 
@@ -186,7 +192,7 @@
     overflow-x: hidden;
   }
 
-  .center-content {
+  .search-container {
     display: none !important;
   }
 

@@ -25,11 +25,12 @@ import { Component, Input, computed, signal } from '@angular/core';
 })
 export class IconComponent {
 
-  @Input() name: 'plus' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'chevron-down' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' = 'plus';
+  @Input() name: 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'chevron-down' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' = 'plus';
   @Input() size: number = 18;
 
   private icons = {
     plus: ['M12 5v14', 'M5 12h14'],
+    'plus-circle': ['M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10z', 'M12 8v8', 'M8 12h8'],
     bell: [
       'M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7',
       'M13.73 21a2 2 0 0 1-3.46 0'
@@ -59,7 +60,8 @@ export class IconComponent {
     'map-pin': ['M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z', 'M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'],
     'dollar-sign': ['M12 1v22', 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
     phone: ['M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z'],
-    building: ['M3 21h18', 'M9 8h1', 'M9 12h1', 'M9 16h1', 'M14 8h1', 'M14 12h1', 'M14 16h1', 'M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16']
+    building: ['M3 21h18', 'M9 8h1', 'M9 12h1', 'M9 16h1', 'M14 8h1', 'M14 12h1', 'M14 16h1', 'M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16'],
+    shapes: ['M12 3l-4 7h8z', 'M4 14h6v6H4z', 'M14 17a3 3 0 1 1 6 0 3 3 0 0 1-6 0']
   };
 
   paths = computed(() => this.icons[this.name] || []);
