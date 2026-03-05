@@ -23,9 +23,13 @@ export class Navbar {
 
   getLogoRoute(): string {
     const currentUrl = this.router.url;
-    // Si estamos en cualquier página de auth, va a bienvenida (/)
+    // Si estamos en auth, va a bienvenida (/)
     if (currentUrl.includes('/auth/')) {
       return '/';
+    }
+    // Si estamos en admin, va al dashboard
+    if (currentUrl.includes('/admin/')) {
+      return '/admin/dashboard';
     }
     // Si estamos dentro de la app (ya logueados), va al feed
     return '/user/feed';

@@ -12,6 +12,7 @@ import { AvisosLegales } from '../../../shared/components/avisosLegales/avisosLe
 })
 export class Bienvenida {
   mostrarAviso = signal(false);
+  mostrarAcercaDe = signal(false);
 
   abrirAviso() {
     this.mostrarAviso.set(true);
@@ -19,5 +20,13 @@ export class Bienvenida {
 
   cerrarAviso() {
     this.mostrarAviso.set(false);
+  }
+
+  abrirAcercaDe() {
+    this.mostrarAcercaDe.set(true);
+  }
+
+  cerrarAcercaDe() {
+    this.mostrarAcercaDe.set(false);
   }
 }

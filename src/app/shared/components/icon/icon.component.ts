@@ -25,7 +25,7 @@ import { Component, Input, computed, signal } from '@angular/core';
 })
 export class IconComponent {
 
-  @Input() name: 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'chevron-down' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' = 'plus';
+  @Input() name: 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'rocket' = 'plus';
   @Input() size: number = 18;
 
   private icons = {
@@ -44,7 +44,13 @@ export class IconComponent {
     user: ['M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2', 'M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
     settings: ['M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'],
     search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z', 'M21 21l-4.35-4.35'],
-    users: ['M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', 'M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', 'M23 21v-2a4 4 0 0 0-3-3.87', 'M16 3.13a4 4 0 0 1 0 7.75'],
+    users: [
+      'M17 21v-2a4 4 0 0 0-3-3.87',
+      'M9 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2',
+      'M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+      'M23 21v-2a4 4 0 0 0-3-3.87',
+      'M16 3.13a4 4 0 0 1 0 7.75'
+    ],
     shield: ['M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', 'M8 11l3 3 5-5'],
     graduation: ['M22 10v6M2 10l10-5 10 5-10 5z', 'M6 12v5c0 2 2.5 3 6 3s6-1 6-3v-5'],
     ban: ['M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z', 'M4.93 4.93l14.14 14.14'],
@@ -61,7 +67,21 @@ export class IconComponent {
     'dollar-sign': ['M12 1v22', 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
     phone: ['M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z'],
     building: ['M3 21h18', 'M9 8h1', 'M9 12h1', 'M9 16h1', 'M14 8h1', 'M14 12h1', 'M14 16h1', 'M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16'],
-    shapes: ['M12 3l-4 7h8z', 'M4 14h6v6H4z', 'M14 17a3 3 0 1 1 6 0 3 3 0 0 1-6 0']
+    shapes: ['M12 3l-4 7h8z', 'M4 14h6v6H4z', 'M14 17a3 3 0 1 1 6 0 3 3 0 0 1-6 0'],
+    'log-out': ['M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4', 'M16 17l5-5-5-5', 'M21 12H9'],
+    'file-text': ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', 'M14 2v6h6', 'M16 13H8', 'M16 17H8', 'M10 9H8'],
+    'alert-triangle': ['M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z', 'M12 9v4', 'M12 17h.01'],
+    'user-check': ['M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', 'M8.5 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z', 'M17 11l2 2 4-4'],
+    'refresh-cw': ['M23 4v6h-6', 'M1 20v-6h6', 'M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15'],
+    'shopping-bag': ['M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z', 'M3 6h18', 'M16 10a4 4 0 0 1-8 0'],
+    x: ['M18 6L6 18', 'M6 6l12 12'],
+    'chevron-left': ['M15 18l-6-6 6-6'],
+    'chevron-right': ['M9 18l6-6-6-6'],
+    info: ['M12 16V12', 'M12 8H12.01', 'M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z'],
+    image: ['M5 19l2.586-2.586a2 2 0 012.828 0L12 18l3.586-3.586a2 2 0 012.828 0L21 17', 'M19 5H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2z', 'M8 10a1 1 0 100-2 1 1 0 000 2z'],
+    'trash-2': ['M3 6h18', 'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2', 'M10 11v6', 'M14 11v6'],
+    'check-circle': ['M22 11.08V12a10 10 0 1 1-5.93-9.14', 'M22 4L12 14.01l-3-3'],
+    rocket: ['M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z', 'm12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 0-2.72 7.33-6.04 11a22 22 0 0 1-3.96 2z', 'M14 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z']
   };
 
   paths = computed(() => this.icons[this.name] || []);

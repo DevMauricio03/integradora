@@ -1,0 +1,240 @@
+<div class="publications-page">
+    <div class="publications-header">
+        <div class="header-text">
+            <h1>Moderación de publicaciones</h1>
+            <p>Publicaciones en la plataforma Tuunka.</p>
+        </div>
+        <button class="btn-primario-sm">
+            <app-icon name="plus" [size]="16"></app-icon>
+            Nueva publicación
+        </button>
+    </div>
+
+    <!-- Filtros y Buscador -->
+    <div class="filters-container">
+        <div class="select-filters">
+            <div class="custom-select">
+                <span>Tipo : <strong>Todos</strong></span>
+                <app-icon name="chevron-down" [size]="14"></app-icon>
+            </div>
+            <div class="custom-select">
+                <span>Estado : <strong>Todos</strong></span>
+                <app-icon name="chevron-down" [size]="14"></app-icon>
+            </div>
+            <div class="custom-select">
+                <span>Fecha : <strong>Todas</strong></span>
+                <app-icon name="chevron-down" [size]="14"></app-icon>
+            </div>
+        </div>
+        <div class="search-box">
+            <app-icon name="search" [size]="18" class="search-icon"></app-icon>
+            <input type="text" placeholder="Buscar por ID, usuario o motivo..." class="search-input">
+            <button class="btn-refresh">
+                <app-icon name="refresh-cw" [size]="18"></app-icon>
+                Actualizar
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabla de Publicaciones -->
+    <div class="publications-card">
+        <div class="table-container">
+            <table class="publications-table">
+                <thead>
+                    <tr>
+                        <th>PUBLICACION</th>
+                        <th>TIPO</th>
+                        <th>AUTOR</th>
+                        <th>FECHA Y HORA</th>
+                        <th>ESTADO</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Fila 1 -->
+                    <tr class="active-row">
+                        <td>
+                            <div class="pub-cell">
+                                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=200&auto=format&fit=crop"
+                                    alt="Libros" class="pub-img">
+                                <div class="pub-info">
+                                    <span class="pub-title">Libros de Cálculo 2do Año</span>
+                                    <p class="pub-snippet">Hola comunidad, estoy vendiendo mis libros de calcul...</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="type-badge product">
+                                <app-icon name="shopping-bag" [size]="14"></app-icon>
+                                <span>PRODUCTO</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="author-cell clickable-author" (click)="abrirModal()">
+                                <img src="https://i.pravatar.cc/150?u=11" alt="Juan" class="author-avatar">
+                                <div class="author-info">
+                                    <span class="author-name">Juan Pérez</span>
+                                    <span class="author-career">Ingeniería</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-cell">
+                                <span class="date-text">Hoy</span>
+                                <span class="time-text">10:23 AM</span>
+                            </div>
+                        </td>
+                        <td><app-status-badge text="Pendiente" type="pending"></app-status-badge></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action reject"><app-icon name="x" [size]="16"></app-icon></button>
+                                <button class="btn-action approve"><app-icon name="check"
+                                        [size]="16"></app-icon></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Fila 2 -->
+                    <tr>
+                        <td>
+                            <div class="pub-cell">
+                                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=200&auto=format&fit=crop"
+                                    alt="Libros" class="pub-img">
+                                <div class="pub-info">
+                                    <span class="pub-title">Libros de Cálculo 2do Año</span>
+                                    <p class="pub-snippet">Hola comunidad, estoy vendiendo mis libros de calcul...</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="type-badge exp-emp">
+                                <app-icon name="briefcase" [size]="14"></app-icon>
+                                <span>EXP. EMPRESARIAL</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="author-cell clickable-author" (click)="abrirModal()">
+                                <img src="https://i.pravatar.cc/150?u=12" alt="Juan" class="author-avatar">
+                                <div class="author-info">
+                                    <span class="author-name">Juan Pérez</span>
+                                    <span class="author-career">Ingeniería</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-cell">
+                                <span class="date-text">Hoy</span>
+                                <span class="time-text">10:23 AM</span>
+                            </div>
+                        </td>
+                        <td><app-status-badge text="Pendiente" type="pending"></app-status-badge></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action reject"><app-icon name="x" [size]="16"></app-icon></button>
+                                <button class="btn-action approve"><app-icon name="check"
+                                        [size]="16"></app-icon></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Fila 3 -->
+                    <tr>
+                        <td>
+                            <div class="pub-cell">
+                                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=200&auto=format&fit=crop"
+                                    alt="Libros" class="pub-img">
+                                <div class="pub-info">
+                                    <span class="pub-title">Libros de Cálculo 2do Año</span>
+                                    <p class="pub-snippet">Hola comunidad, estoy vendiendo mis libros de calcul...</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="type-badge event">
+                                <app-icon name="calendar" [size]="14"></app-icon>
+                                <span>EVENTO</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="author-cell clickable-author" (click)="abrirModal()">
+                                <img src="https://i.pravatar.cc/150?u=13" alt="Juan" class="author-avatar">
+                                <div class="author-info">
+                                    <span class="author-name">Juan Pérez</span>
+                                    <span class="author-career">Ingeniería</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-cell">
+                                <span class="date-text">Hoy</span>
+                                <span class="time-text">10:23 AM</span>
+                            </div>
+                        </td>
+                        <td><app-status-badge text="Pendiente" type="pending"></app-status-badge></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action reject"><app-icon name="x" [size]="16"></app-icon></button>
+                                <button class="btn-action approve"><app-icon name="check"
+                                        [size]="16"></app-icon></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Fila 4 -->
+                    <tr>
+                        <td>
+                            <div class="pub-cell">
+                                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=200&auto=format&fit=crop"
+                                    alt="Libros" class="pub-img">
+                                <div class="pub-info">
+                                    <span class="pub-title">Libros de Cálculo 2do Año</span>
+                                    <p class="pub-snippet">Hola comunidad, estoy vendiendo mis libros de calcul...</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="type-badge aviso">
+                                <app-icon name="megaphone" [size]="14"></app-icon>
+                                <span>AVISO</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="author-cell clickable-author" (click)="abrirModal()">
+                                <img src="https://i.pravatar.cc/150?u=14" alt="Juan" class="author-avatar">
+                                <div class="author-info">
+                                    <span class="author-name">Juan Pérez</span>
+                                    <span class="author-career">Ingeniería</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-cell">
+                                <span class="date-text">Hoy</span>
+                                <span class="time-text">10:23 AM</span>
+                            </div>
+                        </td>
+                        <td><app-status-badge text="Suspendido" type="suspended"></app-status-badge></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action reject"><app-icon name="x" [size]="16"></app-icon></button>
+                                <button class="btn-action approve"><app-icon name="check"
+                                        [size]="16"></app-icon></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-footer">
+            <span>Mostrando 4 de 12,450 usuarios</span>
+            <div class="pagination">
+                <button class="btn-paging"><app-icon name="chevron-left" [size]="16"></app-icon></button>
+                <button class="btn-paging"><app-icon name="chevron-right" [size]="16"></app-icon></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if(mostrarModalUsuario()) {
+<app-usuario-detalle-modal (close)="cerrarModal()"></app-usuario-detalle-modal>
+}

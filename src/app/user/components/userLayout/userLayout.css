@@ -4,6 +4,13 @@
   background-color: #f9fafb;
 }
 
+.user-top-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #111318;
+  white-space: nowrap;
+}
+
 .sidebar {
   width: 280px;
   background: white;

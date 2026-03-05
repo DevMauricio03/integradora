@@ -1,14 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { StatusBadge } from '../../../shared/components/statusBadge/statusBadge';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  standalone: true,
+  imports: [StatusBadge],
   templateUrl: './dashboard.html',
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
+  styleUrls: ['./dashboard.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard { }

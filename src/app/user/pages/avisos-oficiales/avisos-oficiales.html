@@ -1,0 +1,31 @@
+<main class="feed-container">
+
+    <section class="header-universidad">
+        <h1 class="uni-title">Avisos Oficiales</h1>
+        <div class="uni-status">
+            <app-icon name="bell" [size]="16"></app-icon>
+            <p>Comunicaciones e información oficial de la institución</p>
+        </div>
+    </section>
+
+    <div class="feed-content">
+
+        @if (posts().length === 0) {
+        <div class="empty-state">
+            <app-icon name="bell" [size]="48"></app-icon>
+            <p>No hay avisos oficiales aún. ¡Revisa más tarde!</p>
+        </div>
+        }
+
+        <section class="feed-list">
+            @for (post of posts(); track post.id) {
+            <app-post-card [author]="post.author || 'Institución'" [role]="post.role || 'Oficial'"
+                [time]="post.time || 'Ahora'" [title]="post.title" [content]="post.description" [badge]="post.type"
+                [image]="post.image" [avatar]="post.avatar" [category]="post.category" [details]="post.details"
+                [expirationDate]="post.expirationDate" />
+            }
+        </section>
+
+    </div>
+
+</main>

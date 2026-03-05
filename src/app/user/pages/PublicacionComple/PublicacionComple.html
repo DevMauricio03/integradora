@@ -1,1 +1,37 @@
-<p>PublicacionComple works!</p>,
+<div class="success-page">
+    <div class="success-icon-container">
+        <app-icon name="check-circle" [size]="48"></app-icon>
+        <app-icon name="plus-circle" [size]="20" class="confetti-icon"></app-icon>
+    </div>
+
+    <h1>¡Publicación creada con éxito!</h1>
+
+    <p class="success-description">
+        Tu publicación ya es visible para la comunidad. Puedes impulsarla ahora para obtener mayor alcance o hacerlo más
+        tarde desde tu perfil.
+    </p>
+
+    <div class="post-preview-card">
+        <div class="post-thumb">
+            <app-icon name="image" [size]="32"></app-icon>
+        </div>
+        <div class="post-info">
+            <div class="post-badge-row">
+                <span class="type-badge">EVENTO</span>
+                <span class="status-text">Recién publicado</span>
+            </div>
+            <h3>Hackathon Universitaria 2024</h3>
+            <span class="post-location">Auditorio B, Campus Central</span>
+        </div>
+    </div>
+
+    <div class="actions-row">
+        <button class="btn-impulso" (click)="irAImpulso()">
+            <app-icon name="rocket" [size]="18"></app-icon>
+            Impulsar ahora
+        </button>
+        <button class="btn-home" (click)="irAlInicio()">
+            Ir al inicio
+        </button>
+    </div>
+</div>

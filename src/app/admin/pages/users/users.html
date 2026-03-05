@@ -1,0 +1,118 @@
+<div class="users-page">
+    <div class="users-header">
+        <div class="header-text">
+            <h1>Moderación de usuarios</h1>
+            <p>usuarios registrados en la plataforma Tuunka.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-primario-sm">
+                <app-icon name="plus-circle" [size]="16"></app-icon>
+                Agregar usuario
+            </button>
+            <button class="btn-primario-sm btn-update">
+                <app-icon name="clock" [size]="16"></app-icon>
+                Actualizar
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtros y Buscador -->
+    <div class="filters-container">
+        <div class="select-filters">
+            <div class="custom-select">
+                <span>Rol : <strong>Todos</strong></span>
+                <app-icon name="chevron-down" [size]="14"></app-icon>
+            </div>
+            <div class="custom-select">
+                <span>Estado : <strong>Todos</strong></span>
+                <app-icon name="chevron-down" [size]="14"></app-icon>
+            </div>
+            <div class="custom-select">
+                <span>Universidad : <strong>Todos</strong></span>
+                <app-icon name="chevron-down" [size]="14"></app-icon>
+            </div>
+        </div>
+        <div class="search-box">
+            <app-icon name="search" [size]="18" class="search-icon"></app-icon>
+            <input type="text" placeholder="Buscar por ID, usuario o motivo..." class="search-input">
+            <button class="btn-refresh">
+                <app-icon name="clock" [size]="18"></app-icon>
+                Actualizar
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabla de Usuarios -->
+    <div class="users-card">
+        <div class="table-container">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>NOMBRE</th>
+                        <th>CORREO</th>
+                        <th>ROL</th>
+                        <th>UNIVERSIDAD</th>
+                        <th>ESTADO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="active-row clickable-row" (click)="abrirModal()">
+                        <td>
+                            <div class="user-cell">
+                                <img src="https://i.pravatar.cc/150?u=1" alt="Ana" class="user-avatar">
+                                <span class="user-name">Ana García</span>
+                            </div>
+                        </td>
+                        <td class="text-gray">ana.garcia@uni.edu</td>
+                        <td class="text-gray">Estudiante</td>
+                        <td class="text-gray">UNAM</td>
+                        <td><app-status-badge text="ACTIVO" type="active"></app-status-badge></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <img src="https://i.pravatar.cc/150?u=2" alt="Carlos" class="user-avatar">
+                                <span class="user-name">Carlos Mendoza</span>
+                            </div>
+                        </td>
+                        <td class="text-gray">carlos.m@uni.edu</td>
+                        <td class="text-gray">Docente</td>
+                        <td class="text-gray">IPN</td>
+                        <td><app-status-badge text="PENDIENTE" type="pending"></app-status-badge></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <img src="https://i.pravatar.cc/150?u=3" alt="Lucía" class="user-avatar">
+                                <span class="user-name">Lucía Fernandez</span>
+                            </div>
+                        </td>
+                        <td class="text-gray">l.fernandez@uni.edu</td>
+                        <td class="text-gray">Estudiante</td>
+                        <td class="text-gray">ITESM</td>
+                        <td><app-status-badge text="SUSPENDIDO" type="suspended"></app-status-badge></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <img src="https://i.pravatar.cc/150?u=4" alt="Roberto" class="user-avatar">
+                                <span class="user-name">Roberto Ruiz</span>
+                            </div>
+                        </td>
+                        <td class="text-gray">roberto.r@uni.edu</td>
+                        <td class="text-gray">Moderador</td>
+                        <td class="text-gray">UAM</td>
+                        <td><app-status-badge text="ACTIVO" type="active"></app-status-badge></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-footer">
+            <span>Mostrando 4 de 12,450 usuarios</span>
+        </div>
+    </div>
+</div>
+
+@if(mostrarModalUsuario()) {
+<app-usuario-detalle-modal (close)="cerrarModal()"></app-usuario-detalle-modal>
+}

@@ -1,14 +1,16 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import { ModalBase } from '../../../shared/components/modalBase/modalBase';
+import { StatusBadge } from '../../../shared/components/statusBadge/statusBadge';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-reporte-detalle-modal',
-  imports: [],
-  template: `<p>reporte-detalle-modal works!</p>`,
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
+  standalone: true,
+  imports: [ModalBase, StatusBadge, IconComponent],
+  templateUrl: './reporte-detalle-modal.html',
+  styleUrls: ['./reporte-detalle-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReporteDetalleModal { }
+export class ReporteDetalleModal {
+  @Output() close = new EventEmitter<void>();
+}

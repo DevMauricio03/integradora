@@ -182,7 +182,7 @@ export class CreatePostComponent {
     try {
       const postData = this.postModel();
       await this.postStore.addPost(postData);
-      this.router.navigate(['/user/feed']);
+      this.router.navigate(['/user/crear/exito']);
     } catch (err: any) {
       console.error('Error detallado al publicar:', err?.message || err);
       alert('Error al publicar: ' + (err?.message || 'Verifica la consola para más detalles'));

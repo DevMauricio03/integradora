@@ -1,0 +1,140 @@
+/* Extiende estilos globales de layout, si es necesario, importando layout */
+@import '../../../user/components/userLayout/userLayout.css';
+
+.admin-sidebar {
+    border-right: 1px solid var(--border-light);
+    width: 260px;
+    /* Tamaño del Figma */
+}
+
+.admin-sidebar li {
+    position: relative;
+    color: var(--text-secondary);
+}
+
+.admin-sidebar li:hover {
+    color: var(--text-main);
+}
+
+.admin-sidebar li.active {
+    background: rgba(19, 91, 236, 0.1) !important;
+    color: var(--primary) !important;
+}
+
+.admin-sidebar li.active app-icon {
+    color: var(--primary) !important;
+}
+
+.nav-badge {
+    margin-left: auto;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 6px;
+}
+
+.nav-badge.alert {
+    background: #FEE2E2;
+    color: #EF4444;
+}
+
+.logout {
+    color: var(--text-secondary);
+}
+
+.logout:hover {
+    color: #EF4444;
+}
+
+.logout:hover app-icon {
+    color: #EF4444 !important;
+}
+
+/* Redefinir container contenido si tiene padding diferente en Figma admin */
+.admin-contenido {
+    padding: 40px;
+    /* max-width se rige por appLayout normal */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar Top Center Title */
+.admin-top-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-main);
+}
+
+/* Navbar Top Right Profile */
+.right-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.admin-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.admin-role {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.admin-footer {
+    margin-top: auto;
+    padding-top: 40px;
+    padding-bottom: 0px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Media Queries for Admin */
+@media (max-width: 1024px) {
+    .admin-sidebar {
+        width: 220px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-sidebar {
+        display: none;
+    }
+
+    .admin-contenido {
+        padding: 20px 16px;
+    }
+
+    .admin-info {
+        display: none;
+    }
+
+    .admin-top-title {
+        font-size: 14px;
+        white-space: normal;
+    }
+}

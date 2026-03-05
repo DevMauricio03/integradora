@@ -1,0 +1,48 @@
+<app-navbar>
+    <div navbar-center class="admin-top-title">{{ getTitle() }}</div>
+    <div navbar-right class="right-content">
+        <div class="admin-profile">
+            <img src="https://ui-avatars.com/api/?name=Admin&background=135BEC&color=fff" alt="Admin" class="avatar">
+            <div class="admin-info">
+                <span class="admin-name">Administrador</span>
+                <span class="admin-role">Super Admin</span>
+            </div>
+        </div>
+    </div>
+</app-navbar>
+
+<div class="layout">
+    <aside class="sidebar admin-sidebar">
+        <nav>
+            <ul>
+                <li routerLink="/admin/dashboard" routerLinkActive="active">
+                    <app-icon name="home"></app-icon>
+                    <span>Inicio</span>
+                </li>
+                <li routerLink="/admin/users" routerLinkActive="active">
+                    <app-icon name="users"></app-icon>
+                    <span>Usuarios</span>
+                </li>
+                <li routerLink="/admin/publications" routerLinkActive="active">
+                    <app-icon name="file-text"></app-icon>
+                    <span>Publicaciones</span>
+                </li>
+                <li routerLink="/admin/reports" routerLinkActive="active">
+                    <app-icon name="alert-triangle"></app-icon>
+                    <span>Reportes</span>
+                </li>
+                <li class="config-item logout">
+                    <app-icon name="log-out"></app-icon>
+                    <span>Cerrar sesión</span>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="contenido admin-contenido">
+        <router-outlet></router-outlet>
+        <footer class="admin-footer">
+            © 2026 Tuunka. Todos los derechos reservados.
+        </footer>
+    </main>
+</div>

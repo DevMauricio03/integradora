@@ -1,0 +1,210 @@
+/* Header */
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: -10px 0 24px 0;
+}
+
+/* User Profile Head */
+.user-profile-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.profile-lg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 12px;
+    border: 2px solid transparent;
+}
+
+.user-profile-head h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.role-text {
+    font-size: 14px;
+    color: var(--primary);
+    font-weight: 500;
+    margin: 4px 0 12px 0;
+}
+
+.badges-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.custom-badge-verified {
+    background: #F3F4F6;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+/* Details Section */
+.details-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-item label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.detail-item p {
+    font-size: 14px;
+    color: var(--text-main);
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Activity Section */
+.activity-section {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+    display: block;
+    margin-bottom: 12px;
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.activity-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.activity-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    margin-top: 6px;
+}
+
+.activity-text p {
+    font-size: 13px;
+    color: var(--text-main);
+    font-weight: 500;
+    margin: 0 0 2px 0;
+}
+
+.activity-text small {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Actions Group */
+.actions-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.action-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #F9FAFB;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: #F3F4F6;
+}
+
+.action-btn.danger {
+    color: #EF4444;
+}
+
+.action-btn.danger:hover {
+    background: #FEF2F2;
+    border-color: #FEE2E2;
+}
+
+.action-btn app-icon {
+    display: flex;
+    align-items: center;
+}
+
+/* Footer Actions */
+.modal-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    border-top: 1px solid var(--border-light);
+    padding-top: 24px;
+}
+
+.btn-cancel {
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 10px 16px;
+}
+
+.btn-cancel:hover {
+    color: var(--text-secondary);
+}
+
+.btn-primario {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-primario:hover {
+    opacity: 0.9;
+}

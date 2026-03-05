@@ -1,0 +1,267 @@
+/* Header */
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: -10px 0 24px 0;
+}
+
+/* Alert Status */
+.report-status-alert {
+    background: #F0F7FF;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--primary);
+    margin-bottom: 32px;
+}
+
+.alert-texts {
+    display: flex;
+    flex-direction: column;
+}
+
+.alert-texts strong {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.alert-texts span {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Generic Section Label */
+.section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 12px;
+}
+
+/* Reason Section */
+.reason-section {
+    margin-bottom: 32px;
+}
+
+.reason-content h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 8px 0;
+}
+
+.reason-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.reporter-info {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot-separator {
+    opacity: 0.5;
+}
+
+/* Preview Section */
+.preview-section {
+    margin-bottom: 32px;
+}
+
+.content-preview-card {
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.author-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.mini-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    opacity: 0.8;
+}
+
+.author-meta {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.user-handle {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.post-time {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.post-body h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: var(--text-main);
+}
+
+.post-body p {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0 0 8px 0;
+}
+
+.post-link {
+    color: var(--primary);
+    font-size: 13px;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.post-image-placeholder {
+    width: 100%;
+    height: 140px;
+    background: #F9FAFB;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-icon {
+    color: #D1D5DB;
+}
+
+/* User Profile Head (Same as User Modal) */
+.user-profile-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.profile-lg {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 12px;
+}
+
+.user-profile-head h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.role-text {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 500;
+    margin: 4px 0 12px 0;
+}
+
+.badges-row {
+    display: flex;
+    gap: 8px;
+}
+
+.custom-badge-verified {
+    background: #F3F4F6;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+/* Actions */
+.actions-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.action-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #F9FAFB;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.action-btn.danger {
+    color: #EF4444;
+}
+
+.action-btn:hover {
+    background: #F3F4F6;
+}
+
+.action-btn.danger:hover {
+    background: #FEF2F2;
+    border-color: #FEE2E2;
+}
+
+/* Footer Actions */
+.modal-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    border-top: 1px solid var(--border-light);
+    padding-top: 24px;
+}
+
+.btn-cancel {
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.btn-primario {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}

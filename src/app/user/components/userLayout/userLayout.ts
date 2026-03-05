@@ -19,7 +19,7 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
   templateUrl: './userLayout.html',
   styleUrl: './userLayout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  
+
 })
 export class UserLayoutComponent {
 
@@ -28,6 +28,8 @@ export class UserLayoutComponent {
 
   title = signal('');
   showCreateButton = signal(false);
+  showSearch = signal(true);
+  centerTitle = signal(false);
 
   constructor() {
     this.router.events
@@ -38,6 +40,8 @@ export class UserLayoutComponent {
 
         this.title.set(data['title'] || '');
         this.showCreateButton.set(data['showCreateButton'] || false);
+        this.showSearch.set(data['hideSearch'] !== true);
+        this.centerTitle.set(data['centerTitle'] === true);
       });
   }
 
@@ -47,7 +51,7 @@ export class UserLayoutComponent {
     }
     return route;
   }
-goToCreate() {
-  this.router.navigate(['/user/crear']);
-}
+  goToCreate() {
+    this.router.navigate(['/user/crear']);
+  }
 }

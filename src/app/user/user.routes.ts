@@ -9,36 +9,55 @@ export const USER_ROUTES: Routes = [
     component: UserLayoutComponent,
     children: [
       {
-      path: 'feed',
-      loadComponent: () =>
-        import('./pages/feed/feed').then(m => m.Feed),
-      data: { title: 'Inicio',showCreateButton: true }
-    },
-    {
-      path: 'perfil',
-      loadComponent: () =>
-        import('./pages/perfil/perfil').then(m => m.PerfilPublicoPage),
-      data: { title: 'Perfil', showCreateButton: true }
-    },
-    
-    {
-    path: 'perfil/editar',
-    component: EditarPerfilPage,
-    canActivate: [AuthGuard]
-  },
-  {
-      path: 'experiencias',
-      loadComponent: () =>
-        import('./pages/experiencias/experiencias').then(m => m.Experiencias),
-      data: { title: 'Experiencias Empresariales', showCreateButton: true }
-    },
-    {
-  path: 'crear',
-  loadComponent: () =>
-    import('../shared/components/create-post/create-post.component')
-      .then(m => m.CreatePostComponent),
-  data: { title: 'Nueva Publicación' }
-},
+        path: 'feed',
+        loadComponent: () =>
+          import('./pages/feed/feed').then(m => m.Feed),
+        data: { title: 'Inicio', showCreateButton: true }
+      },
+      {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./pages/perfil/perfil').then(m => m.PerfilPublicoPage),
+        data: { title: 'Perfil', showCreateButton: true, hideSearch: true, centerTitle: true }
+      },
+
+      {
+        path: 'perfil/editar',
+        component: EditarPerfilPage,
+        canActivate: [AuthGuard],
+        data: { title: 'Editar Perfil', hideSearch: true, centerTitle: true }
+      },
+      {
+        path: 'experiencias',
+        loadComponent: () =>
+          import('./pages/experiencias/experiencias').then(m => m.Experiencias),
+        data: { title: 'Experiencias Empresariales', showCreateButton: true }
+      },
+      {
+        path: 'experiencias/:id',
+        loadComponent: () =>
+          import('./pages/experienciasCompletas/experienciasCompletas').then(m => m.ExperienciasCompletas),
+        data: { title: 'Detalle de Experiencia', hideSearch: true, centerTitle: true }
+      },
+      {
+        path: 'avisos',
+        loadComponent: () =>
+          import('./pages/avisos-oficiales/avisos-oficiales').then(m => m.AvisosOficiales),
+        data: { title: 'Avisos Oficiales', showCreateButton: true }
+      },
+      {
+        path: 'crear',
+        loadComponent: () =>
+          import('../shared/components/create-post/create-post.component')
+            .then(m => m.CreatePostComponent),
+        data: { title: 'Nueva Publicación', hideSearch: true, centerTitle: true }
+      },
+      {
+        path: 'crear/exito',
+        loadComponent: () =>
+          import('./pages/PublicacionComple/PublicacionComple').then(m => m.PublicacionComple),
+        data: { title: 'Publicado', hideSearch: true }
+      },
       {
         path: '',
         redirectTo: 'feed',

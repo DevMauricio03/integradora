@@ -75,7 +75,8 @@
     <div class="contenedor-ilustracion">
       <div class="">
         <!-- Aquí puedes colocar tu imagen -->
-        <img src="assets/campus-image.jpg" alt="Estudiantes" />
+        <img src="https://cdn.milenio.com/uploads/media/2022/09/29/despues-de-dos-anos-de_0_53_1200_747.jpg"
+          alt="Estudiantes" />
       </div>
       <p class="leyenda-ilustracion">
         Conectando campus en todo el mundo.
@@ -124,7 +125,7 @@
           <span>Ayuda</span>
         </div>
 
-        <div class="tarjeta-enlace">
+        <div class="tarjeta-enlace" (click)="abrirAcercaDe()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="#8B5CF6" stroke-width="2" />
             <path d="M12 16V12" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" />
@@ -157,4 +158,41 @@
 <!-- MODAL AVISO DE PRIVACIDAD -->
 @if (mostrarAviso()) {
 <app-avisos-legales (closed)="cerrarAviso()"></app-avisos-legales>
+}
+
+<!-- MODAL ACERCA DE -->
+@if (mostrarAcercaDe()) {
+<div class="modal-overlay" (click)="cerrarAcercaDe()">
+  <div class="modal-contenido" (click)="$event.stopPropagation()">
+    <div class="modal-encabezado">
+      <h3 class="modal-titulo">Acerca de Tuunka</h3>
+      <button class="boton-cerrar" (click)="cerrarAcercaDe()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-cuerpo">
+      <div class="logo-modal">
+        <div class="icono-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3L1 9L12 15L21 10.09V17H23V9L12 3ZM5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
+              fill="white" />
+          </svg>
+        </div>
+        <span class="texto-logo">Tuunka</span>
+      </div>
+      <p class="version">Versión 1.0.0 (Beta)</p>
+      <p class="descripcion-modal">
+        Tuunka es la plataforma digital de próxima generación diseñada para transformar y simplificar tu vida
+        universitaria. Conecta, organiza y descubre todo lo que tu campus tiene para ofrecer.
+      </p>
+      <div class="creditos">
+        <p>Desarrollado con ❤️ por el equipo de Tuunka.</p>
+        <p>© 2024. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </div>
+</div>
 }
