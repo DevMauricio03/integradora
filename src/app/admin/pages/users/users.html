@@ -9,7 +9,7 @@
                 <app-icon name="plus-circle" [size]="16"></app-icon>
                 Agregar usuario
             </button>
-            <button class="btn-primario-sm btn-update">
+            <button class="btn-primario-sm btn-update" (click)="cargarUsuarios()" [disabled]="isLoading()">
                 <app-icon name="clock" [size]="16"></app-icon>
                 Actualizar
             </button>
@@ -19,23 +19,40 @@
     <!-- Filtros y Buscador -->
     <div class="filters-container">
         <div class="select-filters">
-            <div class="custom-select">
-                <span>Rol : <strong>Todos</strong></span>
+            <div class="custom-select-wrapper">
+                <select class="custom-select" [value]="selectedRol()" (change)="onRolChange($event)">
+                    <option value="">Rol: Todos</option>
+                    <option value="alumno">Rol: Alumno</option>
+                    <option value="admin">Rol: Admin</option>
+                </select>
                 <app-icon name="chevron-down" [size]="14"></app-icon>
             </div>
-            <div class="custom-select">
-                <span>Estado : <strong>Todos</strong></span>
+
+            <div class="custom-select-wrapper">
+                <select class="custom-select" [value]="selectedStatus()" (change)="onStatusChange($event)">
+                    <option value="">Estado: Todos</option>
+                    <option value="activo">Estado: Activo</option>
+                    <option value="pendiente">Estado: Pendiente</option>
+                    <option value="suspendido">Estado: Suspendido</option>
+                </select>
                 <app-icon name="chevron-down" [size]="14"></app-icon>
             </div>
-            <div class="custom-select">
-                <span>Universidad : <strong>Todos</strong></span>
+
+            <div class="custom-select-wrapper">
+                <select class="custom-select" [value]="selectedUniversidad()" (change)="onUniChange($event)">
+                    <option value="">Universidad: Todas</option>
+                    @for (uni of universidades(); track uni.id) {
+                    <option [value]="uni.acronimo">Universidad: {{ uni.acronimo }}</option>
+                    }
+                </select>
                 <app-icon name="chevron-down" [size]="14"></app-icon>
             </div>
         </div>
         <div class="search-box">
             <app-icon name="search" [size]="18" class="search-icon"></app-icon>
-            <input type="text" placeholder="Buscar por ID, usuario o motivo..." class="search-input">
-            <button class="btn-refresh">
+            <input type="text" placeholder="Buscar por nombre, correo..." class="search-input" [value]="searchTerm()"
+                (input)="onSearchInput($event)" (keyup)="onSearchKeyup($event)">
+            <button class="btn-refresh" (click)="cargarUsuarios()" [disabled]="isLoading()">
                 <app-icon name="clock" [size]="18"></app-icon>
                 Actualizar
             </button>
@@ -56,63 +73,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="active-row clickable-row" (click)="abrirModal()">
+                    @if (isLoading()) {
+                    <tr>
+                        <td colspan="5" class="text-center text-gray" style="padding: 30px;">Cargando usuarios...</td>
+                    </tr>
+                    } @else {
+                    @for(user of filteredUsuarios(); track user.id) {
+                    <tr class="clickable-row" (click)="abrirModal(user)">
                         <td>
                             <div class="user-cell">
-                                <img src="https://i.pravatar.cc/150?u=1" alt="Ana" class="user-avatar">
-                                <span class="user-name">Ana García</span>
+                                <img [src]="user.foto_url || 'https://ui-avatars.com/api/?name=' + user.nombre + '&background=random&color=fff'"
+                                    alt="Avatar" class="user-avatar">
+                                <span class="user-name">{{ user.nombre }} {{ user.apellidos }}</span>
                             </div>
                         </td>
-                        <td class="text-gray">ana.garcia@uni.edu</td>
-                        <td class="text-gray">Estudiante</td>
-                        <td class="text-gray">UNAM</td>
+                        <td class="text-gray">{{ user.correoInstitucional }}</td>
+                        <td class="text-gray">{{ user.roles?.nombre || 'Alumno' }}</td>
+                        <td class="text-gray">{{ user.universidades?.acronimo || 'N/A' }}</td>
                         <td><app-status-badge text="ACTIVO" type="active"></app-status-badge></td>
                     </tr>
+                    }
+
+                    @if (filteredUsuarios().length === 0) {
                     <tr>
-                        <td>
-                            <div class="user-cell">
-                                <img src="https://i.pravatar.cc/150?u=2" alt="Carlos" class="user-avatar">
-                                <span class="user-name">Carlos Mendoza</span>
-                            </div>
+                        <td colspan="5" class="text-center text-gray" style="padding: 30px;">
+                            No se encontraron usuarios con esta búsqueda.
                         </td>
-                        <td class="text-gray">carlos.m@uni.edu</td>
-                        <td class="text-gray">Docente</td>
-                        <td class="text-gray">IPN</td>
-                        <td><app-status-badge text="PENDIENTE" type="pending"></app-status-badge></td>
                     </tr>
-                    <tr>
-                        <td>
-                            <div class="user-cell">
-                                <img src="https://i.pravatar.cc/150?u=3" alt="Lucía" class="user-avatar">
-                                <span class="user-name">Lucía Fernandez</span>
-                            </div>
-                        </td>
-                        <td class="text-gray">l.fernandez@uni.edu</td>
-                        <td class="text-gray">Estudiante</td>
-                        <td class="text-gray">ITESM</td>
-                        <td><app-status-badge text="SUSPENDIDO" type="suspended"></app-status-badge></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="user-cell">
-                                <img src="https://i.pravatar.cc/150?u=4" alt="Roberto" class="user-avatar">
-                                <span class="user-name">Roberto Ruiz</span>
-                            </div>
-                        </td>
-                        <td class="text-gray">roberto.r@uni.edu</td>
-                        <td class="text-gray">Moderador</td>
-                        <td class="text-gray">UAM</td>
-                        <td><app-status-badge text="ACTIVO" type="active"></app-status-badge></td>
-                    </tr>
+                    }
+                    }
                 </tbody>
             </table>
         </div>
         <div class="table-footer">
-            <span>Mostrando 4 de 12,450 usuarios</span>
+            <span>Mostrando {{ filteredUsuarios().length }} usuarios en total</span>
         </div>
     </div>
 </div>
 
 @if(mostrarModalUsuario()) {
-<app-usuario-detalle-modal (close)="cerrarModal()"></app-usuario-detalle-modal>
+<app-usuario-detalle-modal [usuario]="usuarioSeleccionado()" (close)="cerrarModal()"></app-usuario-detalle-modal>
 }

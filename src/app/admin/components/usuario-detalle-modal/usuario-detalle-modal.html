@@ -1,13 +1,14 @@
 <app-modal-base ancho="550px" [mostrarCerrar]="true" (close)="close.emit()">
-    <div class="modal-content-wrapper">
+    <div class="modal-content-wrapper" *ngIf="usuario">
         <div class="modal-header">
             <h2>Detalle de Usuario</h2>
         </div>
 
         <div class="user-profile-head">
-            <img src="https://i.pravatar.cc/150?u=1" alt="Ana García" class="profile-lg">
-            <h3>Ana García</h3>
-            <p class="role-text">Estudiante de Ingeniería</p>
+            <img [src]="usuario.foto_url || 'https://ui-avatars.com/api/?name=' + usuario.nombre + '&background=random&color=fff'"
+                [alt]="usuario.nombre" class="profile-lg">
+            <h3>{{ usuario.nombre }} {{ usuario.apellidos }}</h3>
+            <p class="role-text">{{ usuario.roles?.nombre || 'Alumno' }}</p>
             <div class="badges-row">
                 <app-status-badge text="ACTIVO" type="active"></app-status-badge>
                 <div class="custom-badge-verified">VERIFICADO</div>
@@ -17,33 +18,30 @@
         <div class="details-section">
             <div class="detail-item">
                 <label>CORREO ELECTRÓNICO</label>
-                <p>ana.garcia@uni.edu</p>
+                <p>{{ usuario.correoInstitucional }}</p>
             </div>
             <div class="detail-item">
                 <label>UNIVERSIDAD</label>
-                <p>Universidad Nacional Autónoma (UNAM)</p>
+                <p>{{ usuario.universidades?.acronimo || 'N/A' }}</p>
             </div>
             <div class="detail-item">
                 <label>FECHA DE REGISTRO</label>
-                <p>12 Octubre, 2023</p>
+                <p>{{ formatDate(usuario.creado) }}</p>
             </div>
         </div>
 
+        <!-- 
+            Nota: El historial de actividad se deja estático por ahora ya que no hay tabla de logs de actividad 
+            en Supabase aún, pero se integra visualmente.
+        -->
         <div class="activity-section">
             <label class="section-title">Historial de Actividad</label>
             <div class="activity-list">
                 <div class="activity-item">
                     <span class="activity-dot"></span>
                     <div class="activity-text">
-                        <p>Publicó "Guía de Álgebra Lineal"</p>
-                        <small>Hace 2 horas</small>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <span class="activity-dot"></span>
-                    <div class="activity-text">
-                        <p>Cambio de foto de perfil</p>
-                        <small>Ayer, 10:15 AM</small>
+                        <p>Inició sesión recientemente</p>
+                        <small>Reciente</small>
                     </div>
                 </div>
             </div>
@@ -62,8 +60,8 @@
         </div>
 
         <div class="modal-footer-actions">
-            <button class="btn-cancel" (click)="close.emit()">Cancelar</button>
-            <button class="btn-primario">Guardar</button>
+            <button class="btn-cancel" (click)="close.emit()">Cerrar</button>
+            <button class="btn-primario">Actualizar información</button>
         </div>
     </div>
 </app-modal-base>

@@ -291,6 +291,35 @@
     background: #059669;
 }
 
+.empty-state-sm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px 16px;
+    background: white;
+    border: 1px dashed var(--border-light);
+    border-radius: 8px;
+    gap: 12px;
+}
+
+.empty-state-sm p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.icon-circle.bg-green-light {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #ECFDF5;
+}
+
 /* Table Section */
 .table-card {
     padding: 0;

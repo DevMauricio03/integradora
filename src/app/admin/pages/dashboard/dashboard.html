@@ -26,18 +26,19 @@
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
                 </div>
-                <div class="stat-badge positive">
+                <div class="stat-badge" [ngClass]="usersTrend() >= 0 ? 'positive' : 'negative'">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
+                        stroke-linecap="round" stroke-linejoin="round"
+                        [style.transform]="usersTrend() >= 0 ? '' : 'scaleY(-1)'">
                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                         <polyline points="17 6 23 6 23 12"></polyline>
                     </svg>
-                    +5%
+                    {{ usersTrend() > 0 ? '+' : '' }}{{ usersTrend() }}%
                 </div>
             </div>
             <div class="stat-info">
                 <h3>Usuarios Totales</h3>
-                <p class="stat-value">12,450</p>
+                <p class="stat-value">{{ totalUsers() }}</p>
             </div>
         </div>
 
@@ -54,18 +55,19 @@
                         <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
                 </div>
-                <div class="stat-badge positive">
+                <div class="stat-badge" [ngClass]="postsTrend() >= 0 ? 'positive' : 'negative'">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
+                        stroke-linecap="round" stroke-linejoin="round"
+                        [style.transform]="postsTrend() >= 0 ? '' : 'scaleY(-1)'">
                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                         <polyline points="17 6 23 6 23 12"></polyline>
                     </svg>
-                    +12%
+                    {{ postsTrend() > 0 ? '+' : '' }}{{ postsTrend() }}%
                 </div>
             </div>
             <div class="stat-info">
                 <h3>Posts Activos</h3>
-                <p class="stat-value">843</p>
+                <p class="stat-value">{{ activePosts() }}</p>
             </div>
         </div>
 
@@ -82,19 +84,20 @@
                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
                     </svg>
                 </div>
-                <div class="stat-badge positive">
+                <div class="stat-badge" [ngClass]="reportsTrend() >= 0 ? 'positive' : 'negative'">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(90deg);">
+                        stroke-linecap="round" stroke-linejoin="round"
+                        [style.transform]="reportsTrend() >= 0 ? '' : 'scaleY(-1)'">
                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                         <polyline points="17 6 23 6 23 12"></polyline>
                     </svg>
-                    -3%
+                    {{ reportsTrend() > 0 ? '+' : '' }}{{ reportsTrend() }}%
                 </div>
             </div>
             <div class="stat-info">
                 <h3>Reportes Pendientes</h3>
                 <div class="stat-value-group">
-                    <p class="stat-value">15</p>
+                    <p class="stat-value">{{ pendingReports() }}</p>
                     <span class="stat-subtext">Requieren atención</span>
                 </div>
             </div>
@@ -130,18 +133,16 @@
                             <stop offset="100%" stop-color="rgba(19, 91, 236, 0)" />
                         </linearGradient>
                     </defs>
-                    <path d="M0,120 Q50,90 100,60 T200,80 T300,30 T400,40 T500,20 L500,150 L0,150 Z"
-                        fill="url(#chart-fill)" />
+                    <path [attr.d]="chartPathFill()" fill="url(#chart-fill)" />
                     <!-- Line -->
-                    <path d="M0,120 Q50,90 100,60 T200,80 T300,30 T400,40 T500,20" fill="none" stroke="#135BEC"
-                        stroke-width="3" stroke-linecap="round" />
+                    <path [attr.d]="chartPathLine()" fill="none" stroke="#135BEC" stroke-width="3"
+                        stroke-linecap="round" />
                 </svg>
                 <div class="chart-x-axis">
-                    <span>1 Nov</span>
-                    <span>8 Nov</span>
-                    <span>15 Nov</span>
-                    <span>22 Nov</span>
-                    <span>29 Nov</span>
+                    <!-- Iteración dinámica de las de la gráfica -->
+                    @for (label of chartLabels(); track $index) {
+                    <span>{{ label }}</span>
+                    }
                 </div>
             </div>
         </div>
@@ -155,31 +156,28 @@
                 </h2>
             </div>
             <div class="mod-list">
-                <!-- Item 1 -->
+                @for(mod of quickModeration(); track mod.id) {
                 <div class="mod-item">
                     <div class="mod-item-header">
-                        <app-status-badge text="Spam" type="spam"></app-status-badge>
-                        <span class="mod-time">Hace 2h</span>
+                        <app-status-badge [text]="mod.tipo || 'Reporte'" type="spam"></app-status-badge>
+                        <span class="mod-time">Reciente</span>
                     </div>
-                    <p class="mod-text"><strong>Reporte #402 - Venta no...</strong></p>
+                    <p class="mod-text"><strong>{{ mod.titulo }}</strong></p>
                     <div class="mod-actions">
                         <button class="btn-outline">Ignorar</button>
                         <button class="btn-solid-blue">Revisar</button>
                     </div>
                 </div>
+                }
 
-                <!-- Item 2 -->
-                <div class="mod-item">
-                    <div class="mod-item-header">
-                        <app-status-badge text="Solicitud Grupo" type="group"></app-status-badge>
-                        <span class="mod-time">Hace 5h</span>
+                @if(quickModeration().length === 0) {
+                <div class="empty-state-sm">
+                    <div class="icon-circle bg-green-light">
+                        <app-icon name="check" [size]="28" color="#10B981"></app-icon>
                     </div>
-                    <p class="mod-text"><strong>Club de Robótica</strong></p>
-                    <div class="mod-actions">
-                        <button class="btn-outline">Rechazar</button>
-                        <button class="btn-solid-green">Aprobar</button>
-                    </div>
+                    <p>No hay alertas. Todo está al día.</p>
                 </div>
+                }
             </div>
         </div>
     </div>
@@ -206,55 +204,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="active-row">
+                    @for (user of recentUsers(); track user.correoInstitucional) {
+                    <tr>
                         <td>
                             <div class="user-cell">
-                                <img src="https://i.pravatar.cc/150?u=1" alt="Ana" class="user-avatar">
-                                <span class="user-name">Ana García</span>
+                                <img [src]="user.foto_url || 'https://ui-avatars.com/api/?name=' + user.nombre + '&background=random&color=fff'"
+                                    alt="Avatar" class="user-avatar">
+                                <span class="user-name">{{ user.nombre }} {{ user.apellidos }}</span>
                             </div>
                         </td>
-                        <td class="text-gray">ana.garcia@uni.edu</td>
-                        <td class="text-gray">Estudiante</td>
-                        <td class="text-gray">UNAM</td>
+                        <td class="text-gray">{{ user.correoInstitucional }}</td>
+                        <td class="text-gray">{{ user.roles?.nombre || 'Estudiante' }}</td>
+                        <td class="text-gray">{{ user.universidades?.acronimo || 'N/A' }}</td>
+                        <!-- Por simplicidad todos los mostramos como activos hasta añadir campo de estado de baneo -->
                         <td><app-status-badge text="ACTIVO" type="active"></app-status-badge></td>
                     </tr>
+                    }
+                    @if (recentUsers().length === 0) {
                     <tr>
-                        <td>
-                            <div class="user-cell">
-                                <img src="https://i.pravatar.cc/150?u=2" alt="Carlos" class="user-avatar">
-                                <span class="user-name">Carlos Mendoza</span>
-                            </div>
+                        <td colspan="5" class="text-center text-gray" style="padding: 20px;">No hay usuarios recientes
                         </td>
-                        <td class="text-gray">carlos.m@uni.edu</td>
-                        <td class="text-gray">Docente</td>
-                        <td class="text-gray">IPN</td>
-                        <td><app-status-badge text="PENDIENTE" type="pending"></app-status-badge></td>
                     </tr>
-                    <tr>
-                        <td>
-                            <div class="user-cell">
-                                <img src="https://i.pravatar.cc/150?u=3" alt="Lucía" class="user-avatar">
-                                <span class="user-name">Lucía Fernandez</span>
-                            </div>
-                        </td>
-                        <td class="text-gray">l.fernandez@uni.edu</td>
-                        <td class="text-gray">Estudiante</td>
-                        <td class="text-gray">ITESM</td>
-                        <td><app-status-badge text="SUSPENDIDO" type="suspended"></app-status-badge></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="user-cell">
-                                <img src="https://i.pravatar.cc/150?u=4" alt="Roberto" class="user-avatar"
-                                    style="filter: sepia(1);">
-                                <span class="user-name">Roberto Ruiz</span>
-                            </div>
-                        </td>
-                        <td class="text-gray">roberto.r@uni.edu</td>
-                        <td class="text-gray">Moderador</td>
-                        <td class="text-gray">UAM</td>
-                        <td><app-status-badge text="ACTIVO" type="active"></app-status-badge></td>
-                    </tr>
+                    }
                 </tbody>
             </table>
         </div>
