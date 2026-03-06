@@ -1,8 +1,9 @@
 <!-- NAVBAR REUTILIZABLE -->
 <app-navbar title="Inicia Sesión">
-  <span navbar-right class="navbar-help" routerLink="/auth/soporte" style="cursor: pointer;">
+  <button type="button" navbar-right class="navbar-help" routerLink="/auth/soporte"
+    style="cursor: pointer; background: none; border: none; font: inherit; color: inherit; padding: 0;">
     ¿Necesitas ayuda?
-  </span>
+  </button>
 </app-navbar>
 
 <!-- CONTENEDOR PRINCIPAL -->
@@ -36,7 +37,7 @@
 
       <!-- EMAIL -->
       <div class="grupo-formulario">
-        <label>Correo electrónico institucional</label>
+        <label for="loginEmail">Correo electrónico institucional</label>
 
         <div class="contenedor-input">
 
@@ -45,7 +46,8 @@
             <path d="M4 4L12 13L20 4" stroke="var(--text-muted)" stroke-width="2" />
           </svg>
 
-          <input type="email" placeholder="nombre.apellido@universidad.edu.com" [formField]="loginForm.email" />
+          <input id="loginEmail" type="email" placeholder="nombre.apellido@universidad.edu.com"
+            [formField]="loginForm.email" />
 
         </div>
         @if (loginForm.email().touched() && loginForm.email().invalid()) {
@@ -58,7 +60,7 @@
 
       <!-- PASSWORD -->
       <div class="grupo-formulario">
-        <label>Contraseña</label>
+        <label for="loginPass">Contraseña</label>
 
         <div class="contenedor-input">
 
@@ -67,7 +69,7 @@
             <path d="M7 11V7A5 5 0 0 1 17 7V11" stroke="var(--text-muted)" stroke-width="2" />
           </svg>
 
-          <input [type]="mostrarPassword() ? 'text' : 'password'" placeholder="••••••••"
+          <input id="loginPass" [type]="mostrarPassword() ? 'text' : 'password'" placeholder="••••••••"
             [formField]="loginForm.password" />
 
           <button type="button" class="boton-ojo" (click)="mostrarPassword.set(!mostrarPassword())">
@@ -98,11 +100,18 @@
         }
       </div>
 
+      <!-- ERROR GENERAL O SUSPENSIÓN -->
+      @if (errorMensaje() && !errorMensaje().includes('correo') && !errorMensaje().includes('contraseña')) {
+      <div class="error-global">
+        {{ errorMensaje() }}
+      </div>
+      }
+
       <!-- ACTION ROW -->
       <div class="fila-acciones">
 
-        <label class="recordarme">
-          <input type="checkbox" [formField]="loginForm.recordarme" />
+        <label class="recordarme" for="loginRecordar">
+          <input id="loginRecordar" type="checkbox" [formField]="loginForm.recordarme" />
           Recordarme
         </label>
 

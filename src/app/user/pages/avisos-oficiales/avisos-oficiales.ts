@@ -13,7 +13,7 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AvisosOficiales implements OnInit {
-    private postStore = inject(PostStoreService);
+    private readonly postStore = inject(PostStoreService);
 
     // Filtramos los posts para mostrar solo los de tipo aviso oficial
     posts = computed(() =>

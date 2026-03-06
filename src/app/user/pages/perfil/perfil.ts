@@ -18,9 +18,9 @@ import { PostSkeletonComponent } from '../../../shared/components/post-skeleton/
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PerfilPublicoPage implements OnInit {
-  private supabaseService = inject(SupabaseService);
-  private postStore = inject(PostStoreService);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly supabaseService = inject(SupabaseService);
+  private readonly postStore = inject(PostStoreService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   public perfil: any;
   cargando = true;
@@ -39,12 +39,14 @@ export class PerfilPublicoPage implements OnInit {
     );
   });
 
-  async ngOnInit() {
+  ngOnInit() {
+    this.loadPerfil();
+  }
+
+  private async loadPerfil() {
     try {
       this.perfil = await this.supabaseService.getPerfilActual();
-      // Aseguramos que los posts se carguen después de tener el perfil
       await this.postStore.loadPosts();
-
       this.cdr.markForCheck();
     } catch (e) {
       console.error('Error en ngOnInit Perfil:', e);

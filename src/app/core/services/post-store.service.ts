@@ -1,5 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
+import { Post as PostDB, Anuncio } from '../models/supabase.models';
 
 export interface Post {
   id: string;
@@ -9,6 +10,7 @@ export interface Post {
   category: string;
   expirationDate?: string;
   image?: string;
+  images?: string[];
   author: string;
   authorId: string;
   authorCarreraId?: string;
@@ -18,49 +20,94 @@ export interface Post {
   avatar?: string;
   // Dynamic fields
   details?: any;
+  status: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostStoreService {
-  private supabase = inject(SupabaseService);
+  private readonly supabase = inject(SupabaseService);
 
-  private _posts = signal<Post[]>([]);
+  private readonly _posts = signal<Post[]>([]);
   public posts = this._posts.asReadonly();
 
-  private _isLoading = signal<boolean>(false);
+  private readonly _isLoading = signal<boolean>(false);
   public isLoading = this._isLoading.asReadonly();
 
   async loadPosts() {
     this._isLoading.set(true);
-    const { data, error } = await this.supabase.getPosts();
 
-    if (error) {
-      console.error('Error al cargar posts:', error);
-      return;
+    // Ejecutar ambas promesas en paralelo
+    const [postsRes, anunciosRes] = await Promise.all([
+      this.supabase.getPosts(),
+      this.supabase.getAnuncios()
+    ]);
+
+    if (postsRes.error) {
+      console.error('Error al cargar posts:', postsRes.error);
+    }
+    if (anunciosRes.error) {
+      console.error('Error al cargar anuncios:', anunciosRes.error);
     }
 
-    if (data) {
-      const formattedPosts: Post[] = data.map((p: any) => ({
-        id: p.id,
-        title: p.titulo,
-        description: p.descripcion,
-        type: p.tipo,
-        category: p.categoria || 'General',
-        expirationDate: undefined,
-        image: p.imagen_url,
-        author: `${p.perfiles?.nombre} ${p.perfiles?.apellidos}`,
-        authorId: p.autor_id,
-        authorCarreraId: p.perfiles?.carrera_id,
-        role: p.perfiles?.roles?.nombre || 'Miembro',
-        time: this.formatTime(p.creado),
-        rawDate: new Date(p.creado),
-        avatar: p.perfiles?.foto_url,
-        details: p.detalles // Assuming a JSONB column or similar
+    let allPosts: Post[] = [];
+
+    if (postsRes.data) {
+      allPosts = allPosts.concat(postsRes.data.map((p: PostDB) => {
+        const roles = p.perfiles?.roles;
+        const roleName = Array.isArray(roles) ? (roles[0]?.nombre || 'Miembro') : (roles?.nombre || 'Miembro');
+
+        return {
+          id: p.id || '',
+          title: p.titulo,
+          description: p.descripcion,
+          type: p.tipo,
+          category: p.categoria || 'General',
+          expirationDate: undefined,
+          image: p.imagen_url || undefined,
+          images: p.imagenes_url || [],
+          author: `${p.perfiles?.nombre || ''} ${p.perfiles?.apellidos || ''}`.trim() || 'Usuario Anónimo',
+          authorId: p.autor_id,
+          authorCarreraId: p.perfiles?.carrera_id || undefined,
+          role: roleName,
+          time: this.formatTime(p.creado || new Date().toISOString()),
+          rawDate: new Date(p.creado || new Date().toISOString()),
+          avatar: p.perfiles?.foto_url || undefined,
+          details: p.detalles,
+          status: p.estado || 'activo'
+        };
       }));
-      this._posts.set(formattedPosts);
     }
+
+    if (anunciosRes.data) {
+      allPosts = allPosts.concat(anunciosRes.data.map((a: Anuncio) => ({
+        id: `anuncio-${a.id}`,
+        title: a.titulo,
+        description: a.descripcion,
+        type: 'Aviso Oficial',
+        category: a.ciudad && a.ciudad !== 'Todas' ? a.ciudad : 'General',
+        expirationDate: undefined,
+        image: a.imagen_url || undefined,
+        author: 'Tuunka',
+        authorId: 'admin_tuunka',
+        role: 'Administrador',
+        time: this.formatTime(a.creado || new Date().toISOString()),
+        rawDate: new Date(a.creado || new Date().toISOString()),
+        avatar: undefined,
+        details: {
+          contacto_url: a.contacto_url,
+          fecha_inicio: a.fecha_inicio,
+          fecha_fin: a.fecha_fin
+        },
+        status: 'activo'
+      })));
+    }
+
+    // Ordenar de más reciente a más antiguo
+    allPosts.sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime());
+
+    this._posts.set(allPosts);
     this._isLoading.set(false);
   }
 
@@ -69,6 +116,10 @@ export class PostStoreService {
     if (error) throw error;
     await this.loadPosts();
     return data;
+  }
+
+  async uploadPostImages(files: File[]) {
+    return await this.supabase.subirImagenesPublicacion(files);
   }
 
   private formatTime(dateStr: string): string {
@@ -86,7 +137,7 @@ export class PostStoreService {
     return date.toLocaleDateString('es-MX', {
       day: 'numeric',
       month: 'short',
-      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+      year: date.getFullYear() === now.getFullYear() ? undefined : 'numeric'
     });
   }
 }

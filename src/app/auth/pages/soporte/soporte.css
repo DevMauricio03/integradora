@@ -117,8 +117,8 @@ textarea {
 /* ============ SIDEBAR (DERECHA) ============ */
 .sidebar-contacto {
     flex: 0.8;
-    background: #3b82f6;
-    /* Azul sólido imagen 2 */
+    background: #1d4ed8;
+    /* Azul sólido imagen 2 - darkened for WCAG AA contrast */
     padding: 60px 40px;
     color: white;
     display: flex;
@@ -142,13 +142,12 @@ textarea {
 .icon-bg {
     width: 48px;
     height: 48px;
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.18);
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    color: white;
 }
 
 .info-contacto {
@@ -162,7 +161,7 @@ textarea {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    opacity: 0.7;
+    color: rgba(255, 255, 255, 0.80);
 }
 
 .info-contacto p {

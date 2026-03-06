@@ -73,12 +73,24 @@
 
     <section class="feed-list">
       @for (post of filteredPosts(); track post.id) {
-      <app-post-card [author]="post.author || 'Usuario'" [role]="post.role || 'Estudiante'"
+      <app-post-card [id]="post.id" [author]="post.author || 'Usuario'" [role]="post.role || 'Estudiante'"
         [time]="post.time || 'Ahora'" [title]="post.title" [content]="post.description" [badge]="post.type"
-        [image]="post.image" [avatar]="post.avatar" [category]="post.category" [details]="post.details"
-        [expirationDate]="post.expirationDate" />
+        [image]="post.image" [images]="post.images" [avatar]="post.avatar" [category]="post.category"
+        [details]="post.details" [expirationDate]="post.expirationDate" [estado]="post.status"
+        (report)="openReportModal(post)" />
       }
     </section>
+    @if (showReportModal()) {
+    <app-report-modal [post]="selectedPostForReport()" (closed)="closeReportModal()"
+      (reported)="handleReport($event)"></app-report-modal>
+    }
+
+    @if (showSuccessReport()) {
+    <app-success-modal titulo="¡Reporte enviado!"
+      mensaje="Gracias por informarnos. El equipo de moderación revisará la publicación en breve para mantener la comunidad segura."
+      botonTexto="Entendido" (closed)="showSuccessReport.set(false)" (confirm)="showSuccessReport.set(false)">
+    </app-success-modal>
+    }
     }
 
   </div>

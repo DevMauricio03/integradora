@@ -1,30 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { SupabaseService } from '../../../core/services/supabase.service';
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Navbar } from '../../../shared/components/navbar/navbar';
 
 @Component({
-  selector: 'app-confirmacion-correo',
-  standalone: true,
-  imports: [],
-  templateUrl: './confirmacionCorreo.html',
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
+    selector: 'app-confirmacion-correo',
+    standalone: true,
+    imports: [Navbar, RouterLink],
+    templateUrl: './confirmacionCorreo.html',
+    styleUrls: ['./confirmacionCorreo.css']
 })
-export class ConfirmacionCorreo implements OnInit {
+export class ConfirmacionCorreo {
 
-  constructor(
-    private supabaseService: SupabaseService,
-    private router: Router
-  ) {}
-
-  async ngOnInit() {
-    const { data } = await this.supabaseService.getSession();
-
-    if (data.session) {
-      this.router.navigate(['/user/feed']);
-    }
-  }
 }

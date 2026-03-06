@@ -23,8 +23,8 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
 })
 export class UserLayoutComponent {
 
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   title = signal('');
   showCreateButton = signal(false);

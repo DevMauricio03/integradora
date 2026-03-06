@@ -1,4 +1,6 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { Component, Input, computed } from '@angular/core';
+
+export type IconName = 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-up' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'rocket';
 
 @Component({
   selector: 'app-icon',
@@ -25,10 +27,10 @@ import { Component, Input, computed, signal } from '@angular/core';
 })
 export class IconComponent {
 
-  @Input() name: 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'rocket' = 'plus';
+  @Input() name: IconName = 'plus';
   @Input() size: number = 18;
 
-  private icons = {
+  private readonly icons = {
     plus: ['M12 5v14', 'M5 12h14'],
     'plus-circle': ['M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10z', 'M12 8v8', 'M8 12h8'],
     bell: [
@@ -60,6 +62,7 @@ export class IconComponent {
     'arrow-left': ['M19 12H5', 'M12 19l-7-7 7-7'],
     check: ['M20 6L9 17l-5-5'],
     'chevron-down': ['M6 9l6 6 6-6'],
+    'chevron-up': ['M18 15l-6-6-6 6'],
     package: ['M12.89 1.45l8 4A2 2 0 0 1 22 7.24v9.52a2 2 0 0 1-1.11 1.79l-8 4a2 2 0 0 1-1.78 0l-8-4A2 2 0 0 1 2 16.76V7.24a2 2 0 0 1 1.11-1.79l8-4a2 2 0 0 1 1.78 0z', 'M2.32 6.16L12 11l9.68-4.84', 'M12 22.76V11'],
     tool: ['M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z'],
     clock: ['M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z', 'M12 6v6l4 2'],

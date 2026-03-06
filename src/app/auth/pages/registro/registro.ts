@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Navbar } from "../../../shared/components/navbar/navbar";
@@ -25,7 +25,8 @@ interface RegisterFormModel {
   standalone: true,
   imports: [Navbar, RouterLink, AvisosLegales, SuccessModal, FormField],
   templateUrl: './registro.html',
-  styleUrl: './registro.css'
+  styleUrl: './registro.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegistroPage implements OnInit {
 
@@ -74,8 +75,8 @@ export class RegistroPage implements OnInit {
       const val = ctx.value();
       if (val.length < 8) return { kind: 'length', message: 'Mínimo 8 caracteres' };
       if (!/[A-Z]/.test(val)) return { kind: 'upper', message: 'Una mayúscula' };
-      if (!/[0-9]/.test(val)) return { kind: 'number', message: 'Un número' };
-      if (!/[^A-Za-z0-9]/.test(val)) return { kind: 'special', message: 'Un carácter especial' };
+      if (!/\d/.test(val)) return { kind: 'number', message: 'Un número' };
+      if (!/[^A-Za-z\d]/.test(val)) return { kind: 'special', message: 'Un carácter especial' };
       return null;
     });
 
@@ -95,8 +96,8 @@ export class RegistroPage implements OnInit {
   // Requisitos calculados para la UI
   reqLength = computed(() => this.registerModel().password.length >= 8);
   reqUppercase = computed(() => /[A-Z]/.test(this.registerModel().password));
-  reqNumber = computed(() => /[0-9]/.test(this.registerModel().password));
-  reqSpecial = computed(() => /[^A-Za-z0-9]/.test(this.registerModel().password));
+  reqNumber = computed(() => /\d/.test(this.registerModel().password));
+  reqSpecial = computed(() => /[^A-Za-z\d]/.test(this.registerModel().password));
 
   universidades = signal<{ id: string; nombre: string; acronimo: string }[]>([]);
   carreras = signal<{ id: string; nombre: string }[]>([]);
@@ -111,12 +112,14 @@ export class RegistroPage implements OnInit {
   mostrarAviso = signal(false);
   mostrarSuccess = signal(false);
 
-  constructor(
-    private supabaseService: SupabaseService,
-    private router: Router
-  ) { }
+  private readonly supabaseService = inject(SupabaseService);
+  private readonly router = inject(Router);
 
-  async ngOnInit() {
+  ngOnInit() {
+    this.loadData();
+  }
+
+  private async loadData() {
     const [uniRes, carRes] = await Promise.all([
       this.supabaseService.getUniversidades(),
       this.supabaseService.getCarreras()
@@ -228,7 +231,8 @@ export class RegistroPage implements OnInit {
         // Éxito: Mostrar modal de confirmación
         this.handleRegistroExitoso();
       } catch (err) {
-        this.errorRegistro.set('Ocurrió un error inesperado');
+        const message = err instanceof Error ? err.message : 'Ocurrió un error inesperado';
+        this.errorRegistro.set(message);
       } finally {
         this.cargando.set(false);
       }

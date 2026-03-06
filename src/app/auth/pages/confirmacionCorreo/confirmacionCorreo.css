@@ -1,0 +1,143 @@
+/* ============ CONTENEDOR ============ */
+.contenedor {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+    font-family: 'Lexend', sans-serif;
+}
+
+/* ============ CARD ============ */
+.card {
+    width: 440px;
+    max-width: 100%;
+    padding: 40px 32px;
+    border-radius: 24px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0px 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0px 8px 10px -6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+}
+
+/* ============ ICONO ============ */
+.icono-wrapper {
+    width: 48px;
+    height: 48px;
+    background: rgba(19, 91, 236, 0.1);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============ TIPOGRAFÍA ============ */
+h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.descripcion {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ============ INFO BOX ============ */
+.info-box {
+    width: 100%;
+    background: #F6F6F8;
+    border: 1px solid #DBDFE6;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    text-align: left;
+}
+
+.info-icon {
+    flex-shrink: 0;
+}
+
+/* ============ BOTÓN PRIMARIO ============ */
+.boton-primario {
+    width: 100%;
+    padding: 12px 24px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Lexend', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.boton-primario:hover {
+    background: var(--primary-dark, #0f48c0);
+    transform: translateY(-1px);
+}
+
+/* ============ LINK VOLVER ============ */
+.link-volver {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-family: 'Lexend', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.link-volver:hover {
+    color: var(--primary);
+}
+
+/* ============ COPYRIGHT ============ */
+.copyright {
+    margin-top: 32px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ============ NAVBAR HELP ============ */
+.navbar-help {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.navbar-help:hover {
+    color: var(--primary);
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+    .card {
+        width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        width: 100%;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 32px 20px;
+    }
+}

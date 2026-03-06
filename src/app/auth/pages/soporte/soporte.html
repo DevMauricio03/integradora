@@ -30,23 +30,23 @@
             <form (submit)="enviarMensaje($event)">
                 <div class="form-grid">
                     <div class="grupo-input">
-                        <label>Nombre completo</label>
+                        <label for="nombre">Nombre completo</label>
                         <div class="input-wrapper">
-                            <input type="text" placeholder="Ej. Juan Pérez García" required>
+                            <input id="nombre" type="text" placeholder="Ej. Juan Pérez García" required>
                         </div>
                     </div>
 
                     <div class="grupo-input">
-                        <label>Correo institucional</label>
+                        <label for="correo">Correo institucional</label>
                         <div class="input-wrapper">
-                            <input type="email" placeholder="ej. juan.p@tuunka.edu.mx" required>
+                            <input id="correo" type="email" placeholder="ej. juan.p@tuunka.edu.mx" required>
                         </div>
                     </div>
 
                     <div class="grupo-input full-width">
-                        <label>Tipo de solicitud</label>
+                        <label for="tipo-solicitud">Tipo de solicitud</label>
                         <div class="input-wrapper">
-                            <select required>
+                            <select id="tipo-solicitud" required>
                                 <option value="" disabled selected>Selecciona una categoría</option>
                                 <option value="acceso">Problemas de acceso</option>
                                 <option value="error">Reportar un error</option>
@@ -57,16 +57,17 @@
                     </div>
 
                     <div class="grupo-input full-width">
-                        <label>Asunto</label>
+                        <label for="asunto">Asunto</label>
                         <div class="input-wrapper">
-                            <input type="text" placeholder="Resume brevemente tu consulta" required>
+                            <input id="asunto" type="text" placeholder="Resume brevemente tu consulta" required>
                         </div>
                     </div>
 
                     <div class="grupo-input full-width">
-                        <label>Descripción detallada</label>
+                        <label for="descripcion">Descripción detallada</label>
                         <div class="input-wrapper">
-                            <textarea placeholder="Cuéntanos más sobre tu problema o duda..." required></textarea>
+                            <textarea id="descripcion" placeholder="Cuéntanos más sobre tu problema o duda..."
+                                required></textarea>
                         </div>
                     </div>
                 </div>

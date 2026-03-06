@@ -100,7 +100,7 @@
 	</form>
 </div>
 
-<app-modal-base *ngIf="mostrarExito()" [ancho]="'420px'" [mostrarCerrar]="false" (close)="mostrarExito.set(false)">
+<app-modal-base *ngIf="mostrarExito()" [ancho]="'420px'" [mostrarCerrar]="false" (closed)="mostrarExito.set(false)">
 
 	<div class="modal-exito">
 		<div class="icono-exito">

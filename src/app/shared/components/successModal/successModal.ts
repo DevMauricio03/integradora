@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, output } from '@angular/core';
 import { ModalBase } from '../modalBase/modalBase';
 
 @Component({
@@ -6,7 +6,7 @@ import { ModalBase } from '../modalBase/modalBase';
   standalone: true,
   imports: [ModalBase],
   template: `
-    <app-modal-base ancho="440px" [mostrarCerrar]="false" (close)="emitClose()">
+    <app-modal-base ancho="440px" [mostrarCerrar]="false" (closed)="emitClose()">
 
       <div class="success-container">
 
@@ -19,17 +19,16 @@ import { ModalBase } from '../modalBase/modalBase';
           </svg>
         </div>
 
-        <h2>¡Cuenta creada!</h2>
+        <h2>{{ titulo }}</h2>
 
         <p>
-          Haz creado tu cuenta con éxito, inicia sesión
-          para conectarte con tu comunidad universitaria
+          {{ mensaje }}
         </p>
 
         <div class="divider"></div>
 
         <button class="btn-primario" (click)="emitConfirm()">
-          Inicia sesión
+          {{ botonTexto }}
         </button>
 
       </div>
@@ -108,11 +107,15 @@ import { ModalBase } from '../modalBase/modalBase';
 })
 export class SuccessModal {
 
-  @Output() close = new EventEmitter<void>();
-  @Output() confirm = new EventEmitter<void>();
+  @Input() titulo: string = '¡Cuenta creada!';
+  @Input() mensaje: string = 'Haz creado tu cuenta con éxito, inicia sesión para conectarte con tu comunidad universitaria';
+  @Input() botonTexto: string = 'Inicia sesión';
+
+  closed = output<void>();
+  confirm = output<void>();
 
   emitClose() {
-    this.close.emit();
+    this.closed.emit();
   }
 
   emitConfirm() {

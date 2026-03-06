@@ -4,14 +4,14 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
   selector: 'app-modal-base',
   standalone: true,
   template: `
-    <div class="overlay" (click)="close.emit()">
+    <div class="overlay" (click)="closed.emit()">
       <div
         class="modal"
         [style.max-width]="ancho"
         (click)="$event.stopPropagation()"
       >
         @if (mostrarCerrar) {
-          <button class="btn-cerrar" (click)="close.emit()">✕</button>
+          <button class="btn-cerrar" (click)="closed.emit()">✕</button>
         }
         <ng-content></ng-content>
       </div>
@@ -103,5 +103,5 @@ export class ModalBase {
   @Input() mostrarCerrar: boolean = true;
 
   // Evento de cierre
-  @Output() close = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
 }

@@ -4,7 +4,7 @@
             <h1>Panel de Administración</h1>
             <p>Resumen de la actividad de hoy en la plataforma Tuunka.</p>
         </div>
-        <button class="btn-primario-sm">
+        <button class="btn-primario-sm" (click)="isAvisoModalOpen.set(true)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -216,7 +216,6 @@
                         <td class="text-gray">{{ user.correoInstitucional }}</td>
                         <td class="text-gray">{{ user.roles?.nombre || 'Estudiante' }}</td>
                         <td class="text-gray">{{ user.universidades?.acronimo || 'N/A' }}</td>
-                        <!-- Por simplicidad todos los mostramos como activos hasta añadir campo de estado de baneo -->
                         <td><app-status-badge text="ACTIVO" type="active"></app-status-badge></td>
                     </tr>
                     }
@@ -230,4 +229,20 @@
             </table>
         </div>
     </div>
+
+    <!-- Notification Toast -->
+    @if (showSuccessToast()) {
+    <div class="toast-notification fade-in">
+        <div class="toast-content">
+            <app-icon name="check-circle" [size]="20" class="toast-icon"></app-icon>
+            <span>{{ toastMessage() }}</span>
+        </div>
+    </div>
+    }
+
+    <!-- Modal Nuevo Aviso -->
+    @if(isAvisoModalOpen()) {
+    <app-modal-nuevo-aviso (closed)="isAvisoModalOpen.set(false)" (avisoCreado)="handleAvisoGuardado()">
+    </app-modal-nuevo-aviso>
+    }
 </div>

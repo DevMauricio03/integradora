@@ -32,8 +32,10 @@
                     <span>Reportes</span>
                 </li>
                 <li class="config-item logout">
-                    <app-icon name="log-out"></app-icon>
-                    <span>Cerrar sesión</span>
+                    <button (click)="logout()" class="logout-btn">
+                        <app-icon name="log-out"></app-icon>
+                        <span>Cerrar sesión</span>
+                    </button>
                 </li>
             </ul>
         </nav>

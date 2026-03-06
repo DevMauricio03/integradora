@@ -27,8 +27,8 @@ export class EditarPerfilPage implements OnInit {
   perfil = signal<any>(null);
   readonly defaultAvatarUrl = 'https://i.pinimg.com/236x/6c/55/d4/6c55d49dd6839b5b79e84a1aa6d2260d.jpg';
 
-  private supabaseService = inject(SupabaseService);
-  private router = inject(Router);
+  private readonly supabaseService = inject(SupabaseService);
+  private readonly router = inject(Router);
 
   editModel = signal<EditPerfilModel>({
     nombre: '',
@@ -49,7 +49,11 @@ export class EditarPerfilPage implements OnInit {
     maxLength(schema.apellidos, 50, { message: 'Máximo 50 caracteres' });
   });
 
-  async ngOnInit() {
+  ngOnInit() {
+    this.loadPerfil();
+  }
+
+  private async loadPerfil() {
     const data = await this.supabaseService.getPerfilActual();
     if (data) {
       this.perfil.set(data);
@@ -85,8 +89,9 @@ export class EditarPerfilPage implements OnInit {
     });
   }
 
-  async onFileSelected(event: any) {
-    const file: File = event.target.files[0];
+  async onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {

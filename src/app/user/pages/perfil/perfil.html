@@ -47,9 +47,9 @@
 			} @else {
 			@for (post of misPosts(); track post.id) {
 			<app-post-card [author]="post.author" [role]="post.role" [time]="post.time" [title]="post.title"
-				[content]="post.description" [badge]="post.type" [image]="post.image" [avatar]="post.avatar"
-				[category]="post.category" [details]="post.details" [expirationDate]="post.expirationDate"
-				[showControls]="true" />
+				[content]="post.description" [badge]="post.type" [image]="post.image" [images]="post.images"
+				[avatar]="post.avatar" [category]="post.category" [details]="post.details"
+				[expirationDate]="post.expirationDate" [showControls]="true" [estado]="post.status" />
 			}
 			}
 			}

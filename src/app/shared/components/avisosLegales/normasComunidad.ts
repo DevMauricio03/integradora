@@ -7,7 +7,7 @@ import { IconComponent } from '../icon/icon.component';
   standalone: true,
   imports: [ModalBase, IconComponent],
   template: `
-    <app-modal-base (close)="close.emit()" ancho="540px">
+    <app-modal-base (closed)="closed.emit()" ancho="540px">
       
       <div class="header-normas">
         <div class="logo-normas">
@@ -67,7 +67,7 @@ import { IconComponent } from '../icon/icon.component';
       </div>
 
       <div class="footer-normas">
-        <button class="btn-entendido" (click)="close.emit()">
+        <button class="btn-entendido" (click)="closed.emit()">
           Entendido
         </button>
       </div>
@@ -178,5 +178,5 @@ import { IconComponent } from '../icon/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NormasComunidad {
-  @Output() close = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
 }

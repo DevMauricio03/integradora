@@ -1,0 +1,202 @@
+<app-modal-base ancho="700px" [mostrarCerrar]="true" (closed)="closed.emit()">
+    <div class="modal-content-wrapper">
+        <div class="encabezado-crear-cuenta">
+            <div class="icono-crear-cuenta">
+                <app-icon name="plus" [size]="24" class="primary-icon"></app-icon>
+            </div>
+            <h1 class="titulo-crear-cuenta">Agregar Usuario</h1>
+            <p class="subtitulo-crear-cuenta">Registra un nuevo administrador o alumno.</p>
+        </div>
+
+        <div class="modal-body">
+            @if (errorMessage()) {
+            <div class="error-banner fade-in">
+                <app-icon name="ban" [size]="18"></app-icon>
+                {{ errorMessage() }}
+            </div>
+            }
+
+            <form class="formulario-crear-cuenta" (submit)="saveUser($event)" novalidate>
+
+                <!-- NOMBRE Y APELLIDOS -->
+                <div class="fila-doble">
+                    <div class="grupo-formulario mitad">
+                        <label for="nombreUsuario">Nombre(s)</label>
+                        <input id="nombreUsuario" type="text" placeholder="Escribe el nombre(s)"
+                            [formField]="registroForm.nombre" />
+                        @if (registroForm.nombre().touched() && registroForm.nombre().invalid()) {
+                        <span class="error-campo">{{ registroForm.nombre().errors()[0].message }}</span>
+                        }
+                    </div>
+
+                    <div class="grupo-formulario mitad">
+                        <label for="apellidosUsuario">Apellidos</label>
+                        <input id="apellidosUsuario" type="text" placeholder="Escribe los apellidos"
+                            [formField]="registroForm.apellidos" />
+                        @if (registroForm.apellidos().touched() && registroForm.apellidos().invalid()) {
+                        <span class="error-campo">{{ registroForm.apellidos().errors()[0].message }}</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="grupo-formulario ancho-completo">
+                    <label for="emailUsuario">Correo electrónico institucional</label>
+                    <div class="contenedor-input-icon">
+                        <app-icon name="user" [size]="16" class="field-icon"></app-icon>
+                        <input id="emailUsuario" type="email" placeholder="usuario@utvco.edu.mx"
+                            [formField]="registroForm.correo" />
+                    </div>
+                    @if (registroForm.correo().touched() && registroForm.correo().invalid()) {
+                    <span class="error-campo">{{ registroForm.correo().errors()[0].message }}</span>
+                    }
+                </div>
+
+                <!-- PASSWORDS -->
+                <div class="grupo-formulario ancho-completo">
+                    <label for="passUsuario">Contraseña Temporal</label>
+                    <div class="contenedor-input-icon">
+                        <app-icon name="shield" [size]="16" class="field-icon"></app-icon>
+                        <input id="passUsuario" type="text" placeholder="Mín. 8 caracteres"
+                            [formField]="registroForm.password" />
+                    </div>
+                    @if (registroForm.password().touched() && registroForm.password().invalid()) {
+                    <span class="error-campo">{{ registroForm.password().errors()[0].message }}</span>
+                    }
+                </div>
+
+                <!-- REQUISITOS -->
+                <div class="requisitos-seguridad">
+                    <p class="titulo-requisitos">Requisitos de seguridad</p>
+                    <div class="lista-requisitos">
+                        <div class="requisito" [class.activo]="reqLength()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                @if (reqLength()) {
+                                <circle cx="12" cy="12" r="10" stroke="#10B981" stroke-width="2" />
+                                <path d="M8 12L11 15L16 9" stroke="#10B981" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                } @else {
+                                <circle cx="12" cy="12" r="10" stroke="#616F89" stroke-width="2" />
+                                }
+                            </svg>
+                            <span>Al menos 8 caracteres</span>
+                        </div>
+
+                        <div class="requisito" [class.activo]="reqUppercase()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                @if (reqUppercase()) {
+                                <circle cx="12" cy="12" r="10" stroke="#10B981" stroke-width="2" />
+                                <path d="M8 12L11 15L16 9" stroke="#10B981" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                } @else {
+                                <circle cx="12" cy="12" r="10" stroke="#616F89" stroke-width="2" />
+                                }
+                            </svg>
+                            <span>Una mayúscula</span>
+                        </div>
+
+                        <div class="requisito" [class.activo]="reqNumber()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                @if (reqNumber()) {
+                                <circle cx="12" cy="12" r="10" stroke="#10B981" stroke-width="2" />
+                                <path d="M8 12L11 15L16 9" stroke="#10B981" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                } @else {
+                                <circle cx="12" cy="12" r="10" stroke="#616F89" stroke-width="2" />
+                                }
+                            </svg>
+                            <span>Un número</span>
+                        </div>
+
+                        <div class="requisito" [class.activo]="reqSpecial()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                @if (reqSpecial()) {
+                                <circle cx="12" cy="12" r="10" stroke="#10B981" stroke-width="2" />
+                                <path d="M8 12L11 15L16 9" stroke="#10B981" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                } @else {
+                                <circle cx="12" cy="12" r="10" stroke="#616F89" stroke-width="2" />
+                                }
+                            </svg>
+                            <span>Un carácter especial</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fila-doble">
+                    <!-- ROL -->
+                    <div class="grupo-formulario mitad">
+                        <label for="rolUsuario">Rol</label>
+                        <div class="contenedor-select-search">
+                            <select id="rolUsuario" [formField]="registroForm.rol_id"
+                                class="input-select-search select-icon" (change)="onRoleChange()">
+                                <option value="" disabled selected>Selecciona rol</option>
+                                @for (rol of roles(); track rol.id) {
+                                <option [value]="rol.id">{{ rol.nombre | titlecase }}</option>
+                                }
+                            </select>
+                            <app-icon name="chevron-down" [size]="16" class="icono-dropdown"></app-icon>
+                        </div>
+                        @if (registroForm.rol_id().touched() && registroForm.rol_id().invalid()) {
+                        <span class="error-campo">{{ registroForm.rol_id().errors()[0].message }}</span>
+                        }
+                    </div>
+
+                    <!-- UNIVERSIDAD -->
+                    <div class="grupo-formulario mitad">
+                        <label for="uniUsuario">Universidad</label>
+                        <div class="contenedor-select-search">
+                            <select id="uniUsuario" [formField]="registroForm.universidad"
+                                class="input-select-search select-icon" (change)="onUniversidadChange()">
+                                <option value="" disabled selected>Selecciona Inst.</option>
+                                @for (uni of universidades(); track uni.id) {
+                                <option [value]="uni.id">{{ uni.acronimo }}</option>
+                                }
+                            </select>
+                            <app-icon name="chevron-down" [size]="16" class="icono-dropdown"></app-icon>
+                        </div>
+                        @if (registroForm.universidad().touched() && registroForm.universidad().invalid()) {
+                        <span class="error-campo">{{ registroForm.universidad().errors()[0].message }}</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- CARRERA -->
+                <div class="grupo-formulario ancho-completo">
+                    <label for="carreraUsuario">Carrera <small>(opcional para admins)</small></label>
+                    <div class="contenedor-select-search">
+                        <select id="carreraUsuario" [formField]="registroForm.carrera"
+                            class="input-select-search select-icon">
+                            <option value="">Selecciona carrera</option>
+                            @for (car of carrerasFiltradas(); track car.id) {
+                            <option [value]="car.id">{{ car.nombre }}</option>
+                            }
+                        </select>
+                        <app-icon name="chevron-down" [size]="16" class="icono-dropdown"></app-icon>
+                    </div>
+                    @if (registroForm.carrera().touched() && registroForm.carrera().invalid()) {
+                    <span class="error-campo">{{ registroForm.carrera().errors()[0].message }}</span>
+                    }
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancelar" (click)="closed.emit()"
+                        [disabled]="isProcessing()">Cancelar</button>
+                    <button type="submit" class="boton-crear" [disabled]="isProcessing()">
+                        @if (isProcessing()) {
+                        <app-icon name="refresh-cw" [size]="16" class="spin-icon"></app-icon> Registrando...
+                        } @else {
+                        Guardar Usuario
+                        }
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</app-modal-base>
+
+@if (mostrarSuccess()) {
+<app-success-modal titulo="¡Usuario creado!" mensaje="El nuevo usuario ha sido registrado correctamente en el sistema."
+    botonTexto="Entendido" (confirm)="handleSuccessConfirm()" (closed)="handleSuccessConfirm()">
+</app-success-modal>
+}

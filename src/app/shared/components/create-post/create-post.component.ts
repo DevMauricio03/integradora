@@ -14,6 +14,7 @@ interface PostFormModel {
   description: string;
   category: string;
   image: string;
+  images: string[];
 
   // Evento fields
   startDate: string;
@@ -53,9 +54,10 @@ export class CreatePostComponent {
   showRules = signal(false);
   isPublishing = signal(false);
   selectedSubtype = signal<'producto' | 'servicio' | null>(null);
+  private imageFiles = signal<File[]>([]);
 
-  private postStore = inject(PostStoreService);
-  private router = inject(Router);
+  private readonly postStore = inject(PostStoreService);
+  private readonly router = inject(Router);
 
   types = [
     { id: 'aviso', name: 'Aviso', desc: 'Noticias generales', icon: 'megaphone' },
@@ -82,6 +84,7 @@ export class CreatePostComponent {
     description: '',
     category: 'General',
     image: '',
+    images: [],
     startDate: '',
     endDate: '',
     modality: 'Presencial',
@@ -180,12 +183,28 @@ export class CreatePostComponent {
     this.isPublishing.set(true);
 
     try {
-      const postData = this.postModel();
+      const postData = { ...this.postModel() };
+
+      // 1. Subir imágenes si hay archivos seleccionados
+      if (this.imageFiles().length > 0) {
+        console.log('Subiendo archivos:', this.imageFiles());
+        const urls = await this.postStore.uploadPostImages(this.imageFiles());
+        console.log('URLs obtenidas:', urls);
+
+        if (urls.length === 0) {
+          throw new Error('No se pudieron subir las imágenes. Verifica que el bucket "publicaciones" exista y sea público.');
+        }
+
+        postData.images = urls;
+        postData.image = urls[0];
+      }
+
       await this.postStore.addPost(postData);
-      this.router.navigate(['/user/crear/exito']);
-    } catch (err: any) {
-      console.error('Error detallado al publicar:', err?.message || err);
-      alert('Error al publicar: ' + (err?.message || 'Verifica la consola para más detalles'));
+      this.router.navigate(['/user/crear/exito'], { state: { post: postData } });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error desconocido';
+      console.error('Error detallado al publicar:', message);
+      alert('Error: ' + message);
     } finally {
       this.isPublishing.set(false);
     }
@@ -195,15 +214,35 @@ export class CreatePostComponent {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
-    const file = input.files[0];
-    const reader = new FileReader();
+    const files = Array.from(input.files);
 
-    reader.onload = () => {
-      this.postModel.update(m => ({
-        ...m,
-        image: reader.result as string
-      }));
-    };
-    reader.readAsDataURL(file);
+    // Limitamos a 4 imágenes máximo
+    const currentImages = this.postModel().images;
+    if (currentImages.length + files.length > 4) {
+      alert('Máximo 4 imágenes por publicación');
+      return;
+    }
+
+    // Guardamos los archivos para subirlos después
+    this.imageFiles.update(prev => [...prev, ...files]);
+
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.postModel.update(m => ({
+          ...m,
+          images: [...m.images, reader.result as string]
+        }));
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  removeImage(index: number) {
+    this.postModel.update(m => ({
+      ...m,
+      images: m.images.filter((_, i) => i !== index)
+    }));
+    this.imageFiles.update(prev => prev.filter((_, i) => i !== index));
   }
 }

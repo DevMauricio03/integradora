@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 
@@ -8,18 +8,15 @@ import { SupabaseService } from '../../../core/services/supabase.service';
   imports: [RouterLink],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Navbar {
 
   @Input() title: string = '';
   @Input() showLogout: boolean = false;
 
-
-
-  constructor(
-    private supabaseService: SupabaseService,
-    private router: Router
-  ) { }
+  private readonly supabaseService = inject(SupabaseService);
+  private readonly router = inject(Router);
 
   getLogoRoute(): string {
     const currentUrl = this.router.url;

@@ -1,7 +1,8 @@
 <app-navbar title="registro">
-  <span navbar-right class="navbar-help" routerLink="/auth/soporte" style="cursor: pointer;">
+  <button type="button" navbar-right class="navbar-help" routerLink="/auth/soporte"
+    style="cursor: pointer; background: none; border: none; font: inherit; color: inherit; padding: 0;">
     ¿Necesitas ayuda?
-  </span>
+  </button>
 </app-navbar>
 
 <div class="contenedor-crear-cuenta">
@@ -36,16 +37,17 @@
       <div class="fila-doble">
 
         <div class="grupo-formulario mitad">
-          <label>Nombre(s)</label>
-          <input type="text" placeholder="Escribe tu nombre(s)" [formField]="registroForm.nombre" />
+          <label for="regNombre">Nombre(s)</label>
+          <input id="regNombre" type="text" placeholder="Escribe tu nombre(s)" [formField]="registroForm.nombre" />
           @if (registroForm.nombre().touched() && registroForm.nombre().invalid()) {
           <span class="error-campo">{{ registroForm.nombre().errors()[0].message }}</span>
           }
         </div>
 
         <div class="grupo-formulario mitad">
-          <label>Apellidos</label>
-          <input type="text" placeholder="Escribe tus apellidos" [formField]="registroForm.apellidos" />
+          <label for="regApellidos">Apellidos</label>
+          <input id="regApellidos" type="text" placeholder="Escribe tus apellidos"
+            [formField]="registroForm.apellidos" />
           @if (registroForm.apellidos().touched() && registroForm.apellidos().invalid()) {
           <span class="error-campo">{{ registroForm.apellidos().errors()[0].message }}</span>
           }
@@ -55,10 +57,11 @@
 
       <!-- EMAIL -->
       <div class="grupo-formulario ancho-completo">
-        <label>Correo electrónico institucional</label>
+        <label for="regEmail">Correo electrónico institucional</label>
 
         <div class="contenedor-input">
-          <input type="email" placeholder="nombre.apellido@universidad.edu.com" [formField]="registroForm.email" />
+          <input id="regEmail" type="email" placeholder="nombre.apellido@universidad.edu.com"
+            [formField]="registroForm.email" />
         </div>
         @if (registroForm.email().touched() && registroForm.email().invalid()) {
         <span class="error-campo">{{ registroForm.email().errors()[0].message }}</span>
@@ -70,7 +73,7 @@
 
       <!-- UNIVERSIDAD -->
       <div class="grupo-formulario ancho-completo">
-        <label>Universidad</label>
+        <label for="regUni">Universidad</label>
 
         <div class="contenedor-select-search">
 
@@ -80,8 +83,9 @@
               stroke-linejoin="round" />
           </svg>
 
-          <input type="text" placeholder="Busca tu universidad" list="listaUniversidades" class="input-select-search"
-            [formField]="registroForm.universidad" (input)="onUniversidadChange()" (change)="onUniversidadChange()" />
+          <input id="regUni" type="text" placeholder="Busca tu universidad" list="listaUniversidades"
+            class="input-select-search" [formField]="registroForm.universidad" (input)="onUniversidadChange()"
+            (change)="onUniversidadChange()" />
 
           <datalist id="listaUniversidades">
             @for (uni of universidades(); track uni.id) {
@@ -101,7 +105,7 @@
 
       <!-- CARRERA -->
       <div class="grupo-formulario ancho-completo">
-        <label>Carrera</label>
+        <label for="regCarrera">Carrera</label>
 
         <div class="contenedor-select-search">
 
@@ -111,8 +115,9 @@
               stroke-linejoin="round" />
           </svg>
 
-          <input type="text" placeholder="Busca tu carrera" list="listaCarreras" class="input-select-search"
-            [formField]="registroForm.carrera" (input)="onCarreraChange()" (change)="onCarreraChange()" />
+          <input id="regCarrera" type="text" placeholder="Busca tu carrera" list="listaCarreras"
+            class="input-select-search" [formField]="registroForm.carrera" (input)="onCarreraChange()"
+            (change)="onCarreraChange()" />
 
           <datalist id="listaCarreras">
             @for (car of carreras(); track car.id) {
@@ -134,9 +139,9 @@
       <div class="fila-doble">
 
         <div class="grupo-formulario mitad">
-          <label>Contraseña</label>
+          <label for="regPass">Contraseña</label>
           <div class="contenedor-password">
-            <input [type]="mostrarPassword() ? 'text' : 'password'" placeholder="Mín. 8 caracteres"
+            <input id="regPass" [type]="mostrarPassword() ? 'text' : 'password'" placeholder="Mín. 8 caracteres"
               [formField]="registroForm.password" />
             <button type="button" class="boton-ojo" (click)="mostrarPassword.set(!mostrarPassword())">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -163,9 +168,9 @@
         </div>
 
         <div class="grupo-formulario mitad">
-          <label>Confirmar contraseña</label>
+          <label for="regConfirm">Confirmar contraseña</label>
           <div class="contenedor-password">
-            <input [type]="mostrarConfirmar() ? 'text' : 'password'" placeholder="Repite tu contraseña"
+            <input id="regConfirm" [type]="mostrarConfirmar() ? 'text' : 'password'" placeholder="Repite tu contraseña"
               [formField]="registroForm.confirmarPassword" />
             <button type="button" class="boton-ojo" (click)="mostrarConfirmar.set(!mostrarConfirmar())">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -260,12 +265,14 @@
 
       <!-- ACEPTAR TÉRMINOS -->
       <div class="fila-terminos">
-        <input type="checkbox" [formField]="registroForm.aceptaTerminos" />
-        <span>
+        <input id="regAcepta" type="checkbox" [formField]="registroForm.aceptaTerminos" />
+        <label for="regAcepta">
           Acepto el
-          <span class="link" (click)="abrirAviso($event)">Aviso de Privacidad</span>
+          <button type="button" class="link" (click)="abrirAviso($event)"
+            style="background: none; border: none; font: inherit; color: var(--primary-color); cursor: pointer; text-decoration: underline; padding: 0;">Aviso
+            de Privacidad</button>
           y los Términos de Servicio de Tuunka.
-        </span>
+        </label>
         @if (registroForm.aceptaTerminos().touched() && registroForm.aceptaTerminos().invalid()) {
         <span class="error-campo" style="display: block;">{{ registroForm.aceptaTerminos().errors()[0].message }}</span>
         }
@@ -311,5 +318,5 @@
 
 <!-- MODAL CUENTA CREADA -->
 @if (mostrarSuccess()) {
-<app-success-modal (close)="cerrarSuccess()" (confirm)="irALogin()"></app-success-modal>
+<app-success-modal (closed)="cerrarSuccess()" (confirm)="irALogin()"></app-success-modal>
 }

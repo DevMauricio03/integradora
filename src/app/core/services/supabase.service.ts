@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { Perfil, Universidad, Carrera, Rol, Post, Anuncio } from '../models/supabase.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupabaseService {
-  private supabase: SupabaseClient;
+  private readonly supabase: SupabaseClient;
 
   constructor() {
     this.supabase = createClient(
@@ -33,46 +34,50 @@ export class SupabaseService {
     nombre: string;
     apellidos: string;
     correoInstitucional: string;
-    rol_id: string;
-    universidad_id: string;
-    carrera_id: string;
-  }) {
+    rol_id?: string;
+    universidad_id?: string;
+    carrera_id?: string | null;
+    foto_url?: string | null;
+    foto_perfil?: string | null;
+    creado?: string;
+    estado?: string;
+  }): Promise<{ data: Perfil[] | null, error: any }> {
     const { data, error } = await this.supabase
       .from('perfiles')
       .insert(perfil);
 
-    return { data, error };
+    return { data: data as unknown as Perfil[], error };
   }
 
   // 🔹 Obtener lista de universidades
-  async getUniversidades() {
+  async getUniversidades(): Promise<{ data: Universidad[] | null, error: any }> {
     const { data, error } = await this.supabase
       .from('universidades')
       .select('id, nombre, acronimo')
       .order('nombre');
 
-    return { data, error };
+    return { data: data as unknown as Universidad[], error };
   }
 
   // 🔹 Obtener lista de carreras
-  async getCarreras() {
+  async getCarreras(): Promise<{ data: Carrera[] | null, error: any }> {
     const { data, error } = await this.supabase
       .from('carrera')
       .select('id, nombre')
       .order('nombre');
 
-    return { data, error };
+    return { data: data as unknown as Carrera[], error };
   }
 
   // 🔹 Obtener rol por nombre
-  async getRolByNombre(nombre: string) {
+  async getRolByNombre(nombre: string): Promise<{ data: Partial<Rol> | null, error: any }> {
     const { data, error } = await this.supabase
       .from('roles')
       .select('id')
       .eq('nombre', nombre)
       .single();
 
-    return { data, error };
+    return { data: data as unknown as Partial<Rol>, error };
   }
 
   // 🔹 Recuperar contraseña
@@ -98,7 +103,7 @@ export class SupabaseService {
   }
 
   // 🔹 Escuchar cambios de autenticación
-  onAuthStateChange(callback: any) {
+  onAuthStateChange(callback: (event: any, session: any) => void) {
     return this.supabase.auth.onAuthStateChange(callback);
   }
 
@@ -122,7 +127,36 @@ export class SupabaseService {
       return null;
     }
 
-    return data;
+    return data as unknown as Perfil;
+  }
+
+  // 🔹 Verificar si el usuario está suspendido realmente
+  async verifySuspension(): Promise<{ isSuspended: boolean; remains?: string }> {
+    const perfil = await this.getPerfilActual();
+    if (!perfil || perfil.estado !== 'suspendido') return { isSuspended: false };
+
+    // Si tiene fecha de suspensión, verificamos si ya pasó
+    if (perfil.fecha_suspension) {
+      const now = new Date();
+      const suspensionEnd = new Date(perfil.fecha_suspension);
+
+      if (now > suspensionEnd) {
+        // La suspensión ya terminó, lo reactivamos automáticamente
+        await this.updateUserStatus(perfil.id, 'activo');
+        return { isSuspended: false };
+      }
+
+      // Calculamos cuánto tiempo queda para informarle al usuario si es necesario
+      const diffMs = suspensionEnd.getTime() - now.getTime();
+      const hours = Math.floor(diffMs / (1000 * 60 * 60));
+      const days = Math.floor(hours / 24);
+      const remains = days > 0 ? `${days} días` : `${hours} horas`;
+
+      return { isSuspended: true, remains };
+    }
+
+    // Si no tiene fecha, es permanente
+    return { isSuspended: true, remains: 'indefinido' };
   }
 
   async checkIfUserExists(email: string) {
@@ -134,7 +168,7 @@ export class SupabaseService {
     return { exists: !!data, error };
   }
 
-  async updatePerfil(datos: any) {
+  async updatePerfil(datos: Partial<Perfil> & { rol_id: string }) {
     const { data: { user } } = await this.supabase.auth.getUser();
     if (!user) throw new Error('Usuario no autenticado');
 
@@ -218,7 +252,7 @@ export class SupabaseService {
   }
 
   // 🔹 Publicaciones
-  async createPost(post: any) {
+  async createPost(post: Omit<Post, 'autor_id' | 'estado'> & { type: string, title: string, description: string, image?: string, images?: string[], category?: string, startDate?: string, endDate?: string, modality?: string, location?: string, cost?: string, subtype?: string, price?: number, priceUnit?: string, contactMethod?: string, phoneNumber?: string, productStatus?: string, availability?: string, serviceType?: string, availableHours?: string, company?: string, area?: string, period?: string, recommendation?: string }) {
     const { data: { user } } = await this.supabase.auth.getUser();
     if (!user) throw new Error('Usuario no autenticado');
 
@@ -250,6 +284,12 @@ export class SupabaseService {
       detalles.recommendation = post.recommendation;
     }
 
+    console.log('Insertando post con datos:', {
+      titulo: post.title,
+      image: post.images?.[0] || post.image,
+      images_count: post.images?.length || 0
+    });
+
     const { data, error } = await this.supabase
       .from('publicaciones')
       .insert({
@@ -257,22 +297,54 @@ export class SupabaseService {
         descripcion: post.description,
         tipo: post.type,
         autor_id: user.id,
-        estado: 'activo',
-        imagen_url: post.image || null,
+        estado: 'pendiente',
+        imagen_url: (post.images && post.images.length > 0) ? post.images[0] : (post.image || null),
+        imagenes_url: (post.images && post.images.length > 0) ? post.images : null,
         categoria: post.category,
-        detalles: detalles // Columna JSONB
+        detalles: detalles
       });
 
     return { data, error };
   }
 
-  async getPosts() {
+  async getPosts(): Promise<{ data: Post[] | null, error: any }> {
+    const { data: { user } } = await this.supabase.auth.getUser();
+
+    let query = this.supabase
+      .from('publicaciones')
+      .select('*, perfiles(nombre, apellidos, foto_url, carrera_id, roles(nombre))');
+
+    if (user) {
+      // Show active posts OR pending posts belonging to the current user
+      query = query.or(`estado.eq.activo,and(estado.eq.pendiente,autor_id.eq.${user.id})`);
+    } else {
+      // If not logged in, only show active posts
+      query = query.eq('estado', 'activo');
+    }
+
+    const { data, error } = await query.order('creado', { ascending: false });
+    return { data: data as Post[], error };
+  }
+
+  async getUserRecentPosts(userId: string, limit: number = 2) {
     const { data, error } = await this.supabase
       .from('publicaciones')
-      .select('*, perfiles(nombre, apellidos, foto_url, carrera_id, roles(nombre))')
-      .order('creado', { ascending: false });
+      .select('titulo, tipo, creado')
+      .eq('autor_id', userId)
+      .order('creado', { ascending: false })
+      .limit(limit);
 
     return { data, error };
+  }
+
+  async getAnuncios(): Promise<{ data: Anuncio[] | null, error: any }> {
+    const { data, error } = await this.supabase
+      .from('anuncios')
+      .select('*')
+      .eq('estado', 'activo')
+      .order('creado', { ascending: false });
+
+    return { data: data as Anuncio[], error };
   }
 
   // 🔹 Admin Estadísticas
@@ -299,7 +371,7 @@ export class SupabaseService {
       .eq('estado', 'pendiente');
 
     // Fallback if table doesn't exist yet
-    if (error && error.code === '42P01') {
+    if (error?.code === '42P01') {
       return { count: 0, error: null };
     }
 
@@ -326,7 +398,7 @@ export class SupabaseService {
       .select('*', { count: 'exact', head: true })
       .gte('creado', currentPeriodStart);
 
-    if (error && error.code === '42P01') {
+    if (error?.code === '42P01') {
       return 0; // Si la tabla aún no existe devolvemos 0% (útil para "reportes")
     }
 
@@ -345,7 +417,7 @@ export class SupabaseService {
 
   // Trae la fecha de creación de posts de los últimos 30 días para armar la gráfica SVG
   async getPostsForChart(days: number = 30) {
-    const startDate = new Date(new Date().getTime() - days * 24 * 60 * 60 * 1000).toISOString();
+    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
     const { data, error } = await this.supabase
       .from('publicaciones')
       .select('creado')
@@ -358,14 +430,22 @@ export class SupabaseService {
   async getPendingReportsList(limit: number = 2) {
     const { data, error } = await this.supabase
       .from('reportes')
-      .select('*')
+      .select('*, publicaciones(*), informante:perfiles!reportado_por(*)')
       .eq('estado', 'pendiente')
       .order('creado', { ascending: false })
       .limit(limit);
 
-    if (error && error.code === '42P01') {
-      return { data: [], error: null }; // Tabla aún no existe
+    if (error?.code === '42P01') {
+      return { data: [], error: null };
     }
+
+    if (data) {
+      data.forEach((r: any) => {
+        r.detalles = r.descripcion;
+        r.informante_id = r.reportado_por;
+      });
+    }
+
     return { data: data || [], error };
   }
 
@@ -373,7 +453,7 @@ export class SupabaseService {
   async getAllUsers(searchTerm?: string) {
     let query = this.supabase
       .from('perfiles')
-      .select('id, nombre, apellidos, correoInstitucional, foto_url, creado, roles(nombre), universidades(acronimo)')
+      .select('id, nombre, apellidos, correoInstitucional, foto_url, creado, estado, roles(nombre), universidades(acronimo)')
       .order('creado', { ascending: false });
 
     // Filtrado por buscador
@@ -381,8 +461,186 @@ export class SupabaseService {
       query = query.or(`nombre.ilike.%${searchTerm}%,apellidos.ilike.%${searchTerm}%,correoInstitucional.ilike.%${searchTerm}%`);
     }
 
-    // Nota: Como no tenemos todavía el campo 'estado' (baneado, activo, suspendido) en perfiles, todos saldrán activos.
     const { data, error } = await query;
-    return { data: data || [], error };
+    return { data: (data as unknown as Perfil[]) || [], error };
+  }
+
+  // 🔹 Todos los roles
+  async getRolesList() {
+    const { data, error } = await this.supabase
+      .from('roles')
+      .select('id, nombre')
+      .order('nombre');
+    return { data, error };
+  }
+
+  // 🔹 Actualizar rol de usuario
+  async updateUserRole(userId: string, roleId: string) {
+    const { data, error } = await this.supabase
+      .from('perfiles')
+      .update({ rol_id: roleId })
+      .eq('id', userId);
+    return { data, error };
+  }
+
+  // 🔹 Actualizar estado de usuario (Activo/Suspendido)
+  async updateUserStatus(userId: string, nuevoEstado: string) {
+    const { data, error } = await this.supabase
+      .from('perfiles')
+      .update({ estado: nuevoEstado })
+      .eq('id', userId);
+    return { data, error };
+  }
+
+  // 🔹 Crear reporte de publicación (FORCED REBUILD v2 - Schema check)
+  async createReport(reporte: {
+    publicacion_id: string;
+    autor_id: string;
+    informante_id: string;
+    motivo: string;
+    detalles?: string;
+  }) {
+    // ⚠️ REVISIÓN DE ESQUEMA REAL:
+    // pub_id: reporte.publicacion_id
+    // reportado_por (FK): reporte.informante_id
+    // motivo: reporte.motivo
+    // descripcion: reporte.detalles
+
+    const payload = {
+      publicacion_id: reporte.publicacion_id,
+      reportado_por: reporte.informante_id,
+      motivo: reporte.motivo,
+      descripcion: reporte.detalles || '',
+      estado: 'pendiente',
+      creado: new Date().toISOString()
+    };
+
+    console.log('Enviando reporte con payload:', payload);
+
+    return await this.supabase
+      .from('reportes')
+      .insert(payload);
+  }
+
+  // 🔹 Suspender usuario con fecha de fin
+  async suspendUser(userId: string, hours: number | null) {
+    let fechaSuspension: string | null = null;
+
+    if (hours !== null) {
+      const date = new Date();
+      date.setHours(date.getHours() + hours);
+      fechaSuspension = date.toISOString();
+    } else {
+      // Suspension permanente (ponemos una fecha muy lejana)
+      fechaSuspension = '2099-12-31T23:59:59Z';
+    }
+
+    return await this.supabase
+      .from('perfiles')
+      .update({
+        estado: 'suspendido',
+        fecha_suspension: fechaSuspension
+      })
+      .eq('id', userId);
+  }
+
+  // 🔹 Obtener reportes (Admin)
+  async getReportsList() {
+    const { data, error } = await this.supabase
+      .from('reportes')
+      .select(`
+        *,
+        publicaciones (
+          id, titulo, descripcion, imagen_url, tipo, autor_id,
+          autor:perfiles(
+            id, nombre, apellidos, foto_url, creado, correoInstitucional,
+            carrera:carrera_id(nombre),
+            universidades:universidad_id(acronimo, nombre),
+            roles:rol_id(nombre)
+          )
+        ),
+        informante:perfiles!reportado_por(
+          id, nombre, apellidos, foto_url, creado, correoInstitucional,
+          carrera:carrera_id(nombre),
+          universidades:universidad_id(acronimo, nombre),
+          roles:rol_id(nombre)
+        )
+      `)
+      .order('creado', { ascending: false });
+
+    if (data) {
+      data.forEach((r: any) => {
+        // Mapeamos para que los componentes el front sigan funcionando
+        r.detalles = r.descripcion;
+        r.informante_id = r.reportado_por;
+
+        if (r.publicaciones?.autor) {
+          r.autor = r.publicaciones.autor;
+          r.autor_id = r.publicaciones.autor.id;
+        }
+      });
+    }
+
+    return { data, error };
+  }
+
+  // 🔹 Resolver reporte
+  async updateReportStatus(reportId: string, nuevoEstado: 'resuelto' | 'rechazado') {
+    return await this.supabase
+      .from('reportes')
+      .update({ estado: nuevoEstado })
+      .eq('id', reportId);
+  }
+
+  // 🔹 Eliminar reporte definitivamente
+  async deleteReport(reportId: string) {
+    // Agregamos .select() para que Supabase nos devuelva lo que borró. 
+    // Si la data está vacía pero no hay error, significa que RLS (Row Level Security) bloqueó el DELETE.
+    return await this.supabase
+      .from('reportes')
+      .delete()
+      .eq('id', reportId)
+      .select();
+  }
+
+  // 🔹 Crear Anuncio Oficial (Admin)
+  async crearAnuncio(datos: any) {
+    return await this.supabase
+      .from('anuncios')
+      .insert({
+        titulo: datos.titulo,
+        descripcion: datos.descripcion,
+        imagen_url: datos.imagen_url,
+        contacto_url: datos.contacto_url,
+        ciudad: datos.ciudad,
+        estado: 'activo',
+        activo: true,
+        fecha_inicio: datos.fecha_inicio,
+        fecha_fin: datos.fecha_fin,
+        creado: new Date().toISOString()
+      });
+  }
+
+  async subirImagenesPublicacion(files: File[]): Promise<string[]> {
+    const { data: { user } } = await this.supabase.auth.getUser();
+    if (!user) throw new Error('Usuario no autenticado');
+
+    const urls: string[] = [];
+    for (const file of files) {
+      const ext = file.name.split('.').pop();
+      const fileName = `posts/${user.id}-${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+
+      const { error: uploadError } = await this.supabase.storage
+        .from('publicaciones')
+        .upload(fileName, file);
+
+      if (uploadError) {
+        throw new Error(`Error en Storage: ${uploadError.message}. Asegúrate de que el bucket "publicaciones" exista y permita subidas.`);
+      }
+
+      const { data } = this.supabase.storage.from('publicaciones').getPublicUrl(fileName);
+      urls.push(data.publicUrl);
+    }
+    return urls;
   }
 }

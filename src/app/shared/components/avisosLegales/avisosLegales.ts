@@ -6,7 +6,7 @@ import { ModalBase } from '../modalBase/modalBase';
   standalone: true,
   imports: [ModalBase],
   template: `
-    <app-modal-base ancho="680px" [mostrarCerrar]="true" (close)="cerrar()">
+    <app-modal-base ancho="680px" [mostrarCerrar]="true" (closed)="cerrar()">
 
       <!-- HEADER -->
       <div class="aviso-header">

@@ -1,4 +1,4 @@
-<app-modal-base ancho="550px" [mostrarCerrar]="true" (close)="close.emit()">
+<app-modal-base ancho="550px" [mostrarCerrar]="true" (closed)="closed.emit()">
     <div class="modal-content-wrapper" *ngIf="usuario">
         <div class="modal-header">
             <h2>Detalle de Usuario</h2>
@@ -8,24 +8,37 @@
             <img [src]="usuario.foto_url || 'https://ui-avatars.com/api/?name=' + usuario.nombre + '&background=random&color=fff'"
                 [alt]="usuario.nombre" class="profile-lg">
             <h3>{{ usuario.nombre }} {{ usuario.apellidos }}</h3>
-            <p class="role-text">{{ usuario.roles?.nombre || 'Alumno' }}</p>
+
+            <div class="role-management">
+                <p class="role-text" *ngIf="!isEditingRole()">{{ usuario.roles?.nombre || 'Alumno' }}</p>
+                <div class="role-selector-wrapper" *ngIf="isEditingRole()">
+                    <select class="role-select" (change)="onRoleSelect($event)" [disabled]="isProcessing()">
+                        <option value="">Seleccionar rol...</option>
+                        @for (role of roles(); track role.id) {
+                        <option [value]="role.id" [selected]="role.id === usuario.rol_id">{{ role.nombre }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
             <div class="badges-row">
-                <app-status-badge text="ACTIVO" type="active"></app-status-badge>
+                <app-status-badge [text]="(usuario.estado || 'activo').toUpperCase()"
+                    [type]="usuario.estado === 'suspendido' ? 'suspended' : (usuario.estado === 'pendiente' ? 'pending' : 'active')"></app-status-badge>
                 <div class="custom-badge-verified">VERIFICADO</div>
             </div>
         </div>
 
         <div class="details-section">
             <div class="detail-item">
-                <label>CORREO ELECTRÓNICO</label>
+                <span class="detail-label">CORREO ELECTRÓNICO</span>
                 <p>{{ usuario.correoInstitucional }}</p>
             </div>
             <div class="detail-item">
-                <label>UNIVERSIDAD</label>
+                <span class="detail-label">UNIVERSIDAD</span>
                 <p>{{ usuario.universidades?.acronimo || 'N/A' }}</p>
             </div>
             <div class="detail-item">
-                <label>FECHA DE REGISTRO</label>
+                <span class="detail-label">FECHA DE REGISTRO</span>
                 <p>{{ formatDate(usuario.creado) }}</p>
             </div>
         </div>
@@ -35,33 +48,66 @@
             en Supabase aún, pero se integra visualmente.
         -->
         <div class="activity-section">
-            <label class="section-title">Historial de Actividad</label>
+            <h4 class="section-title">Historial de Actividad</h4>
             <div class="activity-list">
+                @for (act of actividadesRecientes(); track act.titulo) {
                 <div class="activity-item">
-                    <span class="activity-dot"></span>
+                    <span class="activity-dot" [style.background-color]="act.color"></span>
                     <div class="activity-text">
-                        <p>Inició sesión recientemente</p>
-                        <small>Reciente</small>
+                        <p>{{ act.titulo }}</p>
+                        <small>{{ act.subtitulo }}</small>
                     </div>
                 </div>
+                }
             </div>
         </div>
 
         <div class="actions-group">
-            <button class="action-btn">
-                <app-icon name="user-check" [size]="16"></app-icon> Cambiar rol
+            <button class="action-btn" (click)="toggleEditRole()" [disabled]="isProcessing()">
+                <app-icon name="user-check" [size]="16"></app-icon> {{ isEditingRole() ? 'Cancelar cambio' : 'Cambiar
+                rol' }}
             </button>
-            <button class="action-btn">
+            <button class="action-btn" (click)="prepararRestablecerContrasena()" [disabled]="isProcessing()">
                 <app-icon name="refresh-cw" [size]="16"></app-icon> Restablecer contraseña
             </button>
-            <button class="action-btn danger">
-                <app-icon name="ban" [size]="16"></app-icon> Suspender cuenta
+            <button class="action-btn" [ngClass]="usuario.estado === 'suspendido' ? 'btn-active' : 'danger'"
+                (click)="prepararSuspenderCuenta()" [disabled]="isProcessing()">
+                <app-icon [name]="usuario.estado === 'suspendido' ? 'user-check' : 'ban'" [size]="16"></app-icon>
+                {{ usuario.estado === 'suspendido' ? 'Activar cuenta' : 'Suspender cuenta' }}
             </button>
         </div>
 
         <div class="modal-footer-actions">
-            <button class="btn-cancel" (click)="close.emit()">Cerrar</button>
+            <button class="btn-cancel" (click)="closed.emit()">Cerrar</button>
             <button class="btn-primario">Actualizar información</button>
         </div>
+
+        <!-- Confirmación Custom Overlay -->
+        @if (mostrarConfirmacion()) {
+        <div class="confirm-overlay">
+            <div class="confirm-box">
+                <h3>{{ confirmacionConfig().titulo }}</h3>
+                <p>{{ confirmacionConfig().mensaje }}</p>
+                <div class="confirm-actions">
+                    <button class="btn-cancel" (click)="mostrarConfirmacion.set(false)"
+                        [disabled]="isProcessing()">Cancelar</button>
+                    <button class="btn-primario"
+                        [ngClass]="{'btn-danger-custom': confirmacionConfig().tipo === 'danger'}"
+                        (click)="ejecutarConfirmacion()" [disabled]="isProcessing()">
+                        {{ isProcessing() ? 'Procesando...' : confirmacionConfig().textoBoton }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Toast / Feedback Message -->
+        @if (mensajeFeedback().visible) {
+        <div class="feedback-toast" [ngClass]="mensajeFeedback().tipo">
+            <app-icon [name]="mensajeFeedback().tipo === 'success' ? 'check-circle' : 'alert-triangle'"
+                [size]="16"></app-icon>
+            <span>{{ mensajeFeedback().mensaje }}</span>
+        </div>
+        }
     </div>
 </app-modal-base>

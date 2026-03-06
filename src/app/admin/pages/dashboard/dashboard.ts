@@ -3,17 +3,23 @@ import { StatusBadge } from '../../../shared/components/statusBadge/statusBadge'
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { ModalNuevoAviso } from '../../components/modal-nuevo-aviso/modal-nuevo-aviso';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [StatusBadge, CommonModule, IconComponent],
+  imports: [StatusBadge, CommonModule, IconComponent, ModalNuevoAviso],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard implements OnInit {
-  private supabase = inject(SupabaseService);
+  private readonly supabase = inject(SupabaseService);
+
+  isAvisoModalOpen = signal(false);
+
+  showSuccessToast = signal(false);
+  toastMessage = signal('');
 
   totalUsers = signal<number>(0);
   usersTrend = signal<number>(0);
@@ -32,8 +38,8 @@ export class Dashboard implements OnInit {
   chartPathFill = signal<string>('M0,135 L125,135 L250,135 L375,135 L500,135 L500,150 L0,150 Z');
   chartLabels = signal<string[]>(['', '', '', '', '']);
 
-  async ngOnInit() {
-    await this.loadStats();
+  ngOnInit() {
+    this.loadStats();
   }
 
   async loadStats() {
@@ -110,5 +116,18 @@ export class Dashboard implements OnInit {
       labels.push(d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }));
     }
     this.chartLabels.set(labels);
+  }
+
+  handleAvisoGuardado() {
+    this.isAvisoModalOpen.set(false);
+    this.showToast('¡Aviso oficial publicado correctamente!');
+  }
+
+  showToast(message: string) {
+    this.toastMessage.set(message);
+    this.showSuccessToast.set(true);
+    setTimeout(() => {
+      this.showSuccessToast.set(false);
+    }, 3000);
   }
 }

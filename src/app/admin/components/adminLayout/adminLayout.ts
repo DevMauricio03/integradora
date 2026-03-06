@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { SupabaseService } from '../../../core/services/supabase.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -11,7 +12,13 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminLayout {
-  private router = inject(Router);
+  private readonly router = inject(Router);
+  private readonly supabase = inject(SupabaseService);
+
+  async logout() {
+    await this.supabase.signOut();
+    this.router.navigate(['/auth/bienvenida']);
+  }
 
   getTitle(): string {
     const url = this.router.url;

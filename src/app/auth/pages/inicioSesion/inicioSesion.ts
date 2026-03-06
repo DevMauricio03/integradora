@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { form, required, email, submit, FormField, SchemaPathTree, maxLength, pattern } from '@angular/forms/signals';
@@ -20,8 +20,9 @@ interface LoginFormModel {
   imports: [Navbar, RouterLink, FormField],
   templateUrl: './inicioSesion.html',
   styleUrl: './inicioSesion.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InicioSesion {
+export class InicioSesion implements OnInit {
 
   /** 
    * Signal que almacena el estado del formulario. 
@@ -49,10 +50,9 @@ export class InicioSesion {
   loading = signal(false);
   errorMensaje = signal('');
 
-  constructor(
-    private supabaseService: SupabaseService,
-    private router: Router
-  ) { }
+  private readonly supabaseService = inject(SupabaseService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   /**
    * Al iniciar, verificamos si existe un correo guardado por la funcionalidad 'Recordarme'.
@@ -60,9 +60,15 @@ export class InicioSesion {
   ngOnInit() {
     const savedEmail = localStorage.getItem('remember_email');
     if (savedEmail) {
-      // Actualizamos el signal atómicamente
       this.loginModel.update(m => ({ ...m, email: savedEmail, recordarme: true }));
     }
+
+    // Si venimos de un redireccionamiento por suspensión
+    this.route.queryParams.subscribe(params => {
+      if (params['error'] === 'cuenta_suspendida') {
+        this.errorMensaje.set('Tu sesión ha finalizado porque tu cuenta se encuentra suspendida.');
+      }
+    });
   }
 
   /**
@@ -88,18 +94,26 @@ export class InicioSesion {
       try {
         const { email, password, recordarme } = this.loginModel();
 
-        // Intento de autenticación con Supabase
         const { error } = await this.supabaseService.signIn(email, password);
 
         if (error) {
           // Si hay error en Supabase, verificamos si es por el correo o la contraseña
           const { exists } = await this.supabaseService.checkIfUserExists(email);
 
-          if (!exists) {
-            this.errorMensaje.set('El correo electrónico no está registrado.');
-          } else {
+          if (exists) {
             this.errorMensaje.set('La contraseña es incorrecta. Inténtalo de nuevo.');
+          } else {
+            this.errorMensaje.set('El correo electrónico no está registrado.');
           }
+          return;
+        }
+
+        // Verificamos si la cuenta está suspendida antes de dejarlo entrar
+        const perfil = await this.supabaseService.getPerfilActual();
+        if (perfil?.estado === 'suspendido') {
+          // Si está suspendido, le cerramos la sesión y le mandamos el error
+          await this.supabaseService.signOut();
+          this.errorMensaje.set('Tu cuenta ha sido suspendida. Contacta a administración para más detalles.');
           return;
         }
 
@@ -113,6 +127,7 @@ export class InicioSesion {
         // Navegación al dashboard tras éxito
         this.router.navigate(['/user/feed']);
       } catch (err) {
+        console.error('Error inesperado en inicio de sesión:', err);
         this.errorMensaje.set('Ocurrió un error inesperado. Inténtalo más tarde.');
       } finally {
         this.loading.set(false);

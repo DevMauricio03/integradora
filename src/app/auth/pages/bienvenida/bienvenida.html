@@ -73,8 +73,8 @@
 
     <!-- Ilustración -->
     <div class="contenedor-ilustracion">
-      <div class="">
-        <!-- Aquí puedes colocar tu imagen -->
+      <div class="wrapper-imagen">
+        <!-- Restaurando imagen original a petición del usuario -->
         <img src="https://cdn.milenio.com/uploads/media/2022/09/29/despues-de-dos-anos-de_0_53_1200_747.jpg"
           alt="Estudiantes" />
       </div>
@@ -116,23 +116,27 @@
       <!-- Enlaces Secundarios -->
       <div class="enlaces-secundarios">
 
-        <div class="tarjeta-enlace" routerLink="/auth/soporte">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke="#135BEC" stroke-width="2" />
-            <path d="M12 16V12" stroke="#135BEC" stroke-width="2" stroke-linecap="round" />
-            <path d="M12 8H12.01" stroke="#135BEC" stroke-width="2" stroke-linecap="round" />
+        <button class="tarjeta-enlace" routerLink="/auth/soporte">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"
+              stroke="var(--primary)" stroke-width="2" />
+            <path d="M12 16V12" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" />
+            <path d="M12 8H12.01" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" />
           </svg>
           <span>Ayuda</span>
-        </div>
+        </button>
 
-        <div class="tarjeta-enlace" (click)="abrirAcercaDe()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke="#8B5CF6" stroke-width="2" />
-            <path d="M12 16V12" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" />
-            <path d="M12 8H12.01" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" />
+        <button class="tarjeta-enlace" (click)="abrirAcercaDe()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"
+              stroke="var(--secondary-purple)" stroke-width="2" />
+            <path d="M12 16V12" stroke="var(--secondary-purple)" stroke-width="2" stroke-linecap="round" />
+            <path d="M12 8H12.01" stroke="var(--secondary-purple)" stroke-width="2" stroke-linecap="round" />
           </svg>
           <span>Acerca de</span>
-        </div>
+        </button>
 
       </div>
 
@@ -141,7 +145,7 @@
     <!-- Pie de Página -->
     <div class="contenedor-footer">
       <div class="enlaces-footer">
-        <span class="enlace-footer" (click)="abrirAviso()">Aviso de Privacidad</span>
+        <button class="enlace-footer" (click)="abrirAviso()">Aviso de Privacidad</button>
         <span>·</span>
         <span class="enlace-footer">Términos y Condiciones</span>
       </div>
@@ -162,8 +166,8 @@
 
 <!-- MODAL ACERCA DE -->
 @if (mostrarAcercaDe()) {
-<div class="modal-overlay" (click)="cerrarAcercaDe()">
-  <div class="modal-contenido" (click)="$event.stopPropagation()">
+<button class="modal-overlay" (click)="cerrarAcercaDe()" (keydown.escape)="cerrarAcercaDe()">
+  <div class="modal-contenido" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
     <div class="modal-encabezado">
       <h3 class="modal-titulo">Acerca de Tuunka</h3>
       <button class="boton-cerrar" (click)="cerrarAcercaDe()">
@@ -194,5 +198,5 @@
       </div>
     </div>
   </div>
-</div>
+</button>
 }

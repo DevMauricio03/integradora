@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostStoreService } from '../../../core/services/post-store.service';
 import { PostCardComponent } from "../../../shared/components/Post-card/post-card/post-card";
@@ -12,8 +12,8 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
   styleUrls: ['./experiencias.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Experiencias {
-  private postStore = inject(PostStoreService);
+export class Experiencias implements OnInit {
+  private readonly postStore = inject(PostStoreService);
 
   // Filtramos los posts para mostrar solo los de tipo 'experiencia'
   posts = computed(() =>

@@ -198,12 +198,41 @@
 }
 
 .clickable-row {
-    cursor: pointer;
+    position: relative;
     transition: background-color 0.2s;
 }
 
 .clickable-row:hover {
     background: #F8F9FC;
+}
+
+.row-action-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+/* El truco del "stretched link" cubre toda la fila que tenga position: relative */
+.row-action-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.row-action-btn:focus-visible::after {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
 }
 
 .table-footer {

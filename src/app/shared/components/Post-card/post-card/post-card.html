@@ -15,6 +15,12 @@
         <strong class="author">{{ author }}</strong>
         <span class="meta">
           {{ role }} · {{ time }} @if (category) { · {{ category }} }
+          @if (estado === 'pendiente') {
+          <span class="pending-badge">
+            <app-icon name="clock" [size]="12"></app-icon>
+            Pendiente de moderación
+          </span>
+          }
         </span>
       </div>
     </div>
@@ -104,19 +110,42 @@
   </div>
   }
 
-  @if (image) {
-  <div class="post-image">
-    <img [src]="image" alt="Imagen publicación" />
+  <!-- Galería de Imágenes Estilo Facebook -->
+  @if ((images && images.length > 0) || image) {
+  <div class="post-gallery" [attr.data-count]="images && images.length > 0 ? images.length : 1">
+    @if (images && images.length > 0) {
+    @for (img of images.slice(0, 4); track img; let i = $index) {
+    <div class="gallery-item" (click)="openImage(img)">
+      <img [src]="img" alt="Foto de publicación" loading="lazy">
+    </div>
+    }
+    } @else if (image) {
+    <div class="gallery-item single" (click)="openImage(image)">
+      <img [src]="image" alt="Foto de publicación" loading="lazy">
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Lightbox Modal -->
+  @if (selectedImage()) {
+  <div class="image-modal" (click)="closeImage()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <img [src]="selectedImage()" alt="Imagen ampliada">
+      <button class="close-modal" (click)="closeImage()">
+        <app-icon name="x" [size]="24"></app-icon>
+      </button>
+    </div>
   </div>
   }
 
   <div class="post-footer">
-    @if (!showControls) {
-    <button type="button" class="footer-btn report">
+    @if (!showControls && badge?.toLowerCase() !== 'aviso oficial') {
+    <button type="button" class="footer-btn report" (click)="notifyReport()">
       <app-icon name="flag" [size]="18"></app-icon>
       <span>Reportar</span>
     </button>
-    } @else {
+    } @else if (showControls) {
     <div class="management-btns">
       <button type="button" class="footer-btn edit">
         <app-icon name="settings" [size]="18"></app-icon>

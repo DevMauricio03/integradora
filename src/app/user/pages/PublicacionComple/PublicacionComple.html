@@ -1,29 +1,53 @@
 <div class="success-page">
-    <div class="success-icon-container">
-        <app-icon name="check-circle" [size]="48"></app-icon>
-        <app-icon name="plus-circle" [size]="20" class="confetti-icon"></app-icon>
+    <div class="success-icon-container" style="background: var(--warning-light);">
+        <app-icon name="clock" [size]="48" style="color: var(--warning);"></app-icon>
     </div>
 
-    <h1>¡Publicación creada con éxito!</h1>
+    <h1>Solicitud enviada al administrador</h1>
 
     <p class="success-description">
-        Tu publicación ya es visible para la comunidad. Puedes impulsarla ahora para obtener mayor alcance o hacerlo más
-        tarde desde tu perfil.
+        Tu publicación ha sido enviada con éxito. Para mantener la seguridad de la comunidad, un administrador debe
+        revisarla antes de que sea pública. Te notificaremos en cuanto sea aprobada.
     </p>
 
-    <div class="post-preview-card">
+    <div class="post-preview-card" *ngIf="post(); else fallback">
         <div class="post-thumb">
-            <app-icon name="image" [size]="32"></app-icon>
+            <img *ngIf="post().image" [src]="post().image" class="thumb-img" alt="Vista previa">
+            <app-icon *ngIf="!post().image" name="image" [size]="32"></app-icon>
         </div>
         <div class="post-info">
             <div class="post-badge-row">
-                <span class="type-badge">EVENTO</span>
-                <span class="status-text">Recién publicado</span>
+                <span class="type-badge">{{ post().type | uppercase }}</span>
+                <span class="status-text">Solicitud enviada</span>
             </div>
-            <h3>Hackathon Universitaria 2024</h3>
-            <span class="post-location">Auditorio B, Campus Central</span>
+            <h3>{{ post().title }}</h3>
+            <span class="post-location" *ngIf="post().location">
+                <app-icon name="map-pin" [size]="14"></app-icon> {{ post().location }}
+            </span>
+            <span class="post-location" *ngIf="post().company">
+                <app-icon name="briefcase" [size]="14"></app-icon> {{ post().company }}
+            </span>
+            <span class="post-location" *ngIf="post().price">
+                <app-icon name="dollar-sign" [size]="14"></app-icon> ${{ post().price }} {{ post().priceUnit }}
+            </span>
         </div>
     </div>
+
+    <ng-template #fallback>
+        <div class="post-preview-card">
+            <div class="post-thumb">
+                <app-icon name="image" [size]="32"></app-icon>
+            </div>
+            <div class="post-info">
+                <div class="post-badge-row">
+                    <span class="type-badge">PUBLICACIÓN</span>
+                    <span class="status-text">Historial</span>
+                </div>
+                <h3>Título de tu publicación</h3>
+                <span class="post-location">Cargando detalles...</span>
+            </div>
+        </div>
+    </ng-template>
 
     <div class="actions-row">
         <button class="btn-impulso" (click)="irAImpulso()">

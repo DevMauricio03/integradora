@@ -172,6 +172,17 @@
   margin-top: 2px;
 }
 
+.error-global {
+  background-color: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #B91C1C;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+}
+
 /* BOTÓN OJO */
 .boton-ojo {
   position: absolute;

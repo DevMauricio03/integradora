@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Navbar } from '../../../shared/components/navbar/navbar';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 @Component({
@@ -16,7 +15,7 @@ export class SoporteAuth {
   enviado = signal(false);
   ticketNumber = signal('TK-48291');
 
-  constructor(private router: Router) { }
+  constructor(private readonly router: Router) { }
 
   enviarMensaje(event: Event) {
     event.preventDefault();

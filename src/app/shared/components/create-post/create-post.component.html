@@ -21,7 +21,6 @@
       </p>
     </div>
 
-    <!-- Cambio a submit tradicional enlazado al Signal Forms -->
     <form class="main-form" (submit)="goToPreview($event)" novalidate>
 
       <!-- TIPO DE PUBLICACIÓN -->
@@ -29,7 +28,10 @@
         <h3 class="section-label">TIPO DE PUBLICACIÓN</h3>
         <div class="type-grid">
           @for (type of types; track type.id) {
-          <div class="type-card" [class.selected]="postModel().type === type.id" (click)="selectType(type.id)">
+          <button type="button" class="type-card" [class.selected]="postModel().type === type.id"
+            [attr.data-type]="type.id" (click)="selectType(type.id)" (keydown.enter)="selectType(type.id)"
+            (keydown.space)="selectType(type.id)"
+            style="background: none; border: inherit; font: inherit; text-align: inherit; color: inherit; padding: 0; cursor: pointer;">
             <div class="type-icon-wrapper">
               <app-icon [name]="$any(type.icon)" [size]="24"></app-icon>
               @if (postModel().type === type.id) {
@@ -40,7 +42,7 @@
             </div>
             <span class="type-name">{{type.name}}</span>
             <span class="type-desc">{{type.desc}}</span>
-          </div>
+          </button>
           }
         </div>
       </div>
@@ -51,7 +53,10 @@
         <h3 class="section-label">¿QUÉ OFRECES?</h3>
         <div class="subtype-grid">
           @for (st of subtypes; track st.id) {
-          <div class="subtype-card" [class.selected]="selectedSubtype() === st.id" (click)="selectSubtype($any(st.id))">
+          <button type="button" class="subtype-card" [class.selected]="selectedSubtype() === st.id"
+            (click)="selectSubtype($any(st.id))" (keydown.enter)="selectSubtype($any(st.id))"
+            (keydown.space)="selectSubtype($any(st.id))"
+            style="background: none; border: inherit; font: inherit; text-align: inherit; color: inherit; padding: 0; cursor: pointer; display: flex;">
             <div class="subtype-icon">
               <app-icon [name]="$any(st.icon)" [size]="20"></app-icon>
             </div>
@@ -59,7 +64,7 @@
               <span class="st-name">{{st.name}}</span>
               <span class="st-desc">{{st.desc}}</span>
             </div>
-          </div>
+          </button>
           }
         </div>
       </div>
@@ -70,14 +75,14 @@
 
         <!-- Título Dinámico -->
         <div class="form-field">
-          <label>
+          <label for="postTitle">
             @switch (currentType()) {
             @case ('evento') { Título del evento * }
             @case ('oferta') { Título del {{ selectedSubtype() }} * }
             @default { Título de la publicación * }
             }
           </label>
-          <input type="text" [formField]="postForm.title"
+          <input id="postTitle" type="text" [formField]="postForm.title"
             [placeholder]="currentType() === 'evento' ? 'Ej: RoboTICup 2026' : 'Ej: Importante: Cierre de laboratorio'"
             [class.error-border]="postForm.title().touched() && postForm.title().invalid()">
           @if (postForm.title().touched() && postForm.title().invalid()) {
@@ -88,8 +93,8 @@
 
         <!-- Descripción Dinámica -->
         <div class="form-field">
-          <label>Descripción *</label>
-          <textarea rows="4" [formField]="postForm.description"
+          <label for="postDesc">Descripción *</label>
+          <textarea id="postDesc" rows="4" [formField]="postForm.description"
             [placeholder]="currentType() === 'evento' ? 'Detalles del evento, ponentes, agenda...' : 'Escribe los detalles importantes aquí...'"
             [class.error-border]="postForm.description().touched() && postForm.description().invalid()"></textarea>
           @if (postForm.description().touched() && postForm.description().invalid()) {
@@ -102,26 +107,26 @@
         @if (currentType() === 'evento') {
         <div class="form-row">
           <div class="form-field">
-            <label>Fecha y hora de inicio *</label>
+            <label for="postStartDate">Fecha y hora de inicio *</label>
             <div class="input-with-icon">
               <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
-              <input type="datetime-local" [formField]="postForm.startDate">
+              <input id="postStartDate" type="datetime-local" [formField]="postForm.startDate">
             </div>
           </div>
           <div class="form-field">
-            <label>Fecha y hora de fin *</label>
+            <label for="postEndDate">Fecha y hora de fin *</label>
             <div class="input-with-icon">
               <app-icon name="calendar" [size]="18" class="field-icon"></app-icon>
-              <input type="datetime-local" [formField]="postForm.endDate">
+              <input id="postEndDate" type="datetime-local" [formField]="postForm.endDate">
             </div>
           </div>
         </div>
         <div class="form-row">
           <div class="form-field">
-            <label>Modalidad *</label>
+            <label for="postModality">Modalidad *</label>
             <div class="select-container">
               <app-icon name="check" [size]="18" class="field-icon"></app-icon>
-              <select [formField]="postForm.modality">
+              <select id="postModality" [formField]="postForm.modality">
                 @for (mod of modalities; track mod) {
                 <option [value]="mod">{{mod}}</option>
                 }
@@ -130,18 +135,19 @@
             </div>
           </div>
           <div class="form-field">
-            <label>Ubicación *</label>
+            <label for="postLocation">Ubicación *</label>
             <div class="input-with-icon">
               <app-icon name="map-pin" [size]="18" class="field-icon"></app-icon>
-              <input type="text" [formField]="postForm.location" placeholder="Ej: Auditorio Principal">
+              <input id="postLocation" type="text" [formField]="postForm.location"
+                placeholder="Ej: Auditorio Principal">
             </div>
           </div>
         </div>
         <div class="form-field">
-          <label>Costo (opcional)</label>
+          <label for="postCost">Costo (opcional)</label>
           <div class="input-with-icon">
             <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
-            <input type="text" [formField]="postForm.cost" placeholder="Ej: Gratuito o $50.00">
+            <input id="postCost" type="text" [formField]="postForm.cost" placeholder="Ej: Gratuito o $50.00">
           </div>
         </div>
         }
@@ -150,11 +156,11 @@
         @if (currentType() === 'oferta' && selectedSubtype() === 'producto') {
         <div class="form-row">
           <div class="form-field">
-            <label>Precio *</label>
+            <label for="postPrice">Precio *</label>
             <div class="price-input-group">
               <div class="input-with-icon">
                 <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
-                <input type="number" [formField]="postForm.price" placeholder="0.00">
+                <input id="postPrice" type="number" [formField]="postForm.price" placeholder="0.00">
               </div>
               <div class="select-container">
                 <select [formField]="postForm.priceUnit" class="unit-select">
@@ -166,10 +172,10 @@
             </div>
           </div>
           <div class="form-field">
-            <label>Estado del producto</label>
+            <label for="postProductStatus">Estado del producto</label>
             <div class="select-container">
               <app-icon name="check" [size]="18" class="field-icon"></app-icon>
-              <select [formField]="postForm.productStatus">
+              <select id="postProductStatus" [formField]="postForm.productStatus">
                 @for (status of productStatuses; track status) {
                 <option [value]="status">{{status}}</option>
                 }
@@ -180,10 +186,10 @@
         </div>
         <div class="form-row">
           <div class="form-field">
-            <label>Disponibilidad</label>
+            <label for="postAvailability">Disponibilidad</label>
             <div class="select-container">
               <app-icon name="clock" [size]="18" class="field-icon"></app-icon>
-              <select [formField]="postForm.availability">
+              <select id="postAvailability" [formField]="postForm.availability">
                 @for (av of availabilities; track av) {
                 <option [value]="av">{{av}}</option>
                 }
@@ -192,10 +198,10 @@
             </div>
           </div>
           <div class="form-field">
-            <label>Método de contacto *</label>
+            <label for="postContactMethodProduct">Método de contacto *</label>
             <div class="select-container">
               <app-icon name="user" [size]="18" class="field-icon"></app-icon>
-              <select [formField]="postForm.contactMethod">
+              <select id="postContactMethodProduct" [formField]="postForm.contactMethod">
                 @for (method of contactMethods; track method) {
                 <option [value]="method">{{method}}</option>
                 }
@@ -205,10 +211,11 @@
           </div>
         </div>
         <div class="form-field">
-          <label>Número</label>
+          <label for="postPhoneNumberProduct">Número</label>
           <div class="input-with-icon">
             <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
-            <input type="text" [formField]="postForm.phoneNumber" placeholder="951 123 4455">
+            <input id="postPhoneNumberProduct" type="text" [formField]="postForm.phoneNumber"
+              placeholder="951 123 4455">
           </div>
         </div>
         }
@@ -216,10 +223,10 @@
         <!-- CAMPOS ESPECÍFICOS: OFERTA - SERVICIO -->
         @if (currentType() === 'oferta' && selectedSubtype() === 'servicio') {
         <div class="form-field">
-          <label>Tipo de servicio *</label>
+          <label for="postServiceType">Tipo de servicio *</label>
           <div class="select-container">
             <app-icon name="tag" [size]="18" class="field-icon"></app-icon>
-            <select [formField]="postForm.serviceType">
+            <select id="postServiceType" [formField]="postForm.serviceType">
               <option value="" disabled>Selecciona una categoría</option>
               <option value="asesoria">Asesoría Académica</option>
               <option value="tecnico">Servicio Técnico</option>
@@ -229,11 +236,11 @@
           </div>
         </div>
         <div class="form-field">
-          <label>Precio *</label>
+          <label for="postPriceService">Precio *</label>
           <div class="price-input-group">
             <div class="input-with-icon">
               <app-icon name="dollar-sign" [size]="18" class="field-icon"></app-icon>
-              <input type="number" [formField]="postForm.price" placeholder="0.00">
+              <input id="postPriceService" type="number" [formField]="postForm.price" placeholder="0.00">
             </div>
             <div class="select-container">
               <select [formField]="postForm.priceUnit" class="unit-select">
@@ -246,17 +253,18 @@
         </div>
         <div class="form-row">
           <div class="form-field">
-            <label>Horarios disponibles</label>
+            <label for="postAvailableHours">Horarios disponibles</label>
             <div class="input-with-icon">
               <app-icon name="clock" [size]="18" class="field-icon"></app-icon>
-              <input type="text" [formField]="postForm.availableHours" placeholder="Ej: Lun-Vie 14:00 - 18:00">
+              <input id="postAvailableHours" type="text" [formField]="postForm.availableHours"
+                placeholder="Ej: Lun-Vie 14:00 - 18:00">
             </div>
           </div>
           <div class="form-field">
-            <label>Método de contacto *</label>
+            <label for="postContactMethodService">Método de contacto *</label>
             <div class="select-container">
               <app-icon name="user" [size]="18" class="field-icon"></app-icon>
-              <select [formField]="postForm.contactMethod">
+              <select id="postContactMethodService" [formField]="postForm.contactMethod">
                 @for (method of contactMethods; track method) {
                 <option [value]="method">{{method}}</option>
                 }
@@ -266,10 +274,11 @@
           </div>
         </div>
         <div class="form-field">
-          <label>Número</label>
+          <label for="postPhoneNumberService">Número</label>
           <div class="input-with-icon">
             <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
-            <input type="text" [formField]="postForm.phoneNumber" placeholder="951 123 4455">
+            <input id="postPhoneNumberService" type="text" [formField]="postForm.phoneNumber"
+              placeholder="951 123 4455">
           </div>
         </div>
         }
@@ -278,17 +287,17 @@
         @if (currentType() === 'experiencia') {
         <div class="form-row">
           <div class="form-field">
-            <label>Empresa *</label>
-            <input type="text" [formField]="postForm.company" placeholder="Nombre de la empresa">
+            <label for="postCompany">Empresa *</label>
+            <input id="postCompany" type="text" [formField]="postForm.company" placeholder="Nombre de la empresa">
           </div>
           <div class="form-field">
-            <label>Área *</label>
-            <input type="text" [formField]="postForm.area" placeholder="Ej: Desarrollo Web">
+            <label for="postArea">Área *</label>
+            <input id="postArea" type="text" [formField]="postForm.area" placeholder="Ej: Desarrollo Web">
           </div>
         </div>
         <div class="form-field">
-          <label>Periodo *</label>
-          <input type="text" [formField]="postForm.period" placeholder="Ej: Enero 2024 - Junio 2024">
+          <label for="postPeriod">Periodo *</label>
+          <input id="postPeriod" type="text" [formField]="postForm.period" placeholder="Ej: Enero 2024 - Junio 2024">
         </div>
         }
 
@@ -296,31 +305,51 @@
 
       <!-- Imágenes -->
       <div class="section-group">
-        <h3 class="section-label">Imágenes o Documentos</h3>
-        <div class="upload-zone" (click)="fileInput.click()">
-          <input type="file" #fileInput (change)="handleFile($event)" style="display: none">
+        <h3 class="section-label">
+          <app-icon name="image" [size]="16" style="color: #2563eb;"></app-icon>
+          Imágenes o Documentos
+        </h3>
+        <button type="button" class="upload-zone" (click)="fileInput.click()" (keydown.enter)="fileInput.click()"
+          (keydown.space)="fileInput.click()"
+          style="background: none; border: inherit; font: inherit; color: inherit; width: 100%; cursor: pointer;">
+          <input type="file" #fileInput (change)="handleFile($event)" style="display: none"
+            accept="image/png, image/jpeg, image/webp" multiple>
           <div class="upload-content">
-            <div class="upload-icon-circle">
-              <app-icon name="upload" [size]="20"></app-icon>
-            </div>
-            <h4>Haz clic para subir o arrastra archivos aquí</h4>
-            <p>Soporta JPG, PNG, PDF (Max 10MB)</p>
-            @if (postModel().image) {
-            <div class="file-ready">
-              <app-icon name="check" [size]="14"></app-icon>
-              <span>Archivo cargado</span>
+            @if (postModel().images.length > 0) {
+            <div class="multi-preview-grid">
+              @for (img of postModel().images; track img; let i = $index) {
+              <div class="preview-box">
+                <img [src]="img" alt="Preview">
+                <button type="button" class="remove-img-btn" (click)="removeImage(i); $event.stopPropagation()">
+                  <app-icon name="x" [size]="14"></app-icon>
+                </button>
+              </div>
+              }
+              @if (postModel().images.length < 4) { <div class="add-more-box"
+                (click)="fileInput.click(); $event.stopPropagation()">
+                <app-icon name="plus" [size]="20"></app-icon>
+                <span>Añadir</span>
             </div>
             }
           </div>
-        </div>
+          <p class="upload-hint">{{ postModel().images.length }} de 4 imágenes seleccionadas</p>
+          } @else {
+          <div class="upload-icon-circle">
+            <app-icon name="upload" [size]="20"></app-icon>
+          </div>
+          <h4>Haz clic para <span class="highlight">subir</span> hasta 4 fotos</h4>
+          <p>Soporta JPG, PNG, WEBP (Max 10MB)</p>
+          }
       </div>
+      </button>
+  </div>
 
-      <div class="form-actions">
-        <button type="button" class="btn-cancelar" (click)="cancel()">Cancelar</button>
-        <button type="submit" class="btn-siguiente">Siguiente</button>
-      </div>
+  <div class="form-actions">
+    <button type="button" class="btn-cancelar" (click)="cancel()">Cancelar</button>
+    <button type="submit" class="btn-siguiente">Siguiente</button>
+  </div>
 
-    </form>
+  </form>
   </div>
   }
 
@@ -334,7 +363,7 @@
     <div class="preview-card-box">
       <app-post-card [author]="'Tu Perfil'" [role]="'Estudiante'" [time]="'Ahora'" [title]="postModel().title!"
         [content]="postModel().description!" [badge]="postModel().type!" [category]="postModel().category!"
-        [image]="postModel().image!" [details]="postModel()" />
+        [image]="postModel().images[0]" [images]="postModel().images" [details]="postModel()" />
     </div>
 
     <div class="preview-footer-actions">
@@ -348,11 +377,13 @@
   }
 
   <footer class="legal-footer">
-    Al publicar, aceptas las <span (click)="openRules()" class="rules-link">Normas de la Comunidad</span> de Tuunka.
+    Al publicar, aceptas las <button type="button" (click)="openRules()" class="rules-link"
+      style="background: none; border: none; font: inherit; color: var(--primary-color); cursor: pointer; text-decoration: underline; padding: 0;">Normas
+      de la Comunidad</button> de Tuunka.
   </footer>
 
 </main>
 
 @if (showRules()) {
-<app-normas-comunidad (close)="closeRules()"></app-normas-comunidad>
+<app-normas-comunidad (closed)="closeRules()"></app-normas-comunidad>
 }

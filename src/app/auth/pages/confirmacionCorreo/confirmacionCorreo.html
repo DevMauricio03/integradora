@@ -1,1 +1,61 @@
-<p>confirmacionCorreo works!</p>,
+<app-navbar title="Verificación">
+    <span navbar-right class="navbar-help">
+        ¿Necesitas ayuda?
+    </span>
+</app-navbar>
+
+<div class="contenedor">
+
+    <div class="card">
+
+        <!-- ICONO CHECK MAIL -->
+        <div class="icono-wrapper">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z"
+                    stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M22 6L12 13L2 6" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M9 12L11 14L15 10" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </div>
+
+        <!-- TÍTULO -->
+        <h1>¡Correo confirmado!</h1>
+
+        <!-- DESCRIPCIÓN -->
+        <p class="descripcion">
+            Tu dirección de correo electrónico ha sido verificada exitosamente.
+            Ya puedes acceder a tu cuenta de Tuunka.
+        </p>
+
+        <!-- INFO BOX -->
+        <div class="info-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="info-icon">
+                <circle cx="12" cy="12" r="10" stroke="var(--primary)" stroke-width="2" />
+                <path d="M12 16V12M12 8H12.01" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <span>
+                Si no solicitaste esta verificación, por favor
+                contacta al soporte de inmediato.
+            </span>
+        </div>
+
+        <!-- BOTÓN INICIAR SESIÓN -->
+        <button class="boton-primario" routerLink="/auth/inicio-sesion">
+            Iniciar sesión
+        </button>
+
+        <!-- LINK VOLVER -->
+        <button class="link-volver" routerLink="/auth/bienvenida">
+            ← Volver al inicio
+        </button>
+
+    </div>
+
+    <!-- COPYRIGHT -->
+    <div class="copyright">
+        © 2026 Tuunka. Todos los derechos reservados.
+    </div>
+
+</div>

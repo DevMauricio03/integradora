@@ -1,83 +1,96 @@
-<app-modal-base ancho="600px" [mostrarCerrar]="true" (close)="close.emit()">
-    <div class="modal-content-wrapper">
+<app-modal-base ancho="600px" [mostrarCerrar]="true" (closed)="closed.emit()">
+    <div class="modal-content-wrapper" *ngIf="reporte">
         <div class="modal-header">
-            <h2>Detalle de Reporte ID # 12K3-2</h2>
+            <h2>Detalle de Reporte #{{ reporte.id?.slice(0, 8) }}</h2>
         </div>
 
         <!-- Alert Status -->
-        <div class="report-status-alert">
+        <div class="report-status-alert" [ngClass]="reporte.estado">
             <app-icon name="info" [size]="20"></app-icon>
             <div class="alert-texts">
-                <strong>En proceso de revisión</strong>
-                <span>Asignado a tu cuenta de administrador</span>
+                <strong>Estado: {{ reporte.estado | uppercase }}</strong>
+                <span>Reportado el {{ reporte.creado | date:'medium' }}</span>
             </div>
         </div>
 
         <!-- Motivo del reporte -->
         <div class="reason-section">
-            <label class="section-label">MOTIVO DEL REPORTE</label>
+            <span class="section-label">MOTIVO DEL REPORTE</span>
             <div class="reason-content">
-                <h3>Spam o Publicidad no deseada</h3>
-                <p>"Este usuario está publicando repetidamente enlaces para vender entradas de un evento externo no
-                    autorizado."</p>
+                <h3>{{ reporte.motivo }}</h3>
+                <p *ngIf="reporte.detalles">"{{ reporte.detalles }}"</p>
             </div>
             <div class="reporter-info">
-                <span>Por <strong>Juan Pérez</strong></span>
-                <span class="dot-separator">•</span>
-                <span>Hace 2 horas</span>
+                <img [src]="reporte.informante?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte.informante?.nombre + '+' + reporte.informante?.apellidos + '&background=random&color=fff'"
+                    class="mini-avatar" alt="Avatar informante">
+                <div class="reporter-meta">
+                    <span>Por <strong>{{ reporte.informante?.nombre }} {{ reporte.informante?.apellidos
+                            }}</strong></span>
+                    <span class="dot-separator">•</span>
+                    <span>{{ reporte.informante?.carrera?.nombre }}</span>
+                </div>
             </div>
         </div>
 
         <!-- Vista previa del contenido -->
         <div class="preview-section">
-            <label class="section-label">VISTA PREVIA DEL CONTENIDO</label>
+            <span class="section-label">VISTA PREVIA DEL CONTENIDO</span>
             <div class="content-preview-card">
                 <div class="author-row">
-                    <div class="mini-avatar"></div>
+                    <img [src]="reporte.autor?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte.autor?.nombre + '+' + reporte.autor?.apellidos + '&background=random&color=fff'"
+                        class="mini-avatar" alt="Avatar autor">
                     <div class="author-meta">
-                        <span class="user-handle">Usuario Reportado</span>
-                        <span class="post-time">@usuario_rep • 3h</span>
+                        <span class="user-handle">{{ reporte.autor?.nombre }} {{ reporte.autor?.apellidos }}</span>
+                        <span class="post-time">{{ reporte.publicaciones?.tipo | uppercase }}</span>
                     </div>
                 </div>
                 <div class="post-body">
-                    <h4>¡ÚLTIMAS ENTRADAS DISPONIBLES! 🔥🔥🔥</h4>
-                    <p>Compra tus entradas para la fiesta de fin de año en el siguiente enlace. No te quedes fuera.</p>
-                    <a href="https://entradas-externas.com/buy..."
-                        class="post-link">https://entradas-externas.com/buy...</a>
+                    <h4>{{ reporte.publicaciones?.titulo }}</h4>
+                    <p>{{ reporte.publicaciones?.descripcion }}</p>
                 </div>
-                <div class="post-image-placeholder">
-                    <app-icon name="image" [size]="32" class="placeholder-icon"></app-icon>
+                <div class="post-image-placeholder" *ngIf="reporte.publicaciones?.imagen_url">
+                    <img [src]="reporte.publicaciones?.imagen_url" style="width: 100%; border-radius: 8px;"
+                        alt="Publicación reportada">
                 </div>
-            </div>
-        </div>
-
-        <!-- Autor del contenido -->
-        <div class="user-profile-head">
-            <img src="https://i.pravatar.cc/150?u=1" alt="Ana García" class="profile-lg">
-            <h3>Ana García</h3>
-            <p class="role-text">Estudiante de Ingeniería</p>
-            <div class="badges-row">
-                <app-status-badge text="ACTIVO" type="active"></app-status-badge>
-                <div class="custom-badge-verified">VERIFICADO</div>
             </div>
         </div>
 
         <!-- Acciones -->
-        <div class="actions-group">
-            <button class="action-btn danger">
-                <app-icon name="ban" [size]="16"></app-icon> Descartar reporte
+        <div class="actions-group" *ngIf="reporte.estado === 'pendiente' && !isProcessing()">
+            <button class="action-btn success" (click)="descartarReporte()">
+                <app-icon name="check" [size]="16"></app-icon> Descartar reporte
             </button>
-            <button class="action-btn danger">
+            <button class="action-btn danger" (click)="eliminarPublicacion()">
                 <app-icon name="trash-2" [size]="16"></app-icon> Eliminar publicación
             </button>
-            <button class="action-btn danger">
-                <app-icon name="ban" [size]="16"></app-icon> Suspender cuenta
-            </button>
+
+            <div class="suspension-wrapper">
+                <button class="action-btn danger" (click)="toggleSuspension()">
+                    <app-icon name="ban" [size]="16"></app-icon> Suspender usuario
+                    <app-icon [name]="showSuspensionOptions() ? 'chevron-up' : 'chevron-down'" [size]="14"></app-icon>
+                </button>
+
+                <div class="suspension-options" *ngIf="showSuspensionOptions()">
+                    <button (click)="suspenderUsuario('1d')">1 Día</button>
+                    <button (click)="suspenderUsuario('1w')">1 Semana</button>
+                    <button (click)="suspenderUsuario('1m')">1 Mes</button>
+                    <button (click)="suspenderUsuario('perm')" class="perm">Permanente</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="processing-loader" *ngIf="isProcessing()">
+            <span>Procesando acción...</span>
         </div>
 
         <div class="modal-footer-actions">
-            <button class="btn-cancel" (click)="close.emit()">Cancelar</button>
-            <button class="btn-primario">Guardar</button>
+            <button class="btn-cancel" (click)="closed.emit()">Cerrar</button>
         </div>
     </div>
+
+    <!-- Modal de Confirmación para acciones críticas -->
+    <app-success-modal *ngIf="mostrarConfirmacion() && configConfirmacion()" [titulo]="configConfirmacion()!.titulo"
+        [mensaje]="configConfirmacion()!.mensaje" [botonTexto]="configConfirmacion()!.botonTexto"
+        (closed)="mostrarConfirmacion.set(false)" (confirm)="configConfirmacion()!.accion()">
+    </app-success-modal>
 </app-modal-base>

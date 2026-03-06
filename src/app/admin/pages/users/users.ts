@@ -4,17 +4,18 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { UsuarioDetalleModal } from '../../components/usuario-detalle-modal/usuario-detalle-modal';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { CommonModule } from '@angular/common';
+import { ModalAgregarUsuario } from '../../components/modal-agregar-usuario/modal-agregar-usuario';
 
 @Component({
     selector: 'app-admin-users',
     standalone: true,
-    imports: [StatusBadge, IconComponent, UsuarioDetalleModal, CommonModule],
+    imports: [StatusBadge, IconComponent, UsuarioDetalleModal, ModalAgregarUsuario, CommonModule],
     templateUrl: './users.html',
     styleUrls: ['./users.css'],
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminUsers implements OnInit {
-    private supabase = inject(SupabaseService);
+    private readonly supabase = inject(SupabaseService);
 
     usuarios = signal<any[]>([]);
     universidades = signal<any[]>([]);
@@ -22,6 +23,7 @@ export class AdminUsers implements OnInit {
     searchTerm = signal<string>('');
     usuarioSeleccionado = signal<any>(null);
     mostrarModalUsuario = signal(false);
+    mostrarModalAgregar = signal(false);
 
     // Estados de filtros
     selectedRol = signal<string>('');
@@ -37,9 +39,7 @@ export class AdminUsers implements OnInit {
         }
 
         if (this.selectedStatus()) {
-            // Actualmente todas las cuentas en BD son "activos"
-            if (this.selectedStatus() === 'activo') list = list;
-            else list = [];
+            list = list.filter(u => (u.estado || 'activo') === this.selectedStatus());
         }
 
         if (this.selectedUniversidad()) {
@@ -49,9 +49,9 @@ export class AdminUsers implements OnInit {
         return list;
     });
 
-    async ngOnInit() {
-        await this.cargarUniversidades();
-        await this.cargarUsuarios();
+    ngOnInit() {
+        this.cargarUniversidades();
+        this.cargarUsuarios();
     }
 
     async cargarUniversidades() {

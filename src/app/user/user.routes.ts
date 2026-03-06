@@ -36,7 +36,7 @@ export const USER_ROUTES: Routes = [
       {
         path: 'experiencias/:id',
         loadComponent: () =>
-          import('./pages/experienciasCompletas/experienciasCompletas').then(m => m.ExperienciasCompletas),
+          import('./pages/experienciasCompletas/experienciaDetalle').then(m => m.ExperienciaDetallePage),
         data: { title: 'Detalle de Experiencia', hideSearch: true, centerTitle: true }
       },
       {

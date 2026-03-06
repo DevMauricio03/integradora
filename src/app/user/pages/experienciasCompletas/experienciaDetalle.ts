@@ -10,7 +10,7 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
   styleUrls: ['./experienciaDetalle.css']
 })
 export class ExperienciaDetallePage {
-  constructor(private router: Router) {}
+  constructor(private readonly router: Router) { }
   volver() {
     this.router.navigate(['/user/experiencias']);
   }
