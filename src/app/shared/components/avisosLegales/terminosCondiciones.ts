@@ -200,7 +200,7 @@ import { ModalBase } from '../modalBase/modalBase';
       <!-- CONTACTO -->
       <div class="aviso-contacto">
         <div class="contacto-texto">
-          <strong>¿Tienes dudas sobre tu privacidad?</strong>
+          <strong>¿Tienes dudas sobre los terminos y condiciones?</strong>
           <span>Nuestro equipo está listo para ayudarte en cualquier momento.</span>
         </div>
         <a class="contacto-btn" href="mailto:hola&#64;tuunka.com">

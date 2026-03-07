@@ -1,21 +1,10 @@
-<header class="custom-header">
-    <div class="header-left">
-        <div class="logo-wrap">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 3L1 9L12 15L21 10.09V17H23V9L12 3ZM5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
-                    fill="#135BEC" />
-            </svg>
-            <span class="logo-text">Tuunka</span>
-        </div>
-        <div class="divider"></div>
-        <span class="page-title">Vista Previa</span>
-    </div>
-
-    <button class="btn-volver-top" (click)="volver()">
+<app-navbar title="Soporte">
+    <button type="button" navbar-right class="btn-volver-top" (click)="volver()"
+        style="cursor: pointer; background: none; border: none; font: inherit; color: inherit; padding: 0; display: flex; align-items: center; gap: 8px;">
         <app-icon name="arrow-left" [size]="16"></app-icon>
         Volver
     </button>
-</header>
+</app-navbar>
 
 <main class="soporte-container">
 
@@ -23,23 +12,22 @@
     <div class="soporte-content">
         <!-- FORMULARIO -->
         <section class="formulario-card">
-            <h1>¿Cómo podemos ayudarte hoy?</h1>
-            <p class="subtitulo">Completa el formulario y nuestro equipo académico te responderá en menos de 24 horas.
-            </p>
+            <h1>¿Cómo podemos ayudarte?</h1>
+            <p class="subtitulo">Completa el formulario y nuestro equipo te responderá en menos de 24 horas.</p>
 
             <form (submit)="enviarMensaje($event)">
                 <div class="form-grid">
                     <div class="grupo-input">
                         <label for="nombre">Nombre completo</label>
                         <div class="input-wrapper">
-                            <input id="nombre" type="text" placeholder="Ej. Juan Pérez García" required>
+                            <input id="nombre" type="text" placeholder="Tu nombre completo" required>
                         </div>
                     </div>
 
                     <div class="grupo-input">
                         <label for="correo">Correo institucional</label>
                         <div class="input-wrapper">
-                            <input id="correo" type="email" placeholder="ej. juan.p@tuunka.edu.mx" required>
+                            <input id="correo" type="email" placeholder="ejemplo@tuunka.edu.mx" required>
                         </div>
                     </div>
 
@@ -59,21 +47,25 @@
                     <div class="grupo-input full-width">
                         <label for="asunto">Asunto</label>
                         <div class="input-wrapper">
-                            <input id="asunto" type="text" placeholder="Resume brevemente tu consulta" required>
+                            <input id="asunto" type="text" placeholder="Asunto de tu consulta" required>
                         </div>
                     </div>
 
                     <div class="grupo-input full-width">
                         <label for="descripcion">Descripción detallada</label>
                         <div class="input-wrapper">
-                            <textarea id="descripcion" placeholder="Cuéntanos más sobre tu problema o duda..."
+                            <textarea id="descripcion" placeholder="Explícanos cómo podemos ayudarte..."
                                 required></textarea>
                         </div>
                     </div>
                 </div>
 
                 <button type="submit" class="btn-enviar">
-                    <app-icon name="megaphone" [size]="18"></app-icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                        fill="#ffffff">
+                        <path
+                            d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
+                    </svg>
                     Enviar mensaje
                 </button>
             </form>
@@ -90,7 +82,7 @@
                     <app-icon name="bell" [size]="22"></app-icon>
                 </div>
                 <div class="info-contacto">
-                    <span>Email</span>
+                    <span>Correo Electrónico</span>
                     <p>hola@tuunka.edu</p>
                 </div>
             </div>
@@ -100,7 +92,7 @@
                     <app-icon name="clock" [size]="22"></app-icon>
                 </div>
                 <div class="info-contacto">
-                    <span>Horario de atención</span>
+                    <span>Horario de Atención</span>
                     <p>Lun - Vie, 8:00 - 15:00</p>
                 </div>
             </div>
@@ -128,7 +120,7 @@
                 institucional.</p>
 
             <div class="ticket-info">
-                <app-icon name="check" [size]="20" style="color: #2563eb"></app-icon>
+                <app-icon name="check" [size]="20" style="color: var(--primary)"></app-icon>
                 <div class="info-text">
                     Tu número de ticket de seguimiento es <strong>{{ ticketNumber() }}</strong>. Se ha enviado una copia
                     de este mensaje a tu bandeja de entrada.
