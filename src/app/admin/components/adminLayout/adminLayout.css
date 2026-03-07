@@ -38,7 +38,7 @@
 
 .nav-badge.alert {
     background: #FEE2E2;
-    color: #EF4444;
+    color: #991B1B;
 }
 
 .admin-sidebar li.logout {
@@ -65,11 +65,11 @@
 
 .logout-btn:hover {
     background: #f3f4f6;
-    color: #EF4444;
+    color: #991B1B;
 }
 
 .logout:hover app-icon {
-    color: #EF4444 !important;
+    color: #991B1B !important;
 }
 
 /* Redefinir container contenido si tiene padding diferente en Figma admin */

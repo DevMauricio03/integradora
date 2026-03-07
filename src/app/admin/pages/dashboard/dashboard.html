@@ -15,7 +15,7 @@
 
     <div class="stats-grid">
         <!-- Card 1 -->
-        <div class="stat-card">
+        <div class="stat-card" routerLink="/admin/users" style="cursor: pointer;">
             <div class="stat-header">
                 <div class="stat-icon-wrapper bg-blue">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -43,7 +43,7 @@
         </div>
 
         <!-- Card 2 -->
-        <div class="stat-card">
+        <div class="stat-card" routerLink="/admin/publications" style="cursor: pointer;">
             <div class="stat-header">
                 <div class="stat-icon-wrapper bg-purple">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Card 3 -->
-        <div class="stat-card">
+        <div class="stat-card" routerLink="/admin/reports" style="cursor: pointer;">
             <div class="stat-header">
                 <div class="stat-icon-wrapper bg-orange">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -164,8 +164,8 @@
                     </div>
                     <p class="mod-text"><strong>{{ mod.titulo }}</strong></p>
                     <div class="mod-actions">
-                        <button class="btn-outline">Ignorar</button>
-                        <button class="btn-solid-blue">Revisar</button>
+                        <button class="btn-outline" (click)="$event.stopPropagation()">Ignorar</button>
+                        <button class="btn-solid-blue" routerLink="/admin/reports">Revisar</button>
                     </div>
                 </div>
                 }
@@ -189,7 +189,7 @@
                 <h2 class="card-title">Usuarios Recientes</h2>
                 <p class="card-subtitle">Nuevos registros en la plataforma</p>
             </div>
-            <a href="#" class="view-all-link">Ver directorio completo &rarr;</a>
+            <a routerLink="/admin/users" class="view-all-link">Ver directorio completo &rarr;</a>
         </div>
 
         <div class="table-container">

@@ -302,25 +302,27 @@
 }
 
 .action-btn.danger:hover {
-    background: #FEB2B2;
-    border-color: #FC8181;
+    background: #E53E3E;
+    border-color: #C53030;
     color: white;
 }
 
 .action-btn.success {
     background: #F0FFF4;
     border-color: #C6F6D5;
-    color: #2F855A;
+    color: #22543D;
 }
 
 .action-btn.success:hover {
-    background: #9AE6B4;
-    border-color: #68D391;
+    background: #38A169;
+    border-color: #2F855A;
     color: white;
 }
 
 .suspension-wrapper {
     grid-column: span 2;
+    position: relative;
+    width: 100%;
 }
 
 .action-btn.full-width {
@@ -328,10 +330,6 @@
 }
 
 /* Suspension Styles */
-.suspension-wrapper {
-    position: relative;
-    width: 100%;
-}
 
 .suspension-options {
     position: absolute;

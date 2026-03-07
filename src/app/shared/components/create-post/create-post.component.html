@@ -325,23 +325,23 @@
                 </button>
               </div>
               }
-              @if (postModel().images.length < 4) { <div class="add-more-box"
+              @if (postModel().images.length < 4) { <button type="button" class="add-more-box"
                 (click)="fileInput.click(); $event.stopPropagation()">
                 <app-icon name="plus" [size]="20"></app-icon>
                 <span>Añadir</span>
-            </div>
-            }
-          </div>
-          <p class="upload-hint">{{ postModel().images.length }} de 4 imágenes seleccionadas</p>
-          } @else {
-          <div class="upload-icon-circle">
-            <app-icon name="upload" [size]="20"></app-icon>
-          </div>
-          <h4>Haz clic para <span class="highlight">subir</span> hasta 4 fotos</h4>
-          <p>Soporta JPG, PNG, WEBP (Max 10MB)</p>
-          }
+        </button>
+        }
       </div>
-      </button>
+      <p class="upload-hint">{{ postModel().images.length }} de 4 imágenes seleccionadas</p>
+      } @else {
+      <div class="upload-icon-circle">
+        <app-icon name="upload" [size]="20"></app-icon>
+      </div>
+      <h4>Haz clic para <span class="highlight">subir</span> hasta 4 fotos</h4>
+      <p>Soporta JPG, PNG, WEBP (Max 10MB)</p>
+      }
+  </div>
+  </button>
   </div>
 
   <div class="form-actions">

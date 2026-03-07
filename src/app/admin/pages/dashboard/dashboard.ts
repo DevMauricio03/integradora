@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { ModalNuevoAviso } from '../../components/modal-nuevo-aviso/modal-nuevo-aviso';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [StatusBadge, CommonModule, IconComponent, ModalNuevoAviso],
+  imports: [StatusBadge, CommonModule, IconComponent, ModalNuevoAviso, RouterModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

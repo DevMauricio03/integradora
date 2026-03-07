@@ -110,33 +110,55 @@
   </div>
   }
 
-  <!-- Galería de Imágenes Estilo Facebook -->
+  <!-- Galería de Imágenes Estilo Facebook (Inteligente) -->
   @if ((images && images.length > 0) || image) {
-  <div class="post-gallery" [attr.data-count]="images && images.length > 0 ? images.length : 1">
+  <div class="post-gallery"
+    [attr.data-count]="images && images.length > 0 ? (images.length > 3 ? '4-plus' : images.length) : 1"
+    [attr.data-orientation]="firstImageOrientation()">
     @if (images && images.length > 0) {
     @for (img of images.slice(0, 4); track img; let i = $index) {
-    <div class="gallery-item" (click)="openImage(img)">
+    <button type="button" class="gallery-item" (click)="openImage(img)">
       <img [src]="img" alt="Foto de publicación" loading="lazy">
-    </div>
+      @if (i === 3 && images.length > 4) {
+      <div class="more-images-overlay">
+        <span>+{{ images.length - 4 }}</span>
+      </div>
+      }
+    </button>
     }
     } @else if (image) {
-    <div class="gallery-item single" (click)="openImage(image)">
+    <button type="button" class="gallery-item single" (click)="openImage(image)">
       <img [src]="image" alt="Foto de publicación" loading="lazy">
-    </div>
+    </button>
     }
   </div>
   }
 
   <!-- Lightbox Modal -->
   @if (selectedImage()) {
-  <div class="image-modal" (click)="closeImage()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <img [src]="selectedImage()" alt="Imagen ampliada">
-      <button class="close-modal" (click)="closeImage()">
+  <dialog #imageDialog class="image-modal" (click)="closeImage()" (cancel)="closeImage()" (keydown.enter)="closeImage()"
+    (keydown.space)="closeImage()">
+    <div class="modal-content" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+
+      @if (images && images.length > 1) {
+      <button type="button" class="nav-btn prev" (click)="prevImage($event)" aria-label="Imagen anterior">
+        <app-icon name="chevron-left" [size]="32"></app-icon>
+      </button>
+      }
+
+      <img [src]="selectedImage()" alt="Vista ampliada">
+
+      @if (images && images.length > 1) {
+      <button type="button" class="nav-btn next" (click)="nextImage($event)" aria-label="Siguiente imagen">
+        <app-icon name="chevron-right" [size]="32"></app-icon>
+      </button>
+      }
+
+      <button type="button" class="close-modal" (click)="closeImage()" aria-label="Cerrar">
         <app-icon name="x" [size]="24"></app-icon>
       </button>
     </div>
-  </div>
+  </dialog>
   }
 
   <div class="post-footer">

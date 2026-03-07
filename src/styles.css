@@ -4,6 +4,10 @@ body {
   overflow-x: hidden;
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
 :root {
   --primary: #135BEC;
   --primary-hover: #0D4FD8;

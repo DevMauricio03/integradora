@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, signal, ViewChild, ElementRef, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent, IconName } from "../../icon/icon.component";
 
@@ -10,7 +10,7 @@ import { IconComponent, IconName } from "../../icon/icon.component";
   styleUrls: ['./post-card.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PostCardComponent {
+export class PostCardComponent implements OnInit, OnChanges {
   @Input() id: string = '';
 
   @Input() author: string = '';
@@ -30,13 +30,70 @@ export class PostCardComponent {
   @Output() report = new EventEmitter<void>();
 
   selectedImage = signal<string | null>(null);
+  firstImageOrientation = signal<'landscape' | 'portrait' | 'square'>('landscape');
+
+  @ViewChild('imageDialog') imageDialog!: ElementRef<HTMLDialogElement>;
+
+  constructor(private cdr: ChangeDetectorRef) { }
+
+  ngOnInit() {
+    this.checkFirstImage();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['images'] || changes['image']) {
+      this.checkFirstImage();
+    }
+  }
+
+  checkFirstImage() {
+    const firstImg = (this.images && this.images.length > 0) ? this.images[0] : this.image;
+    if (!firstImg) return;
+
+    const img = new Image();
+    img.onload = () => {
+      // Usar 1.1 de ratio para no ser tan estrictos con cuadros casi-cuadrados
+      if (img.width > img.height * 1.1) {
+        this.firstImageOrientation.set('landscape');
+      } else if (img.height > img.width * 1.1) {
+        this.firstImageOrientation.set('portrait');
+      } else {
+        this.firstImageOrientation.set('square');
+      }
+      this.cdr.detectChanges(); // Forzar renderizado pues esto corre asíncronamente
+    };
+    img.src = firstImg;
+  }
 
   openImage(img: string) {
     this.selectedImage.set(img);
+    // Angular needs a tick to render the @if block before we can access the native dialog
+    setTimeout(() => {
+      this.imageDialog?.nativeElement?.showModal();
+      document.body.classList.add('modal-open');
+    }, 0);
   }
 
   closeImage() {
+    this.imageDialog?.nativeElement?.close();
     this.selectedImage.set(null);
+    document.body.classList.remove('modal-open');
+  }
+
+  prevImage(event: Event) {
+    event.stopPropagation();
+    if (!this.images || this.images.length <= 1) return;
+    const currentIdx = this.images.indexOf(this.selectedImage()!);
+    const prevIdx = (currentIdx - 1 + this.images.length) % this.images.length;
+    this.selectedImage.set(this.images[prevIdx]);
+  }
+
+  nextImage(event: Event) {
+    event.stopPropagation();
+    if (!this.images || this.images.length <= 1) return;
+    const currentIdx = this.images.indexOf(this.selectedImage()!);
+    const nextIdx = (currentIdx + 1) % this.images.length;
+    this.selectedImage.set(this.images[nextIdx]);
   }
 
   notifyReport() {

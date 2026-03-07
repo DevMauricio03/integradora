@@ -133,7 +133,7 @@ export class SupabaseService {
   // 🔹 Verificar si el usuario está suspendido realmente
   async verifySuspension(): Promise<{ isSuspended: boolean; remains?: string }> {
     const perfil = await this.getPerfilActual();
-    if (!perfil || perfil.estado !== 'suspendido') return { isSuspended: false };
+    if (perfil?.estado !== 'suspendido') return { isSuspended: false };
 
     // Si tiene fecha de suspensión, verificamos si ya pasó
     if (perfil.fecha_suspension) {
@@ -526,13 +526,13 @@ export class SupabaseService {
   async suspendUser(userId: string, hours: number | null) {
     let fechaSuspension: string | null = null;
 
-    if (hours !== null) {
+    if (hours === null) {
+      // Suspension permanente (ponemos una fecha muy lejana)
+      fechaSuspension = '2099-12-31T23:59:59Z';
+    } else {
       const date = new Date();
       date.setHours(date.getHours() + hours);
       fechaSuspension = date.toISOString();
-    } else {
-      // Suspension permanente (ponemos una fecha muy lejana)
-      fechaSuspension = '2099-12-31T23:59:59Z';
     }
 
     return await this.supabase
