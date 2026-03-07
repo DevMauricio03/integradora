@@ -5,6 +5,7 @@ import { Navbar } from "../../../shared/components/navbar/navbar";
 import { AvisosLegales } from '../../../shared/components/avisosLegales/avisosLegales';
 import { SuccessModal } from '../../../shared/components/successModal/successModal';
 import { form, required, email, submit, FormField, SchemaPathTree, pattern, validate, maxLength } from '@angular/forms/signals';
+import { TerminosCondiciones } from "../../../shared/components/avisosLegales/terminosCondiciones";
 
 /**
  * Estructura de datos para el formulario de registro.
@@ -23,7 +24,7 @@ interface RegisterFormModel {
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [Navbar, RouterLink, AvisosLegales, SuccessModal, FormField],
+  imports: [Navbar, RouterLink, AvisosLegales, SuccessModal, FormField, TerminosCondiciones],
   templateUrl: './registro.html',
   styleUrl: './registro.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -110,6 +111,7 @@ export class RegistroPage implements OnInit {
   errorRegistro = signal('');
   cargando = signal(false);
   mostrarAviso = signal(false);
+  mostrarTerminos = signal(false);
   mostrarSuccess = signal(false);
 
   private readonly supabaseService = inject(SupabaseService);
@@ -138,6 +140,18 @@ export class RegistroPage implements OnInit {
 
   cerrarAviso() {
     this.mostrarAviso.set(false);
+  }
+
+  // 🔹 Modal terminos y condiciones
+
+  abrirTerminos(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.mostrarTerminos.set(true);
+  }
+
+  cerrarTerminos() {
+    this.mostrarTerminos.set(false);
   }
 
   private handleRegistroExitoso() {

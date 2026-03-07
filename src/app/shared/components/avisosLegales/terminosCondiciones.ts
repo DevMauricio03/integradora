@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angul
 import { ModalBase } from '../modalBase/modalBase';
 
 @Component({
-  selector: 'app-avisos-legales',
+  selector: 'app-terminos-condiciones',
   standalone: true,
   imports: [ModalBase],
   template: `
@@ -11,13 +11,13 @@ import { ModalBase } from '../modalBase/modalBase';
 
       <!-- HEADER -->
       <div class="aviso-header">
-        <h2 class="aviso-titulo">Aviso de Privacidad</h2>
+        <h2 class="aviso-titulo">Términos y Condiciones</h2>
         <div class="aviso-fecha">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text-muted)" stroke-width="2"/>
             <path d="M16 2V6M8 2V6M3 10H21" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <span>Última actualización: Enero 2026</span>
+          <span>Última actualización: Febrero 2026</span>
         </div>
       </div>
 
@@ -25,142 +25,175 @@ import { ModalBase } from '../modalBase/modalBase';
       <div class="aviso-body">
 
         <p class="aviso-intro" style="text-align: justify;">
-          En <strong class="marca">Tuunka</strong>, valoramos la privacidad de nuestra comunidad universitaria.
-          Este documento detalla de manera transparente cómo recopilamos, utilizamos y protegemos su información personal para mejorar la comunicación y los servicios dentro del campus.
+          Al acceder, registrarse o utilizar la plataforma, el usuario acepta cumplir con los presentes Términos y Condiciones.
         </p>
-
-        <p class="aviso-intro" style="text-align: justify;">En cumplimiento con lo establecido en la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP), se emite el presente Aviso de Privacidad para informar a los usuarios sobre el tratamiento de sus datos personales.</p>
+        <p class="aviso-intro" style="text-align: justify;">
+          Si el usuario no está de acuerdo, deberá abstenerse de utilizar el servicio.
+        </p>
 
         <!-- 1. Identidad y domicilio del responsable -->
         <div class="aviso-seccion" style="text-align: justify;">
           <div class="seccion-header">
             <span class="numero-seccion">1</span>
-            <h3>Identidad y domicilio del responsable</h3>
+            <h3>Identificación del Servicio</h3>
           </div>
           <p>
-            <strong class="marca">Tuunka</strong> es una plataforma digital desarrollada con fines académicos y comunitarios, responsable del uso y protección de los datos personales que los usuarios proporcionen al registrarse y utilizar el sistema.
-          </p>
-          <p>
-            Para cualquier asunto relacionado con este aviso de privacidad, el usuario podrá contactar al equipo responsable a través del correo electrónico:
-          </p>
-          <p>
-             <i><strong>hola@tuunka.com</strong></i>
+            <strong class="marca">Tuunka</strong> es una plataforma digital destinada a centralizar la comunicación dentro de comunidades universitarias, permitiendo la publicación de avisos, eventos, productos, servicios, experiencias empresariales y anuncios comerciales.
           </p>
         </div>
 
-        <!-- 2. Datos personales que se recaban -->
-        <div class="aviso-seccion" style="text-align: justify;" >
+        <!-- 2. REGISTRO DE USUARIOS -->
+        <div class="aviso-seccion" style="text-align: justify;">
           <div class="seccion-header">
             <span class="numero-seccion">2</span>
-            <h3>Datos personales que se recaban</h3>
+            <h3>Registro de Usuarios</h3>
           </div>
-          <p>
-            Los datos personales que Tuunka podrá recabar de forma directa son:
-          </p>
+          <p>Para utilizar determinadas funciones es necesario crear una cuenta.</p>
+          <p>El usuario declara que:</p>
           <ul>
-            <li>Nombre completo del usuario</li>
-            <li>Correo electrónico institucional</li>
-            <li>Contraseña</li>
-            <li>Universidad a la que pertenece</li>
-            <li>Carrera a la que pertenece</li>
-            <li>Información relacionada con el uso de la plataforma (publicaciones, eventos, reportes)</li>
+            <li>La información proporcionada es veraz.</li>
+            <li>Es responsable de la confidencialidad de su cuenta.</li>
+            <li>Notificará cualquier uso no autorizado.</li>
           </ul>
-
-          <p>
-            <strong>Tuunka no recaba ni almacena datos bancarios ni información financiera sensible.</strong>
-          </p>
+          <p>Tuunka puede suspender cuentas con información falsa.</p>
         </div>
 
-        <!-- 3. Finalidades del tratamiento de los datos personales -->
+        <!-- 3. USO DE LA PLATAFORMA -->
         <div class="aviso-seccion" style="text-align: justify;">
           <div class="seccion-header">
             <span class="numero-seccion">3</span>
-            <h3>Finalidades del tratamiento de los datos personales</h3>
+            <h3>Uso de la Plataforma</h3>
           </div>
-          <p>Los datos personales recabados serán utilizados para las siguientes finalidades:</p>
-          <p><strong>Finalidades primarias</strong></p>
+          <p>El usuario se compromete a utilizar la plataforma únicamente para fines lícitos y conforme a estos términos.</p>
+          <p>Está prohibido publicar contenido que:</p>
           <ul>
-            <li>Registrar y autenticar a los usuarios dentro de la plataforma</li>
-            <li>Permitir la interacción entre miembros de la misma comunidad universitaria</li>
-            <li>Gestionar publicaciones, eventos, avisos, productos y servicios</li>
-            <li>Mantener la seguridad y funcionamiento adecuado del sistema</li>
-            <li>Atender reportes y solicitudes de los usuarios</li>
+            <li>Sea ilegal, ofensivo o discriminatorio.</li>
+            <li>Vulnera derechos de terceros.</li>
+            <li>Contenga información falsa o engañosa.</li>
+            <li>Promueva actividades ilícitas.</li>
+            <li>Infrinja propiedad intelectual.</li>
+            <li>Incluya spam o publicidad no autorizada.</li>
           </ul>
-          <p><strong>Finalidades secundarias</strong></p>
-          <ul>
-            <li>Generar estadísticas de uso para la mejora de la plataforma</li>
-          </ul>
-          <p>En caso de no estar de acuerdo con las finalidades secundarias, el usuario podrá manifestarlo mediante los medios de contacto indicados.</p>
         </div>
 
-        <!-- 4. Transferencia de datos personales -->
+        <!-- 4. CONTENIDO GENERADO POR USUARIOS -->
         <div class="aviso-seccion" style="text-align: justify;">
           <div class="seccion-header">
             <span class="numero-seccion">4</span>
-            <h3>Transferencia de datos personales</h3>
+            <h3>Contenido Generado por Usuarios</h3>
           </div>
-          <p>
-            Tuunka <strong>no comparte, vende ni transfiere</strong> los datos personales de los usuarios a terceros sin su consentimiento, salvo en los casos previstos por la ley.
-          </p>
-          <p>
-            En el caso de servicios de pago, estos se realizarán a través de <strong>plataformas externas certificadas</strong>, las cuales son responsables del tratamiento de la información financiera conforme a sus propios avisos de privacidad.
-          </p>
+          <p>El usuario es el único responsable del contenido que publique.</p>
+          <p>Tuunka no garantiza la veracidad de las publicaciones ni se responsabiliza por interacciones entre usuarios.</p>
+          <p>Tuunka se reserva el derecho de eliminar contenido que viole estas condiciones.</p>
         </div>
 
-        <!-- 5. Medidas de seguridad -->
+        <!-- 5. EXPERIENCIAS EMPRESARIALES -->
         <div class="aviso-seccion" style="text-align: justify;">
           <div class="seccion-header">
             <span class="numero-seccion">5</span>
-            <h3>Medidas de seguridad</h3>
+            <h3>Experiencias Empresariales</h3>
           </div>
-          <p>
-            Tuunka implementa medidas de seguridad administrativas y técnicas para proteger los datos personales contra daño, pérdida, alteración, destrucción o uso no autorizado, tales como:
-          </p>
-          <ul>
-            <li>Control de acceso por roles</li>
-            <li>Autenticación segura</li>
-            <li>Restricción de acceso a información sensible</li>
-          </ul>
+          <p>Las experiencias publicadas representan opiniones personales de los usuarios.</p>
+          <p>Tuunka no valida ni certifica dichas experiencias.</p>
         </div>
 
-        <!-- 6. Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición) -->
+        <!-- 6. ANUNCIOS Y PUBLICACIONES DESTACADAS -->
         <div class="aviso-seccion" style="text-align: justify;">
           <div class="seccion-header">
             <span class="numero-seccion">6</span>
-            <h3>Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición)</h3>
+            <h3>Anuncios y Publicaciones Destacadas</h3>
           </div>
-          <p>El usuario tiene derecho a:</p>
-          <ul>
-            <li>Acceder a sus datos personales</li>
-            <li>Rectificarlos en caso de ser inexactos</li>
-            <li>Cancelarlos cuando considere que no son necesarios</li>
-            <li>Oponerse a su tratamiento para fines específicos</li>
-          </ul>
-          <p>
-            Para ejercer estos derechos, el usuario deberá enviar una solicitud al correo electrónico indicado, señalando su nombre, comunidad y el derecho que desea ejercer.
-          </p>
+          <p>La plataforma puede ofrecer servicios de promoción pagada.</p>
+          <p>Los pagos realizados son procesados por terceros (por ejemplo Stripe).</p>
+          <p>Tuunka no es responsable por fallas externas del sistema de pago.</p>
         </div>
 
-        <!-- 7. Consentimiento -->
+        <!-- 7. PROPIEDAD INTELECTUAL -->
         <div class="aviso-seccion" style="text-align: justify;">
           <div class="seccion-header">
             <span class="numero-seccion">7</span>
-            <h3>Consentimiento</h3>
+            <h3>Propiedad Intelectual</h3>
           </div>
-          <p>
-            Al registrarse y utilizar la plataforma Tuunka, el usuario <strong>manifiesta su consentimiento expreso</strong> para el tratamiento de sus datos personales conforme a los términos del presente Aviso de Privacidad.
-          </p>
+          <p>El diseño, software, logotipos y contenido propio de Tuunka están protegidos por derechos de propiedad intelectual.</p>
+          <p>El usuario conserva la propiedad del contenido que publique, pero concede a Tuunka una licencia para mostrarlo dentro de la plataforma.</p>
         </div>
 
-        <!-- 8. Cambios al aviso de privacidad -->
+        <!-- 8. MODERACIÓN Y SUSPENSIÓN DE CUENTAS -->
         <div class="aviso-seccion" style="text-align: justify;">
           <div class="seccion-header">
             <span class="numero-seccion">8</span>
-            <h3>Cambios al aviso de privacidad</h3>
+            <h3>Moderación y Suspensión de Cuentas</h3>
           </div>
-          <p>
-            Tuunka se reserva el derecho de realizar modificaciones o actualizaciones al presente aviso de privacidad. Cualquier cambio será notificado a través de la plataforma.
-          </p>
+          <p>Tuunka puede:</p>
+          <ul>
+            <li>Eliminar contenido.</li>
+            <li>Suspender cuentas.</li>
+            <li>Limitar funciones.</li>
+          </ul>
+          <p>Cuando detecte incumplimiento de estos términos.</p>
+        </div>
+
+        <!-- 9. LIMITACIÓN DE RESPONSABILIDAD -->
+        <div class="aviso-seccion" style="text-align: justify;">
+          <div class="seccion-header">
+            <span class="numero-seccion">9</span>
+            <h3>Limitación de Responsabilidad</h3>
+          </div>
+          <p>Tuunka no será responsable por:</p>
+          <ul>
+            <li>Daños derivados del uso de la plataforma.</li>
+            <li>Interacciones entre usuarios.</li>
+            <li>Información publicada por terceros.</li>
+            <li>Fallas técnicas externas.</li>
+            <li>Pérdida de datos por causas fuera de control razonable.</li>
+          </ul>
+        </div>
+
+        <!-- 10. DISPONIBILIDAD DEL SERVICIO -->
+        <div class="aviso-seccion" style="text-align: justify;">
+          <div class="seccion-header">
+            <span class="numero-seccion">10</span>
+            <h3>Disponibilidad del Servicio</h3>
+          </div>
+          <p>El servicio puede modificarse, suspenderse o actualizarse en cualquier momento sin previo aviso.</p>
+        </div>
+
+        <!-- 11. PROTECCIÓN DE DATOS PERSONALES -->
+        <div class="aviso-seccion" style="text-align: justify;">
+          <div class="seccion-header">
+            <span class="numero-seccion">11</span>
+            <h3>Protección de Datos Personales</h3>
+          </div>
+          <p>El tratamiento de datos personales se regula conforme al Aviso de Privacidad de Tuunka.</p>
+        </div>
+
+        <!-- 12. MODIFICACIONES A LOS TÉRMINOS -->
+        <div class="aviso-seccion" style="text-align: justify;">
+          <div class="seccion-header">
+            <span class="numero-seccion">12</span>
+            <h3>Modificaciones a los Términos</h3>
+          </div>
+          <p>Tuunka puede modificar estos términos en cualquier momento.</p>
+          <p>El uso continuado de la plataforma implica aceptación de los cambios.</p>
+        </div>
+
+        <!-- 13. LEGISLACIÓN APLICABLE -->
+        <div class="aviso-seccion" style="text-align: justify;">
+          <div class="seccion-header">
+            <span class="numero-seccion">13</span>
+            <h3>Legislación Aplicable</h3>
+          </div>
+          <p>Estos términos se rigen por la legislación vigente en los Estados Unidos Mexicanos.</p>
+        </div>
+
+        <!-- 14. CONTACTO -->
+        <div class="aviso-seccion" style="text-align: justify;">
+          <div class="seccion-header">
+            <span class="numero-seccion">14</span>
+            <h3>Contacto</h3>
+          </div>
+          <p>Para cualquier duda o solicitud:</p>
+          <p><strong>hola&#64;tuunka.com</strong></p>
         </div>
       </div>
 
@@ -385,7 +418,7 @@ import { ModalBase } from '../modalBase/modalBase';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AvisosLegales {
+export class TerminosCondiciones {
 
   @Output() closed = new EventEmitter<void>();
 

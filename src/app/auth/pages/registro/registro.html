@@ -83,15 +83,13 @@
               stroke-linejoin="round" />
           </svg>
 
-          <input id="regUni" type="text" placeholder="Busca tu universidad" list="listaUniversidades"
-            class="input-select-search" [formField]="registroForm.universidad" (input)="onUniversidadChange()"
-            (change)="onUniversidadChange()" />
-
-          <datalist id="listaUniversidades">
+          <select id="regUni" class="input-select-search" [formField]="registroForm.universidad"
+            (input)="onUniversidadChange()" (change)="onUniversidadChange()">
+            <option value="" disabled selected>Busca tu universidad</option>
             @for (uni of universidades(); track uni.id) {
-            <option [value]="uni.nombre">{{ uni.acronimo }}</option>
+            <option [value]="uni.nombre">{{ uni.acronimo }} - {{ uni.nombre }}</option>
             }
-          </datalist>
+          </select>
 
           <svg class="icono-dropdown" width="18" height="18" viewBox="0 0 24 24">
             <path d="M6 9L12 15L18 9" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" />
@@ -115,15 +113,13 @@
               stroke-linejoin="round" />
           </svg>
 
-          <input id="regCarrera" type="text" placeholder="Busca tu carrera" list="listaCarreras"
-            class="input-select-search" [formField]="registroForm.carrera" (input)="onCarreraChange()"
-            (change)="onCarreraChange()" />
-
-          <datalist id="listaCarreras">
+          <select id="regCarrera" class="input-select-search" [formField]="registroForm.carrera"
+            (input)="onCarreraChange()" (change)="onCarreraChange()">
+            <option value="" disabled selected>Busca tu carrera</option>
             @for (car of carreras(); track car.id) {
-            <option [value]="car.nombre"></option>
+            <option [value]="car.nombre">{{ car.nombre }}</option>
             }
-          </datalist>
+          </select>
 
           <svg class="icono-dropdown" width="18" height="18" viewBox="0 0 24 24">
             <path d="M6 9L12 15L18 9" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" />
@@ -271,7 +267,11 @@
           <button type="button" class="link" (click)="abrirAviso($event)"
             style="background: none; border: none; font: inherit; color: var(--primary-color); cursor: pointer; text-decoration: underline; padding: 0;">Aviso
             de Privacidad</button>
-          y los Términos de Servicio de Tuunka.
+          y los
+          <button type="button" class="link" (click)="abrirTerminos($event)"
+            style="background: none; border: none; font: inherit; color: var(--primary-color); cursor: pointer; text-decoration: underline; padding: 0;">Términos
+            y condiciones</button>
+          de Tuunka.
         </label>
         @if (registroForm.aceptaTerminos().touched() && registroForm.aceptaTerminos().invalid()) {
         <span class="error-campo" style="display: block;">{{ registroForm.aceptaTerminos().errors()[0].message }}</span>
@@ -314,6 +314,11 @@
 <!-- MODAL AVISO DE PRIVACIDAD -->
 @if (mostrarAviso()) {
 <app-avisos-legales (closed)="cerrarAviso()"></app-avisos-legales>
+}
+
+<!-- MODAL TÉRMINOS Y CONDICIONES -->
+@if (mostrarTerminos()) {
+<app-terminos-condiciones (closed)="cerrarTerminos()"></app-terminos-condiciones>
 }
 
 <!-- MODAL CUENTA CREADA -->

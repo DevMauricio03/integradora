@@ -144,11 +144,11 @@
       <div class="enlaces-footer">
         <button class="enlace-footer" (click)="abrirAviso()">Aviso de Privacidad</button>
         <span>·</span>
-        <span class="enlace-footer">Términos y Condiciones</span>
+        <button class="enlace-footer" (click)="abrirTerminos()">Términos y Condiciones</button>
       </div>
 
       <div class="copyright-footer">
-        © 2024 Tuunka. Todos los derechos reservados.
+        © 2026 Tuunka. Todos los derechos reservados.
       </div>
     </div>
 
@@ -159,6 +159,10 @@
 <!-- MODAL AVISO DE PRIVACIDAD -->
 @if (mostrarAviso()) {
 <app-avisos-legales (closed)="cerrarAviso()"></app-avisos-legales>
+}
+<!-- MODAL AVISO DE TERMINOS Y CONDICIONES -->
+@if (mostrarTerminos()) {
+<app-terminos-condiciones (closed)="cerrarTerminos()"></app-terminos-condiciones>
 }
 
 <!-- MODAL ACERCA DE -->
@@ -177,10 +181,8 @@
     <div class="modal-cuerpo">
       <div class="logo-modal">
         <div class="icono-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3L1 9L12 15L21 10.09V17H23V9L12 3ZM5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"
-              fill="white" />
-          </svg>
+          <img width="30" src="icons/tuunka_logo.svg" alt="Tuunka Logo">
+
         </div>
         <span class="texto-logo">Tuunka</span>
       </div>
@@ -191,7 +193,7 @@
       </p>
       <div class="creditos">
         <p>Desarrollado con ❤️ por el equipo de Tuunka.</p>
-        <p>© 2024. Todos los derechos reservados.</p>
+        <p>© 2026. Todos los derechos reservados.</p>
       </div>
     </div>
   </div>
