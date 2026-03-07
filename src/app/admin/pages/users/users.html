@@ -121,6 +121,6 @@
 
 <!-- Modal Agregar Usuario -->
 @if(mostrarModalAgregar()) {
-<app-modal-agregar-usuario (closed)="mostrarModalAgregar.set(false)" (refresh)="cargarUsuarios()">
+<app-modal-agregar-usuario (closed)="mostrarModalAgregar.set(false)" (refresh)="agregarUsuarioLocal($event)">
 </app-modal-agregar-usuario>
 }

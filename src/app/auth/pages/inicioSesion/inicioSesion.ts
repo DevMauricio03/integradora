@@ -124,8 +124,15 @@ export class InicioSesion implements OnInit {
           localStorage.removeItem('remember_email');
         }
 
-        // Navegación al dashboard tras éxito
-        this.router.navigate(['/user/feed']);
+        // Navegación basada en roles
+        const rol: any = perfil?.roles;
+        const nombreRol = Array.isArray(rol) ? rol[0]?.nombre : rol?.nombre;
+
+        if (nombreRol?.toLowerCase()?.includes('admin')) {
+          this.router.navigate(['/admin/dashboard']);
+        } else {
+          this.router.navigate(['/user/feed']);
+        }
       } catch (err) {
         console.error('Error inesperado en inicio de sesión:', err);
         this.errorMensaje.set('Ocurrió un error inesperado. Inténtalo más tarde.');

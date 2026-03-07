@@ -112,10 +112,38 @@ export class PostStoreService {
   }
 
   async addPost(postData: any) {
-    const { data, error } = await this.supabase.createPost(postData);
+    const { data: resultData, error } = await this.supabase.createPost(postData);
     if (error) throw error;
-    await this.loadPosts();
-    return data;
+
+    // Agregarlo directamente al inicio de la lista local (Signal) de forma instantánea
+    if (resultData) {
+      const p = resultData;
+      const roles = p.perfiles?.roles;
+      const roleName = Array.isArray(roles) ? (roles[0]?.nombre || 'Miembro') : (roles?.nombre || 'Miembro');
+
+      const mappedPost: Post = {
+        id: p.id,
+        title: p.titulo,
+        description: p.descripcion,
+        type: p.tipo,
+        category: p.categoria,
+        image: p.imagen_url,
+        images: p.imagenes_url || [],
+        author: p.perfiles?.nombre ? `${p.perfiles.nombre} ${p.perfiles.apellidos || ''}`.trim() : 'Usuario Anónimo',
+        authorId: p.autor_id,
+        authorCarreraId: p.perfiles?.carrera_id,
+        role: roleName,
+        time: this.formatTime(p.creado_en || new Date().toISOString()),
+        rawDate: new Date(p.creado_en || new Date().toISOString()),
+        avatar: p.perfiles?.foto_url || 'https://api.dicebear.com/7.x/initials/svg?seed=' + (p.perfiles?.nombre || 'U'),
+        details: p.detalles,
+        status: p.estado || 'activo' // Puede ser pendiente si requiere aprobación
+      };
+
+      this._posts.update(current => [mappedPost, ...current]);
+    }
+
+    return resultData;
   }
 
   async uploadPostImages(files: File[]) {

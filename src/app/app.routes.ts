@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
-import { EditarPerfilPage } from './user/pages/editPerfil/editPerfil';
-import { PerfilPublicoPage } from './user/pages/perfil/perfil';
+import { AdminGuard } from './core/guards/admin.guard';
+import { UserGuard } from './core/guards/user.guard';
 
 export const routes: Routes = [
   {
@@ -23,13 +22,14 @@ export const routes: Routes = [
 
   {
     path: 'user',
-    canActivate: [AuthGuard],
+    canActivate: [UserGuard],
     loadChildren: () =>
       import('./user/user.routes')
         .then(m => m.USER_ROUTES)
   },
   {
     path: 'admin',
+    canActivate: [AdminGuard],
     loadChildren: () =>
       import('./admin/admin.routes')
         .then(m => m.ADMIN_ROUTES)

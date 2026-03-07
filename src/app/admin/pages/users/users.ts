@@ -66,6 +66,14 @@ export class AdminUsers implements OnInit {
         this.isLoading.set(false);
     }
 
+    agregarUsuarioLocal(newUser?: any) {
+        if (newUser) {
+            this.usuarios.update(list => [newUser, ...list]);
+        } else {
+            this.cargarUsuarios();
+        }
+    }
+
     onSearchInput(event: Event) {
         const input = event.target as HTMLInputElement;
         this.searchTerm.set(input.value);

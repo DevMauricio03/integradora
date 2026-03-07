@@ -26,7 +26,7 @@ interface AgregarUsuarioFormModel {
 })
 export class ModalAgregarUsuario implements OnInit {
     closed = output<void>();
-    refresh = output<void>();
+    refresh = output<any>();
 
     private readonly supabase = inject(SupabaseService);
 
@@ -39,6 +39,7 @@ export class ModalAgregarUsuario implements OnInit {
     readonly isProcessing = signal(false);
     readonly errorMessage = signal<string>('');
     readonly mostrarSuccess = signal(false);
+    readonly newUserCreated = signal<any>(null);
 
     readonly formModel = signal<AgregarUsuarioFormModel>({
         nombre: '',
@@ -161,6 +162,23 @@ export class ModalAgregarUsuario implements OnInit {
                         throw new Error(profileError.message);
                     }
 
+                    // Construimos el usuario localmente para evitar recargas (Optimistic UI)
+                    const rolLocal = this.roles().find(r => r.id === data.rol_id);
+                    const uniLocal = this.universidades().find(u => u.id === data.universidad);
+
+                    const optimistiUser = {
+                        id: authData.user.id,
+                        nombre: data.nombre,
+                        apellidos: data.apellidos,
+                        correoInstitucional: data.correo,
+                        foto_url: null,
+                        creado: new Date().toISOString(),
+                        estado: 'activo',
+                        roles: { nombre: rolLocal?.nombre },
+                        universidades: { acronimo: uniLocal?.acronimo }
+                    };
+
+                    this.newUserCreated.set(optimistiUser);
                     this.mostrarSuccess.set(true);
                 } else {
                     throw new Error('No se pudo crear el usuario.');
@@ -176,7 +194,7 @@ export class ModalAgregarUsuario implements OnInit {
 
     handleSuccessConfirm() {
         this.mostrarSuccess.set(false);
-        this.refresh.emit();
+        this.refresh.emit(this.newUserCreated());
         this.closed.emit();
     }
 }

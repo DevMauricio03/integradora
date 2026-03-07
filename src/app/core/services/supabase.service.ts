@@ -302,7 +302,9 @@ export class SupabaseService {
         imagenes_url: (post.images && post.images.length > 0) ? post.images : null,
         categoria: post.category,
         detalles: detalles
-      });
+      })
+      .select('*, perfiles(nombre, apellidos, foto_url, carrera_id, roles(nombre))')
+      .single();
 
     return { data, error };
   }
