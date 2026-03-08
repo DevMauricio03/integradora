@@ -55,6 +55,14 @@ export class NuevaPassword implements OnInit {
   reqUppercase = computed(() => /[A-Z]/.test(this.passwordModel().password));
   reqNumber = computed(() => /[0-9]/.test(this.passwordModel().password));
   reqSpecial = computed(() => /[^A-Za-z0-9]/.test(this.passwordModel().password));
+  seguridadNivel = computed(() => {
+    let nivel = 0;
+    if (this.reqLength()) nivel++;
+    if (this.reqUppercase()) nivel++;
+    if (this.reqNumber()) nivel++;
+    if (this.reqSpecial()) nivel++;
+    return nivel;
+  });
 
   mostrarExito = signal(false);
   cargando = signal(false);

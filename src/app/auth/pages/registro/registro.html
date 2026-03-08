@@ -30,7 +30,6 @@
     </div>
 
     <!-- FORM -->
-    <!-- FORM -->
     <form class="formulario-crear-cuenta" (submit)="onRegister($event)" novalidate>
 
       <!-- NOMBRE Y APELLIDOS -->
@@ -264,13 +263,9 @@
         <input id="regAcepta" type="checkbox" [formField]="registroForm.aceptaTerminos" />
         <label for="regAcepta">
           Acepto el
-          <button type="button" class="link" (click)="abrirAviso($event)"
-            style="background: none; border: none; font: inherit; color: var(--primary-color); cursor: pointer; text-decoration: underline; padding: 0;">Aviso
-            de Privacidad</button>
+          <button type="button" class="link" (click)="abrirAviso($event)">Aviso de Privacidad</button>
           y los
-          <button type="button" class="link" (click)="abrirTerminos($event)"
-            style="background: none; border: none; font: inherit; color: var(--primary-color); cursor: pointer; text-decoration: underline; padding: 0;">Términos
-            y condiciones</button>
+          <button type="button" class="link" (click)="abrirTerminos($event)">Términos y condiciones</button>
           de Tuunka.
         </label>
         @if (registroForm.aceptaTerminos().touched() && registroForm.aceptaTerminos().invalid()) {

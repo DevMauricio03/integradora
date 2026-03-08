@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { form, required, email, pattern, submit, FormField, SchemaPathTree } from '@angular/forms/signals';
+import { IconComponent } from "../../../shared/components/icon/icon.component";
 
 /**
  * Modelo para el formulario de recuperación.
@@ -14,11 +15,12 @@ interface RecoverFormModel {
 @Component({
   selector: 'app-recuperar-contrasena',
   standalone: true,
-  imports: [RouterLink, Navbar, FormField],
+  imports: [RouterLink, Navbar, FormField, IconComponent],
   templateUrl: './recuperarContrasena.html',
   styleUrl: './recuperarContrasena.css'
 })
 export class RecuperarContrasena {
+  enviado = signal(false);
 
   /** Modelado de datos reactivo con Signals */
   recoverModel = signal<RecoverFormModel>({
@@ -37,8 +39,7 @@ export class RecuperarContrasena {
   emailEnviado = signal(false);
   errorEnvio = signal('');
 
-  constructor(private supabaseService: SupabaseService) { }
-
+  constructor(private supabaseService: SupabaseService, private readonly router: Router) { }
   /**
    * Procesa el envío del enlace de recuperación.
    */
@@ -75,5 +76,13 @@ export class RecuperarContrasena {
         this.cargando.set(false);
       }
     });
+  }
+
+  volver() {
+    if (this.enviado()) {
+      this.enviado.set(false);
+    } else {
+      this.router.navigate(['/auth/bienvenida']);
+    }
   }
 }

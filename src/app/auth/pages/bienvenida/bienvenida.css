@@ -72,7 +72,11 @@ body {
 }
 
 .titulo-principal .resaltado {
-  color: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--secondary-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
 }
 
 .descripcion-principal {
@@ -228,8 +232,9 @@ body {
 }
 
 .boton-primario:hover {
-  background: var(--primary);
-  filter: brightness(0.9);
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(19, 91, 236, 0.1);
 }
 
 .boton-secundario {
@@ -240,8 +245,10 @@ body {
 }
 
 .boton-secundario:hover {
-  background: rgba(0, 0, 0, 0.02);
-  border-color: var(--text-muted);
+  border-color: var(--primary-hover);
+  color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(19, 91, 236, 0.1);
 }
 
 /* Divisor */

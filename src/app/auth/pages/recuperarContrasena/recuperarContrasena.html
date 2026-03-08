@@ -1,8 +1,10 @@
 <!-- NAVBAR REUTILIZABLE -->
-<app-navbar title="Recuperar contraseña">
-  <a navbar-right class="navbar-volver" routerLink="/auth/inicio-sesion">
-    Volver al inicio
-  </a>
+<app-navbar title="Recuperar Contraseña">
+  <button type="button" navbar-right class="btn-volver-top" (click)="volver()"
+        style="cursor: pointer; background: none; border: none; font: inherit; color: inherit; padding: 0; display: flex; align-items: center; gap: 8px;">
+        <app-icon name="arrow-left" [size]="16"></app-icon>
+        Volver
+    </button>
 </app-navbar>
 
 <!-- CONTENEDOR PRINCIPAL -->
