@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { SupabaseService } from '../../../core/services/supabase.service';

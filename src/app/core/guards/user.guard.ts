@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase.service';
+import { AuthStoreService } from '../services/auth-store.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserGuard implements CanActivate {
 
     constructor(
         private readonly supabaseService: SupabaseService,
+        private readonly authStore: AuthStoreService,
         private readonly router: Router
     ) { }
 
@@ -27,7 +29,8 @@ export class UserGuard implements CanActivate {
             return false;
         }
 
-        const perfil = await this.supabaseService.getPerfilActual();
+        // Usa el caché del AuthStoreService → no hace network si ya está en memoria
+        const perfil = await this.authStore.getPerfilActual();
         if (!perfil) {
             this.router.navigate(['/auth/inicio-sesion']);
             return false;

@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } 
 import { StatusBadge } from '../../../shared/components/statusBadge/statusBadge';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { UsuarioDetalleModal } from '../../components/usuario-detalle-modal/usuario-detalle-modal';
-import { SupabaseService } from '../../../core/services/supabase.service';
-import { CommonModule } from '@angular/common';
 import { ModalAgregarUsuario } from '../../components/modal-agregar-usuario/modal-agregar-usuario';
+import { CommonModule } from '@angular/common';
+import { AdminUserService } from '../../services/adminUser.service';
 
 @Component({
     selector: 'app-admin-users',
@@ -15,7 +15,8 @@ import { ModalAgregarUsuario } from '../../components/modal-agregar-usuario/moda
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminUsers implements OnInit {
-    private readonly supabase = inject(SupabaseService);
+    // Layer 3: AdminUserService (ya no accede directamente a SupabaseService)
+    private readonly userService = inject(AdminUserService);
 
     usuarios = signal<any[]>([]);
     universidades = signal<any[]>([]);
@@ -25,43 +26,31 @@ export class AdminUsers implements OnInit {
     mostrarModalUsuario = signal(false);
     mostrarModalAgregar = signal(false);
 
-    // Estados de filtros
     selectedRol = signal<string>('');
     selectedStatus = signal<string>('');
     selectedUniversidad = signal<string>('');
 
-    // Array computado basandome en todos los filtros
     filteredUsuarios = computed(() => {
         let list = this.usuarios();
-
-        if (this.selectedRol()) {
-            list = list.filter(u => u.roles?.nombre?.toLowerCase() === this.selectedRol());
-        }
-
-        if (this.selectedStatus()) {
-            list = list.filter(u => (u.estado || 'activo') === this.selectedStatus());
-        }
-
-        if (this.selectedUniversidad()) {
-            list = list.filter(u => u.universidades?.acronimo === this.selectedUniversidad());
-        }
-
+        if (this.selectedRol()) list = list.filter(u => u.roles?.nombre?.toLowerCase() === this.selectedRol());
+        if (this.selectedStatus()) list = list.filter(u => (u.estado || 'activo') === this.selectedStatus());
+        if (this.selectedUniversidad()) list = list.filter(u => u.universidades?.acronimo === this.selectedUniversidad());
         return list;
     });
 
     ngOnInit() {
-        this.cargarUniversidades();
-        this.cargarUsuarios();
+        // Carga paralela de universidades y usuarios
+        Promise.all([this.cargarUniversidades(), this.cargarUsuarios()]);
     }
 
     async cargarUniversidades() {
-        const { data } = await this.supabase.getUniversidades();
+        const { data } = await this.userService.getUniversidades();
         if (data) this.universidades.set(data);
     }
 
     async cargarUsuarios() {
         this.isLoading.set(true);
-        const { data } = await this.supabase.getAllUsers(this.searchTerm());
+        const { data } = await this.userService.getAllUsers(this.searchTerm());
         this.usuarios.set(data || []);
         this.isLoading.set(false);
     }
@@ -74,39 +63,12 @@ export class AdminUsers implements OnInit {
         }
     }
 
-    onSearchInput(event: Event) {
-        const input = event.target as HTMLInputElement;
-        this.searchTerm.set(input.value);
-    }
+    onSearchInput(event: Event) { this.searchTerm.set((event.target as HTMLInputElement).value); }
+    onSearchKeyup(event: KeyboardEvent) { if (event.key === 'Enter') this.cargarUsuarios(); }
+    onRolChange(event: Event) { this.selectedRol.set((event.target as HTMLSelectElement).value); }
+    onStatusChange(event: Event) { this.selectedStatus.set((event.target as HTMLSelectElement).value); }
+    onUniChange(event: Event) { this.selectedUniversidad.set((event.target as HTMLSelectElement).value); }
 
-    onSearchKeyup(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
-            this.cargarUsuarios();
-        }
-    }
-
-    onRolChange(event: Event) {
-        const select = event.target as HTMLSelectElement;
-        this.selectedRol.set(select.value);
-    }
-
-    onStatusChange(event: Event) {
-        const select = event.target as HTMLSelectElement;
-        this.selectedStatus.set(select.value);
-    }
-
-    onUniChange(event: Event) {
-        const select = event.target as HTMLSelectElement;
-        this.selectedUniversidad.set(select.value);
-    }
-
-    abrirModal(user: any): void {
-        this.usuarioSeleccionado.set(user);
-        this.mostrarModalUsuario.set(true);
-    }
-
-    cerrarModal(): void {
-        this.mostrarModalUsuario.set(false);
-        this.usuarioSeleccionado.set(null);
-    }
+    abrirModal(user: any) { this.usuarioSeleccionado.set(user); this.mostrarModalUsuario.set(true); }
+    cerrarModal() { this.mostrarModalUsuario.set(false); this.usuarioSeleccionado.set(null); }
 }

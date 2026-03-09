@@ -80,6 +80,39 @@
         (report)="openReportModal(post)" />
       }
     </section>
+
+    <!-- ── Zona de carga adicional ─────────────────────────────── -->
+
+    <!--
+      Sentinel: elemento invisible al final del feed.
+      El IntersectionObserver lo observa y dispara loadMorePosts()
+      automáticamente cuando el usuario llega aquí.
+    -->
+    <div #scrollAnchor class="scroll-anchor" aria-hidden="true"></div>
+
+    @if (isLoadingMore()) {
+    <!-- Skeleton mientras se carga la siguiente página -->
+    <div class="feed-list feed-list--more">
+      @for (i of [1,2,3]; track i) {
+      <app-post-skeleton></app-post-skeleton>
+      }
+    </div>
+    }
+
+    @if (hasMore() && !isLoadingMore()) {
+    <!-- Botón de respaldo manual (por si el observer no se activa) -->
+    <div class="load-more-wrapper">
+      <button class="load-more-btn" (click)="loadMore()" [disabled]="isLoadingMore()">
+        <app-icon name="chevron-down" [size]="16"></app-icon>
+        Cargar más publicaciones
+      </button>
+    </div>
+    }
+
+    @if (!hasMore() && filteredPosts().length > 0) {
+    <p class="no-more-posts">Ya viste todas las publicaciones disponibles</p>
+    }
+
     @if (showReportModal()) {
     <app-report-modal [post]="selectedPostForReport()" (closed)="closeReportModal()"
       (reported)="handleReport($event)"></app-report-modal>

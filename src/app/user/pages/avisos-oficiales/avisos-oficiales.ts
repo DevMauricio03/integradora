@@ -23,6 +23,6 @@ export class AvisosOficiales implements OnInit {
     );
 
     ngOnInit() {
-        this.postStore.loadPosts();
+        this.postStore.loadFeed();
     }
 }

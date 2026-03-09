@@ -201,3 +201,62 @@
     gap: 20px;
   }
 }
+
+/* ── Infinite scroll / paginación ─────────────────────────────── */
+
+/** Sentinel invisible: el IntersectionObserver lo observa para disparar la carga. */
+.scroll-anchor {
+  height: 1px;
+  width: 100%;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/** Espacio entre el último post y los skeletons de "cargar más" */
+.feed-list--more {
+  margin-top: 8px;
+}
+
+/** Wrapper del botón de respaldo */
+.load-more-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 8px;
+}
+
+/** Botón "Cargar más publicaciones" */
+.load-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  color: #1e293b;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.load-more-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.load-more-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/** Mensaje de fin del feed */
+.no-more-posts {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+  padding: 24px 0 8px;
+  margin: 0;
+}

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthStoreService } from '../../../core/services/auth-store.service';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { form, required, submit, FormField, SchemaPathTree, pattern, maxLength } from '@angular/forms/signals';
@@ -27,6 +28,7 @@ export class EditarPerfilPage implements OnInit {
   perfil = signal<any>(null);
   readonly defaultAvatarUrl = 'https://i.pinimg.com/236x/6c/55/d4/6c55d49dd6839b5b79e84a1aa6d2260d.jpg';
 
+  private readonly authStore = inject(AuthStoreService);
   private readonly supabaseService = inject(SupabaseService);
   private readonly router = inject(Router);
 
@@ -54,7 +56,8 @@ export class EditarPerfilPage implements OnInit {
   }
 
   private async loadPerfil() {
-    const data = await this.supabaseService.getPerfilActual();
+    // Usa el caché del AuthStoreService → no genera query si ya fue cargado
+    const data = await this.authStore.getPerfilActual();
     if (data) {
       this.perfil.set(data);
       this.editModel.update(m => ({

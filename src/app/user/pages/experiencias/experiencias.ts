@@ -21,6 +21,6 @@ export class Experiencias implements OnInit {
   );
 
   ngOnInit() {
-    this.postStore.loadPosts();
+    this.postStore.loadFeed();
   }
 }
