@@ -101,6 +101,8 @@ export class ReportService {
     /**
      * Transforma una fila plana de `admin_reports` en el objeto anidado
      * que usan el template y los modales.
+     * La vista simplificada ya no expone carrera/universidad/rol/creado
+     * del autor e informante — esos campos quedan en null.
      */
     private mapViewRow(r: any) {
         return {
@@ -110,44 +112,39 @@ export class ReportService {
             reportado_por:  r.reportado_por,
             motivo:         r.motivo,
             descripcion:    r.descripcion,
-            detalles:       r.descripcion,      // alias para modales
+            detalles:       r.descripcion,   // alias para modales
             estado:         r.estado,
             creado:         r.creado,
+            resuelto_por:   r.resuelto_por  ?? null,
+            resuelto_en:    r.resuelto_en   ?? null,
+            resolucion:     r.resolucion    ?? null,
 
-            // Objeto publicaciones (compatible con template)
+            // Objeto publicaciones
             publicaciones: r.pub_titulo ? {
-                titulo:       r.pub_titulo,
-                descripcion:  r.pub_descripcion,
-                imagen_url:   r.pub_imagen_url,
-                tipo:         r.pub_tipo,
+                titulo:      r.pub_titulo,
+                descripcion: r.pub_descripcion,
+                imagen_url:  r.pub_imagen_url,
+                tipo:        r.pub_tipo,
             } : null,
 
-            // Datos del autor (compatible con template y modal)
+            // Datos del autor
             autor_id: r.autor_id ?? null,
             autor: r.autor_id ? {
-                id:          r.autor_id,
-                nombre:      r.autor_nombre,
-                apellidos:   r.autor_apellidos,
-                foto_url:    r.autor_foto_url,
+                id:                  r.autor_id,
+                nombre:              r.autor_nombre,
+                apellidos:           r.autor_apellidos,
+                foto_url:            r.autor_foto_url,
                 correoInstitucional: r.autor_correo,
-                creado:      r.autor_creado,
-                carrera:     r.autor_carrera     ? { nombre: r.autor_carrera }                    : null,
-                universidades: r.autor_universidad ? { acronimo: r.autor_universidad_acronimo, nombre: r.autor_universidad } : null,
-                roles:       r.autor_rol         ? { nombre: r.autor_rol }                        : null,
             } : null,
 
-            // Datos del informante (compatible con template y modal)
+            // Datos del informante
             informante_id: r.informante_id ?? null,
             informante: r.informante_id ? {
-                id:          r.informante_id,
-                nombre:      r.informante_nombre,
-                apellidos:   r.informante_apellidos,
-                foto_url:    r.informante_foto_url,
+                id:                  r.informante_id,
+                nombre:              r.informante_nombre,
+                apellidos:           r.informante_apellidos,
+                foto_url:            r.informante_foto_url,
                 correoInstitucional: r.informante_correo,
-                creado:      r.informante_creado,
-                carrera:     r.informante_carrera     ? { nombre: r.informante_carrera }                          : null,
-                universidades: r.informante_universidad ? { acronimo: r.informante_universidad_acronimo, nombre: r.informante_universidad } : null,
-                roles:       r.informante_rol         ? { nombre: r.informante_rol }                              : null,
             } : null,
         };
     }
@@ -212,6 +209,7 @@ export class ReportService {
      * Descarta un reporte marcándolo como 'descartado'.
      * El registro permanece en la BD para historial de moderación.
      * NO elimina el reporte. NO elimina la publicación.
+     * @deprecated Usar dismissReport() que además llena resuelto_por/resuelto_en/resolucion.
      */
     async discardReport(reportId: string) {
         return await this.db
@@ -227,5 +225,28 @@ export class ReportService {
             .delete()
             .eq('id', reportId)
             .select();
+    }
+
+    // ── Acción de moderación transaccional (RPC) ─────────────────
+
+    /**
+     * Ejecuta una acción de moderación en una sola transacción PostgreSQL.
+     * La función RPC valida que el llamante es admin y que el reporte
+     * está pendiente antes de operar.
+     *
+     * @param reportId  UUID del reporte a moderar.
+     * @param accion    'eliminar_publicacion' | 'suspender_usuario' | 'descartar'
+     * @param horas     Solo para 'suspender_usuario'. null = largo plazo (2099).
+     */
+    async moderarReporte(
+        reportId: string,
+        accion: 'eliminar_publicacion' | 'suspender_usuario' | 'descartar',
+        horas?: number | null,
+    ) {
+        return await this.db.rpc('moderar_reporte', {
+            p_reporte_id: reportId,
+            p_accion:     accion,
+            p_horas:      horas ?? null,
+        });
     }
 }

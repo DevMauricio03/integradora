@@ -4,9 +4,7 @@ import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { CommonModule } from '@angular/common';
 // Layer 3: Admin Services — nunca llamar al core directamente desde componentes admin
-import { AdminUserService } from '../../services/adminUser.service';
 import { AdminReportService } from '../../services/adminReport.service';
-import { AdminPublicationService } from '../../services/adminPublication.service';
 
 @Component({
   selector: 'app-reporte-detalle-modal',
@@ -21,9 +19,7 @@ export class ReporteDetalleModal {
   @Output() closed = new EventEmitter<void>();
   @Output() actionExecuted = new EventEmitter<void>();
 
-  private readonly userService   = inject(AdminUserService);
   private readonly reportService = inject(AdminReportService);
-  private readonly pubService    = inject(AdminPublicationService);
 
   isProcessing = signal<boolean>(false);
   showSuspensionOptions = signal<boolean>(false);
@@ -36,18 +32,17 @@ export class ReporteDetalleModal {
     accion: () => Promise<void>;
   } | null>(null);
 
-  // ── Acciones atómicas de moderación ─────────────────────────────────────
+  // ── Acciones de moderación ────────────────────────────────────────────────
 
   /**
-   * Descarta el reporte: cambia estado a 'descartado'.
-   * El registro permanece en la BD para historial de moderación.
-   * NO elimina la publicación.
+   * Descarta el reporte: estado='descartado', resolucion='sin_infraccion'.
+   * La RPC valida admin + que el reporte esté pendiente.
    */
   async descartarReporte() {
     if (this.isProcessing()) return;
     this.isProcessing.set(true);
     try {
-      const { error } = await this.reportService.discardReport(this.reporte.id);
+      const { error } = await this.reportService.moderarReporte(this.reporte.id, 'descartar');
       if (error) throw error;
       this.actionExecuted.emit();
       this.closed.emit();
@@ -60,31 +55,26 @@ export class ReporteDetalleModal {
   }
 
   /**
-   * Solicita confirmación y luego ejecuta soft-delete de la publicación.
-   * Acción 1 (atómica): marca publicación como 'eliminado'.
-   * Acción 2 (atómica): descarta el reporte como 'descartado'.
-   * Cada acción falla de forma independiente.
+   * Solicita confirmación y ejecuta el RPC moderar_reporte('eliminar_publicacion').
+   * El RPC en una sola transacción:
+   *   1. Soft-delete de la publicación (estado = 'eliminado').
+   *   2. Resuelve TODOS los reportes pendientes de esa publicación.
    */
   async eliminarPublicacion() {
     this.configConfirmacion.set({
       titulo: '¿Eliminar publicación?',
-      mensaje: 'La publicación quedará desactivada y no será visible. El reporte se marcará como resuelto. Esta acción no se puede deshacer.',
+      mensaje: 'La publicación quedará desactivada y no será visible. Todos los reportes pendientes de esta publicación se marcarán como resueltos. Esta acción no se puede deshacer.',
       botonTexto: 'Sí, eliminar',
       accion: async () => {
         if (this.isProcessing()) return;
         this.isProcessing.set(true);
         this.mostrarConfirmacion.set(false);
         try {
-          // Acción 1: soft-delete de la publicación
-          const { error: pubError } = await this.pubService.softDeletePost(this.reporte.publicacion_id);
-          if (pubError) throw pubError;
-
-          // Acción 2: descartar el reporte (preservar historial)
-          const { error: reportError } = await this.reportService.discardReport(this.reporte.id);
-          if (reportError) {
-            console.warn('[ReporteModal] Publicación eliminada pero fallo al descartar reporte:', reportError);
-          }
-
+          const { error } = await this.reportService.moderarReporte(
+            this.reporte.id,
+            'eliminar_publicacion',
+          );
+          if (error) throw error;
           this.actionExecuted.emit();
           this.closed.emit();
         } catch (err) {
@@ -103,10 +93,10 @@ export class ReporteDetalleModal {
   }
 
   /**
-   * Solicita confirmación y suspende al autor de la publicación.
-   * Acción 1 (atómica): suspender usuario con fecha de expiración.
-   * Acción 2 (atómica): descartar el reporte ('descartado').
-   * Cada acción falla de forma independiente.
+   * Solicita confirmación y ejecuta el RPC moderar_reporte('suspender_usuario').
+   * El RPC en una sola transacción:
+   *   1. Suspende al autor con fecha de expiración.
+   *   2. Resuelve TODOS los reportes pendientes del autor.
    */
   async suspenderUsuario(periodo: '1d' | '1w' | '1m' | 'perm') {
     const duraciones: Record<string, { hours: number | null; label: string }> = {
@@ -126,16 +116,12 @@ export class ReporteDetalleModal {
         this.isProcessing.set(true);
         this.mostrarConfirmacion.set(false);
         try {
-          // Acción 1: suspender con fecha de expiración
-          const { error: suspError } = await this.userService.suspendUser(this.reporte.autor_id, hours);
-          if (suspError) throw suspError;
-
-          // Acción 2: descartar el reporte (preservar historial)
-          const { error: reportError } = await this.reportService.discardReport(this.reporte.id);
-          if (reportError) {
-            console.warn('[ReporteModal] Usuario suspendido pero fallo al descartar reporte:', reportError);
-          }
-
+          const { error } = await this.reportService.moderarReporte(
+            this.reporte.id,
+            'suspender_usuario',
+            hours,
+          );
+          if (error) throw error;
           this.actionExecuted.emit();
           this.closed.emit();
         } catch (err) {

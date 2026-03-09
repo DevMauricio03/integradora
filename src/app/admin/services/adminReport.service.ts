@@ -15,8 +15,20 @@ export class AdminReportService {
   updateReportStatus(id: string, estado: 'resuelto' | 'rechazado') {
     return this.reportService.updateReportStatus(id, estado);
   }
-  /** Marcar reporte como 'descartado'. Preserva historial de moderación. */
-  discardReport(id: string) { return this.reportService.discardReport(id); }
   /** Hard-delete. Solo para casos extremos (contenido ilegal comprobado). */
   deleteReport(id: string) { return this.reportService.deleteReport(id); }
+
+  // ── Acción de moderación transaccional (RPC) ────────────────────
+
+  /**
+   * Ejecuta una acción de moderación en una sola transacción.
+   * La RPC valida admin + estado pendiente antes de operar.
+   */
+  moderarReporte(
+    reportId: string,
+    accion: 'eliminar_publicacion' | 'suspender_usuario' | 'descartar',
+    horas?: number | null,
+  ) {
+    return this.reportService.moderarReporte(reportId, accion, horas);
+  }
 }
