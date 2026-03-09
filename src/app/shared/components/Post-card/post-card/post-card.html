@@ -118,7 +118,7 @@
     @if (images && images.length > 0) {
     @for (img of images.slice(0, 4); track img; let i = $index) {
     <button type="button" class="gallery-item" (click)="openImage(img)">
-      <div class="blurred-bg" [style.background-image]="'url(' + img + ')'"></div>
+      <div class="blurred-bg" [style.background-image]="'url(' + getThumbnailUrl(img) + ')'"></div>
       <img [src]="img" alt="Foto de publicación" loading="lazy">
       @if (i === 3 && images.length > 4) {
       <div class="more-images-overlay">
@@ -129,7 +129,7 @@
     }
     } @else if (image) {
     <button type="button" class="gallery-item single" (click)="openImage(image)">
-      <div class="blurred-bg" [style.background-image]="'url(' + image + ')'"></div>
+      <div class="blurred-bg" [style.background-image]="'url(' + getThumbnailUrl(image) + ')'"></div>
       <img [src]="image" alt="Foto de publicación" loading="lazy">
     </button>
     }

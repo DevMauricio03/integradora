@@ -124,7 +124,8 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
     this._observer = null;
   }
 
-  // ── Carga inicial ─────────────────────────────────────────────
+  // Imágenes ya solicitadas al prefetcher (deduplicación)
+  private readonly _prefetched = new Set<string>();
 
   private async initialLoad() {
     const [, carrerasRes] = await Promise.all([
@@ -132,6 +133,70 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
       this.catalogService.getCarreras()
     ]);
     if (carrerasRes.data) this.carreras.set(carrerasRes.data);
+
+    const posts = this.postStore.posts();
+    const firstImageUrl = posts[0]?.images?.[0] ?? posts[0]?.image;
+    if (firstImageUrl) this._preloadFirstImage(firstImageUrl);
+    this._prefetchImages(posts, 1);
+
+    // TIMING FIX: el IntersectionObserver solo dispara en CAMBIOS de intersección,
+    // no en el estado actual. Si con 3 posts el sentinel ya fue visible antes
+    // de que isLoading() bajara a false, el observer nunca vuelve a disparar.
+    // Por eso forzamos una comprobación manual aquí, DESPUÉS de que carga termine.
+    this._checkAndLoadMore();
+  }
+
+  /**
+   * Pre-descarga en background las imágenes de los posts a partir de `startIndex`.
+   * Solo toma los siguientes `count` posts para no saturar la red.
+   *
+   * Condiciones:
+   *  - Omite si la red es 2G (navigator.connection?.effectiveType)
+   *  - Omite URLs ya solicitadas (_prefetched Set)
+   *  - No bloquea el hilo principal (new Image() es asíncrono)
+   */
+  private _prefetchImages(posts: any[], startIndex: number, count = 3): void {
+    if (typeof navigator === 'undefined') return;
+
+    // No prefetchar en conexiones 2G para ahorrar datos
+    const conn = (navigator as any).connection;
+    if (conn?.effectiveType === '2g') return;
+
+    posts.slice(startIndex, startIndex + count).forEach(post => {
+      const urls: string[] = [
+        ...(post.images ?? []),
+        post.image
+      ].filter(Boolean);
+
+      urls.forEach(url => {
+        if (this._prefetched.has(url)) return;
+        this._prefetched.add(url);
+        const img = new Image();
+        img.src = url;   // dispara descarga en background; el browser la cachea
+      });
+    });
+  }
+
+  /**
+   * Inserta <link rel="preload" as="image"> en <head> para la primera
+   * imagen del feed, indicando al browser que la descargue inmediatamente
+   * aunque el componente PostCard todavía no haya sido renderizado.
+   *
+   * Deduplicación: usa el atributo `data-preload-feed` para evitar
+   * insertar más de un tag por sesión.
+   */
+  private _preloadFirstImage(url: string): void {
+    if (typeof document === 'undefined') return; // SSR guard
+
+    // Evitar duplicados
+    if (document.head.querySelector('link[data-preload-feed]')) return;
+
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = url;
+    link.setAttribute('data-preload-feed', 'true');
+    document.head.appendChild(link);
   }
 
   // ── Infinite scroll ───────────────────────────────────────────
@@ -153,26 +218,38 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
     this._observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        // Guard triple: hay más páginas, no está cargando más, y la carga inicial terminó
-        if (entry.isIntersecting
-          && this.hasMore()
-          && !this.isLoadingMore()
-          && !this.isLoading()) {   // ← evita disparar durante loadFeed()
-          this.postStore.loadMorePosts();
+        if (entry.isIntersecting) {
+          this._checkAndLoadMore();
         }
       },
       {
-        rootMargin: '0px 0px 200px 0px',
-        threshold: 0.1
+        // 400px de margen anticipa la carga antes de que el usuario llegue al fondo
+        rootMargin: '0px 0px 400px 0px',
+        threshold: 0
       }
     );
 
     this._observer.observe(this.scrollAnchorRef.nativeElement);
   }
 
+  /**
+   * Comprueba si se puede cargar más y lo hace.
+   * Centralizado aquí para poder llamarlo tanto desde el observer
+   * como manualmente tras initialLoad() (timing fix).
+   */
+  private _checkAndLoadMore(): void {
+    if (this.hasMore() && !this.isLoadingMore() && !this.isLoading()) {
+      this.postStore.loadMorePosts();
+    }
+  }
+
   /** Botón de fallback manual para cargar más posts. */
-  loadMore() {
-    this.postStore.loadMorePosts();
+  async loadMore() {
+    await this.postStore.loadMorePosts();
+    // Prefetch de las siguientes imágenes después de que la página nueva llegó
+    const posts = this.postStore.posts();
+    const newPageStart = posts.length - 3; // los 3 recién llegados ya son visibles
+    this._prefetchImages(posts, newPageStart + 3);
   }
 
   // ── Filtros ───────────────────────────────────────────────────

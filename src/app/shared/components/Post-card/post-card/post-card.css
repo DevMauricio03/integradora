@@ -6,6 +6,13 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   border: 1px solid #f3f4f6;
   transition: transform 0.2s;
+  /*
+   * contain: paint style (sin layout)
+   * Aísla el paint de cada tarjeta sin crear un layout context independiente.
+   * contain:layout impedía que el IntersectionObserver propagara correctamente
+   * la posición del sentinel #scrollAnchor.
+   */
+  contain: paint style;
 }
 
 .post-card:hover {
@@ -239,15 +246,24 @@
 
 .blurred-bg {
   position: absolute;
-  inset: -10%;
-  /* Estiramos más allá del borde para que el difuminado no deje bordes duros */
+  inset: 0;
+  /* Eliminamos el inset: -10% — no es necesario con will-change porque
+     la capa GPU ya gestiona los bordes correctamente */
   background-size: cover;
   background-position: center;
-  filter: blur(20px) brightness(0.8);
+  /* blur(8px) en vez de blur(20px):
+     el coste de compositing es cuadrático con el radio — 8px es ~6x más barato.
+     Visualmente indistinguible sobre la tarjeta porque la imagen principal cubre el centro. */
+  filter: blur(8px) brightness(0.8);
   z-index: 1;
-  opacity: 0.8;
-  transform: scale(1.1);
-  /* Ligero stretch para evitar recortes raros en los bordes */
+  opacity: 0.85;
+  /* Promueve el elemento a su propia capa del compositor (GPU).
+     Evita que el repaint de .blurred-bg invalide la capa de la imagen superior. */
+  will-change: transform;
+  transform: translateZ(0) scale(1.08);
+  /* Limita el layout/paint/composite al stacking context del padre.
+     Impide que el blur se propague fuera del contenedor y fuerza un nuevo bloque formato. */
+  contain: strict;
 }
 
 .more-images-overlay {

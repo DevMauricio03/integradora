@@ -131,4 +131,23 @@ export class PostCardComponent implements OnInit, OnChanges {
     return 'badge-aviso';
   }
 
+  /**
+   * Convierte una URL de Supabase Storage a una versión thumbnail ultra-ligera.
+   *
+   * Supabase expone: /storage/v1/render/image/public/<bucket>/<path>?width=40&quality=20
+   * La versión tiny (~2-5 kB) es ideal para .blurred-bg porque blur(8px)
+   * elimina el detalle de alta frecuencia de todos modos.
+   *
+   * URLs que no sean de Supabase Storage se devuelven sin cambios.
+   */
+  getThumbnailUrl(url: string | undefined): string {
+    if (!url) return '';
+    const marker = '/storage/v1/object/public/';
+    const idx = url.indexOf(marker);
+    if (idx === -1) return url;
+    const base = url.substring(0, idx);
+    const cleanPath = url.substring(idx + marker.length).split('?')[0];
+    return `${base}/storage/v1/render/image/public/${cleanPath}?width=40&quality=20&resize=cover`;
+  }
+
 }

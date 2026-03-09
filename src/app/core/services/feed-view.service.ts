@@ -27,8 +27,8 @@ export interface FeedPost {
     fuente: 'publicacion' | 'anuncio';
 }
 
-/** Tamaño de página del feed */
-export const FEED_PAGE_SIZE = 5;
+/** Tamaño de página del feed — 3 cards reducen el render inicial y el LCP */
+export const FEED_PAGE_SIZE = 3;
 
 @Injectable({ providedIn: 'root' })
 export class FeedViewService {

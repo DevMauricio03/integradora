@@ -80,13 +80,14 @@
         (report)="openReportModal(post)" />
       }
     </section>
+    }
 
     <!-- ── Zona de carga adicional ─────────────────────────────── -->
 
     <!--
       Sentinel: elemento invisible al final del feed.
-      El IntersectionObserver lo observa y dispara loadMorePosts()
-      automáticamente cuando el usuario llega aquí.
+      Al colocarlo FUERA del bloque @else, nos aseguramos de que
+      ngAfterViewInit siempre lo encuentre y conecte el observer.
     -->
     <div #scrollAnchor class="scroll-anchor" aria-hidden="true"></div>
 
@@ -123,7 +124,6 @@
       mensaje="Gracias por informarnos. El equipo de moderación revisará la publicación en breve para mantener la comunidad segura."
       botonTexto="Entendido" (closed)="showSuccessReport.set(false)" (confirm)="showSuccessReport.set(false)">
     </app-success-modal>
-    }
     }
 
   </div>

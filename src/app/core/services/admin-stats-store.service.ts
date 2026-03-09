@@ -13,7 +13,7 @@ const STATS_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
  * Estrategia de queries (dos modos):
  *
  *  Modo A – RPC (preferido):
- *    Una sola llamada a `get_dashboard_stats()` que devuelve todo.
+ *    Una sola llamada a `get_dashboard_stats()` que devuelve.
  *    Requiere que la función SQL esté creada en Supabase
  *    (ver supabase/migrations/get_dashboard_stats.sql).
  *

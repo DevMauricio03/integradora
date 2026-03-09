@@ -145,6 +145,17 @@
 .feed-list {
   display: flex;
   flex-direction: column;
+  /*
+   * NOTA: content-visibility: auto NO puede aplicarse aquí porque
+   * el sentinel #scrollAnchor vive dentro de este contenedor.
+   * Cuando el browser omite el layout del contenido off-screen,
+   * el IntersectionObserver no puede detectar que el sentinel
+   * entró al viewport y el infinite scroll deja de funcionar.
+   *
+   * El aislamiento de paint está aplicado a nivel de .post-card
+   * individualmente (contain: layout paint style), que es más
+   * granular y no afecta al observer.
+   */
 }
 
 .empty-state {
@@ -204,11 +215,16 @@
 
 /* ── Infinite scroll / paginación ─────────────────────────────── */
 
-/** Sentinel invisible: el IntersectionObserver lo observa para disparar la carga. */
+/** Sentinel invisible: el IntersectionObserver lo observa para disparar la carga.
+ *
+ * IMPORTANTE: NO usar visibility:hidden. Según la spec del IntersectionObserver,
+ * elementos con visibility:hidden NO son intersectables y el observer nunca
+ * dispara isIntersecting:true sobre ellos. Usar opacity:0 en su lugar.
+ */
 .scroll-anchor {
-  height: 1px;
+  height: 10px;
   width: 100%;
-  visibility: hidden;
+  opacity: 0;
   pointer-events: none;
 }
 

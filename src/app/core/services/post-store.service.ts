@@ -227,7 +227,7 @@ export class PostStoreService {
       const { data: anunciosData } = await this.anuncioService.getAnuncios();
       const anuncios = anunciosData ? anunciosData.map(a => this.mapLegacyAnuncio(a as any)) : [];
       const combined = [...pubs, ...anuncios].sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime());
-      this._hasMore.set(false); // En fallback cargamos todo de una vez
+      this._hasMore.set(false); // En fallback cargamos de una vez
       return combined;
     }
 
