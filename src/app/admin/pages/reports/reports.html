@@ -9,24 +9,20 @@
     <!-- Filtros y Buscador -->
     <div class="filters-container">
         <div class="select-filters">
-            <button class="custom-select" (click)="setFiltroEstado('todos')">
-                <span>Estado : <strong
-                        [style.color]="filtroEstado() === 'todos' ? 'var(--primary)' : 'inherit'">Todos</strong></span>
-            </button>
-            <button class="custom-select" (click)="setFiltroEstado('pendiente')">
-                <span>Estado : <strong
-                        [style.color]="filtroEstado() === 'pendiente' ? 'var(--primary)' : 'inherit'">Pendientes</strong></span>
-            </button>
-            <button class="custom-select" (click)="setFiltroEstado('resuelto')">
-                <span>Estado : <strong
-                        [style.color]="filtroEstado() === 'resuelto' ? 'var(--primary)' : 'inherit'">Resueltos</strong></span>
-            </button>
+            <div class="custom-select-wrapper">
+                <select class="custom-select" [value]="store.filter()" (change)="onFilterChange($event)">
+                    <option value="todas">Estado: Todas</option>
+                    <option value="pendiente">Estado: Pendientes</option>
+                    <option value="resuelto">Estado: Resueltos</option>
+                </select>
+                <app-icon name="chevron-down" [size]="14"></app-icon>
+            </div>
         </div>
         <div class="search-box">
             <app-icon name="search" [size]="18" class="search-icon"></app-icon>
             <input type="text" placeholder="Buscar por ID, usuario o motivo..." class="search-input"
-                [value]="searchTerm()" (input)="onSearch($event)">
-            <button class="btn-refresh" (click)="cargarReportes()">
+                [value]="store.searchTerm()" (input)="onSearch($event)">
+            <button class="btn-refresh" (click)="store.refresh()" [disabled]="store.isLoading()">
                 <app-icon name="refresh-cw" [size]="18"></app-icon>
                 Actualizar
             </button>
@@ -48,17 +44,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (isLoading()) {
+                    @if (store.isLoading()) {
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 40px;">Cargando reportes...</td>
                     </tr>
-                    } @else if (filteredReportes().length === 0) {
+                    } @else if (store.items().length === 0) {
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 40px;">No hay reportes que coincidan con los
                             filtros.</td>
                     </tr>
                     } @else {
-                    @for (reporte of filteredReportes(); track reporte.id) {
+                    @for (reporte of store.items(); track reporte.id) {
                     <tr [class.active-row]="reporte.estado === 'pendiente'">
                         <td>
                             <button class="pub-cell clickable-pub" (click)="abrirModalReporte(reporte)">
@@ -118,10 +114,13 @@
             </table>
         </div>
         <div class="table-footer">
-            <span>{{ filteredReportes().length }} reportes encontrados</span>
+            <span>Mostrando {{ store.items().length }} de {{ store.totalCount() }} reportes (Página {{
+                store.currentPage() + 1 }})</span>
             <div class="pagination">
-                <button class="btn-paging"><app-icon name="chevron-left" [size]="16"></app-icon></button>
-                <button class="btn-paging"><app-icon name="chevron-right" [size]="16"></app-icon></button>
+                <button class="btn-paging" (click)="store.prevPage()" [disabled]="store.currentPage() === 0"><app-icon
+                        name="chevron-left" [size]="16"></app-icon></button>
+                <button class="btn-paging" (click)="store.nextPage()" [disabled]="!store.hasMore()"><app-icon
+                        name="chevron-right" [size]="16"></app-icon></button>
             </div>
         </div>
     </div>

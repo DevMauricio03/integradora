@@ -17,4 +17,13 @@ export class AdminPublicationService {
     async updatePublicationStatus(id: string, status: string) {
         return this.publicationService.updatePostStatus(id, status);
     }
+
+    /**
+     * Soft-delete de publicación.
+     * Cambia estado a 'eliminado'. El registro permanece en la BD.
+     * Los reportes relacionados conservan su referencia. El feed la excluye.
+     */
+    async softDeletePost(id: string) {
+        return this.publicationService.softDeletePost(id);
+    }
 }

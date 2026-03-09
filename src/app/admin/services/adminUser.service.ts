@@ -11,11 +11,13 @@ export class AdminUserService {
   private readonly profileService = inject(ProfileService);
   private readonly catalogService = inject(CatalogService);
 
-  getAllUsers(search?: string) { return this.profileService.getAllUsers(search); }
+  getAllUsers(search?: string) { return this.profileService.getAllUsers({ searchTerm: search }); }
   getRecentUsers(limit = 5) { return this.profileService.getRecentUsers(limit); }
   updateUserRole(userId: string, roleId: string) { return this.profileService.updateUserRole(userId, roleId); }
-  updateUserStatus(userId: string, estado: string) { return this.profileService.updateUserStatus(userId, estado); }
+  /** Suspender con fecha de expiración. hours = null → largo plazo (año 2099). */
   suspendUser(userId: string, hours: number | null) { return this.profileService.suspendUser(userId, hours); }
+  /** Reactivar cuenta y limpiar fecha_suspension. */
+  unsuspendUser(userId: string) { return this.profileService.unsuspendUser(userId); }
 
   getUniversidades() { return this.catalogService.getUniversidades(); }
   getRoles() { return this.catalogService.getRoles(); }

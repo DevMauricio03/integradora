@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SupabaseService } from '../../../core/services/supabase.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { ProfileService } from '../../../core/services/profile.service';
+import { CatalogService } from '../../../core/services/catalog.service';
 import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { SuccessModal } from '../../../shared/components/successModal/successModal';
@@ -28,7 +30,9 @@ export class ModalAgregarUsuario implements OnInit {
     closed = output<void>();
     refresh = output<any>();
 
-    private readonly supabase = inject(SupabaseService);
+    private readonly auth = inject(AuthService);
+    private readonly profile = inject(ProfileService);
+    private readonly catalog = inject(CatalogService);
 
     readonly roles = signal<any[]>([]);
     readonly universidades = signal<any[]>([]);
@@ -100,9 +104,9 @@ export class ModalAgregarUsuario implements OnInit {
 
     private async loadData(): Promise<void> {
         const [rolesRes, unisRes, carrRes] = await Promise.all([
-            this.supabase.getRolesList(),
-            this.supabase.getUniversidades(),
-            this.supabase.getCarreras()
+            this.catalog.getRoles(),
+            this.catalog.getUniversidades(),
+            this.catalog.getCarreras()
         ]);
 
         if (rolesRes.data) this.roles.set(rolesRes.data);
@@ -138,7 +142,7 @@ export class ModalAgregarUsuario implements OnInit {
                 const data = this.formModel();
 
                 // 1. Auth Supabase
-                const { data: authData, error: authError } = await this.supabase.register(data.correo, data.password);
+                const { data: authData, error: authError } = await this.auth.signUp(data.correo, data.password);
 
                 if (authError) {
                     throw new Error(authError.message.includes('User already registered')
@@ -148,7 +152,7 @@ export class ModalAgregarUsuario implements OnInit {
 
                 if (authData?.user) {
                     // 2. Perfil
-                    const { error: profileError } = await this.supabase.createProfile({
+                    const { error: profileError } = await this.profile.createProfile({
                         id: authData.user.id,
                         nombre: data.nombre,
                         apellidos: data.apellidos,

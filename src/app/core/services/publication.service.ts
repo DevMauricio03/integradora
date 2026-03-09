@@ -151,8 +151,31 @@ export class PublicationService {
         return { data, error };
     }
 
+    /**
+     * Soft-delete de publicación (admin).
+     * El registro queda en la BD con estado = 'eliminado'.
+     * Los reportes relacionados conservan su referencia intacta.
+     * El feed excluye publicaciones eliminadas porque solo muestra 'activo'.
+     */
+    async softDeletePost(id: string) {
+        const { data, error } = await this.db
+            .from('publicaciones')
+            .update({ estado: 'eliminado' })
+            .eq('id', id);
+        return { data, error };
+    }
+
+    /** Hard-delete SOLO para emergencias (borrar contenido ilegal, etc.). */
+    async deletePost(id: string) {
+        const { data, error } = await this.db
+            .from('publicaciones')
+            .delete()
+            .eq('id', id);
+        return { data, error };
+    }
+
     /** Obtener todas las publicaciones con filtros (admin – join pesado justificado aquí) */
-    async getPublications(filters?: { type?: string; status?: string; search?: string }) {
+    async getPublications(params?: { page?: number; pageSize?: number; type?: string; status?: string; searchTerm?: string }) {
         let query = this.db
             .from('publicaciones')
             .select(`
@@ -165,27 +188,29 @@ export class PublicationService {
           carrera ( nombre ),
           universidades ( acronimo )
         )
-      `)
+      `, { count: 'exact' })
             .order('creado', { ascending: false });
 
-        if (filters?.type && filters.type !== 'Todos') {
-            const typeMap: Record<string, string> = {
-                producto: 'oferta', empresarial: 'experiencia', evento: 'evento'
-            };
-            const key = filters.type.toLowerCase();
-            const dbType = Object.keys(typeMap).find(k => key.includes(k));
-            if (dbType) query = query.eq('tipo', typeMap[dbType]);
+        if (params?.type && params.type !== 'todos') {
+            query = query.eq('tipo', params.type);
         }
 
-        if (filters?.status && filters.status !== 'Todos') {
-            query = query.eq('estado', filters.status.toLowerCase());
+        if (params?.status && params.status !== 'todos') {
+            query = query.eq('estado', params.status);
         }
 
-        if (filters?.search) {
-            query = query.or(`titulo.ilike.%${filters.search}%,descripcion.ilike.%${filters.search}%`);
+        if (params?.searchTerm) {
+            const term = params.searchTerm;
+            query = query.or(`titulo.ilike.%${term}%,descripcion.ilike.%${term}%`);
         }
 
-        const { data, error } = await query;
-        return { data: data as (Post & { perfiles: any })[] | null, error };
+        if (params?.page !== undefined && params?.pageSize !== undefined) {
+            const from = params.page * params.pageSize;
+            const to = from + params.pageSize - 1;
+            query = query.range(from, to);
+        }
+
+        const { data, count, error } = await query;
+        return { data: data || [], count: count || 0, error };
     }
 }

@@ -59,7 +59,7 @@ export class SupabaseService {
   updateUserStatus(userId: string, estado: string) { return this.profileSvc.updateUserStatus(userId, estado); }
   suspendUser(userId: string, hours: number | null) { return this.profileSvc.suspendUser(userId, hours); }
   verifySuspension() { return this.profileSvc.verifySuspension(); }
-  getAllUsers(search?: string) { return this.profileSvc.getAllUsers(search); }
+  getAllUsers(search?: string) { return this.profileSvc.getAllUsers({ searchTerm: search }); }
   getRecentUsers(limit = 5) { return this.profileSvc.getRecentUsers(limit); }
   updateUserRole(userId: string, roleId: string) { return this.profileSvc.updateUserRole(userId, roleId); }
 

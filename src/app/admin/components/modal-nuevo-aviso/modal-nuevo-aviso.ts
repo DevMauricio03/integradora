@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SupabaseService } from '../../../core/services/supabase.service';
+import { AnuncioService } from '../../../core/services/anuncio.service';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { PostCardComponent } from '../../../shared/components/Post-card/post-card/post-card';
 import { form, required, submit, FormField, SchemaPathTree, maxLength, validate } from '@angular/forms/signals';
@@ -27,7 +27,7 @@ export class ModalNuevoAviso {
     closed = output<void>();
     avisoCreado = output<void>();
 
-    private readonly supabase = inject(SupabaseService);
+    private readonly anuncioService = inject(AnuncioService);
 
     step = signal<'form' | 'preview'>('form');
     isPublishing = signal(false);
@@ -116,11 +116,11 @@ export class ModalNuevoAviso {
         const data = this.postModel();
 
         try {
-            const { error } = await this.supabase.crearAnuncio({
+            const { error } = await this.anuncioService.crearAnuncio({
                 titulo: data.titulo,
                 descripcion: data.descripcion,
-                imagen_url: data.imagen_url || null,
-                contacto_url: data.contacto_url || null,
+                imagen_url: data.imagen_url || undefined,
+                contacto_url: data.contacto_url || undefined,
                 ciudad: data.ciudad,
                 fecha_inicio: data.fecha_inicio ? new Date(data.fecha_inicio).toISOString() : new Date().toISOString(),
                 fecha_fin: data.fecha_fin ? new Date(data.fecha_fin).toISOString() : new Date().toISOString()

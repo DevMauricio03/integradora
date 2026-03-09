@@ -3,7 +3,10 @@ import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { StatusBadge } from '../../../shared/components/statusBadge/statusBadge';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { CommonModule } from '@angular/common';
-import { SupabaseService } from '../../../core/services/supabase.service';
+// Layer 3: Admin Services — nunca llamar al core directamente desde componentes admin
+import { AdminUserService } from '../../services/adminUser.service';
+import { PublicationService } from '../../../core/services/publication.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
     selector: 'app-usuario-detalle-modal',
@@ -18,7 +21,9 @@ export class UsuarioDetalleModal implements OnInit {
     closed = output<void>();
     refresh = output<void>();
 
-    private readonly supabase = inject(SupabaseService);
+    private readonly adminUserService = inject(AdminUserService);
+    private readonly pubService = inject(PublicationService);
+    private readonly authService = inject(AuthService);
 
     roles = signal<{ id: string; nombre: string }[]>([]);
     isEditingRole = signal(false);
@@ -43,14 +48,14 @@ export class UsuarioDetalleModal implements OnInit {
     }
 
     private async initialLoad() {
-        const { data } = await this.supabase.getRolesList();
+        const { data } = await this.adminUserService.getRoles();
         if (data) this.roles.set(data);
         this.cargarActividadReciente();
     }
 
     async cargarActividadReciente() {
         const result: { titulo: string, subtitulo: string, color: string }[] = [];
-        const { data: posts } = await this.supabase.getUserRecentPosts(this.usuario.id, 2);
+        const { data: posts } = await this.pubService.getUserRecentPosts(this.usuario.id, 2);
 
         if (posts && posts.length > 0) {
             posts.forEach((p: { titulo: string; tipo: string; creado: string }) => {
@@ -98,7 +103,7 @@ export class UsuarioDetalleModal implements OnInit {
         if (!roleId) return;
 
         this.isProcessing.set(true);
-        const { error } = await this.supabase.updateUserRole(this.usuario.id, roleId);
+        const { error } = await this.adminUserService.updateUserRole(this.usuario.id, roleId);
 
         if (error) {
             this.mostrarFeedback('Error al actualizar el rol: ' + error.message, 'error');
@@ -130,7 +135,7 @@ export class UsuarioDetalleModal implements OnInit {
             tipo: 'info',
             accion: async () => {
                 this.isProcessing.set(true);
-                const { error } = await this.supabase.resetPassword(this.usuario.correoInstitucional);
+                const { error } = await this.authService.resetPassword(this.usuario.correoInstitucional);
                 if (error) {
                     this.mostrarFeedback('No se pudo enviar el correo: ' + error.message, 'error');
                 } else {
@@ -149,18 +154,23 @@ export class UsuarioDetalleModal implements OnInit {
             titulo: esSuspender ? 'Suspender cuenta' : 'Activar cuenta',
             textoBoton: esSuspender ? 'Sí, suspender' : 'Sí, activar',
             mensaje: esSuspender
-                ? '¿Estás seguro de que deseas suspender esta cuenta? El usuario ya no podrá acceder a la plataforma.'
-                : '¿Deseas activar nuevamente esta cuenta para permitirle el acceso?',
+                ? '¿Suspender esta cuenta por 7 días? El usuario no podrá acceder durante ese periodo. Usa la sección de Reportes para suspensiones más largas.'
+                : '¿Activar nuevamente esta cuenta para permitir el acceso?',
             tipo: esSuspender ? 'danger' : 'info',
             accion: async () => {
                 this.isProcessing.set(true);
-                const nuevoEstado = esSuspender ? 'suspendido' : 'activo';
-                const { error } = await this.supabase.updateUserStatus(this.usuario.id, nuevoEstado);
+                // Suspender siempre con fecha de expiración (nunca updateUserStatus directamente).
+                // Desde el modal de usuario: 7 días por defecto.
+                // Para suspensiones más largas, usar el flujo de Reportes.
+                const { error } = esSuspender
+                    ? await this.adminUserService.suspendUser(this.usuario.id, 24 * 7)
+                    : await this.adminUserService.unsuspendUser(this.usuario.id);
 
                 if (error) {
                     this.mostrarFeedback('Error al actualizar el estado: ' + error.message, 'error');
                 } else {
-                    this.mostrarFeedback(esSuspender ? 'Cuenta suspendida con éxito.' : 'Cuenta activada con éxito.', 'success');
+                    const nuevoEstado = esSuspender ? 'suspendido' : 'activo';
+                    this.mostrarFeedback(esSuspender ? 'Cuenta suspendida por 7 días.' : 'Cuenta activada con éxito.', 'success');
                     this.usuario.estado = nuevoEstado;
                     this.refresh.emit();
                 }

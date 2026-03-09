@@ -3,7 +3,10 @@ import { SuccessModal } from '../../../shared/components/successModal/successMod
 import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { CommonModule } from '@angular/common';
-import { SupabaseService } from '../../../core/services/supabase.service';
+// Layer 3: Admin Services — nunca llamar al core directamente desde componentes admin
+import { AdminUserService } from '../../services/adminUser.service';
+import { AdminReportService } from '../../services/adminReport.service';
+import { AdminPublicationService } from '../../services/adminPublication.service';
 
 @Component({
   selector: 'app-reporte-detalle-modal',
@@ -18,11 +21,13 @@ export class ReporteDetalleModal {
   @Output() closed = new EventEmitter<void>();
   @Output() actionExecuted = new EventEmitter<void>();
 
-  readonly supabase = inject(SupabaseService);
+  private readonly userService   = inject(AdminUserService);
+  private readonly reportService = inject(AdminReportService);
+  private readonly pubService    = inject(AdminPublicationService);
+
   isProcessing = signal<boolean>(false);
   showSuspensionOptions = signal<boolean>(false);
 
-  // Estado para confirmación personalizada
   mostrarConfirmacion = signal<boolean>(false);
   configConfirmacion = signal<{
     titulo: string;
@@ -31,60 +36,59 @@ export class ReporteDetalleModal {
     accion: () => Promise<void>;
   } | null>(null);
 
+  // ── Acciones atómicas de moderación ─────────────────────────────────────
+
+  /**
+   * Descarta el reporte: cambia estado a 'descartado'.
+   * El registro permanece en la BD para historial de moderación.
+   * NO elimina la publicación.
+   */
   async descartarReporte() {
     if (this.isProcessing()) return;
     this.isProcessing.set(true);
-
     try {
-      const { data, error } = await this.supabase.deleteReport(this.reporte.id);
-
+      const { error } = await this.reportService.discardReport(this.reporte.id);
       if (error) throw error;
-
-      // Si la base de datos no arrojó error pero NO devolvió nada eliminado, RLS lo bloqueó.
-      if (!data || data.length === 0) {
-        alert('ADVERTENCIA: Tu cuenta no tiene permisos RLS configurados en Supabase para ELIMINAR (DELETE) reportes. El registro sigue en la base de datos.');
-      }
-
       this.actionExecuted.emit();
       this.closed.emit();
     } catch (err) {
-      console.error(err);
+      console.error('[ReporteModal] descartarReporte error:', err);
       alert('Error al descartar el reporte');
     } finally {
       this.isProcessing.set(false);
     }
   }
 
+  /**
+   * Solicita confirmación y luego ejecuta soft-delete de la publicación.
+   * Acción 1 (atómica): marca publicación como 'eliminado'.
+   * Acción 2 (atómica): descarta el reporte como 'descartado'.
+   * Cada acción falla de forma independiente.
+   */
   async eliminarPublicacion() {
     this.configConfirmacion.set({
       titulo: '¿Eliminar publicación?',
-      mensaje: '¿Estás seguro de eliminar esta publicación definitivamente? Esta acción no se puede deshacer.',
+      mensaje: 'La publicación quedará desactivada y no será visible. El reporte se marcará como resuelto. Esta acción no se puede deshacer.',
       botonTexto: 'Sí, eliminar',
       accion: async () => {
         if (this.isProcessing()) return;
         this.isProcessing.set(true);
         this.mostrarConfirmacion.set(false);
-
         try {
-          const { error: postError } = await this.supabase.client
-            .from('publicaciones')
-            .delete()
-            .eq('id', this.reporte.publicacion_id);
+          // Acción 1: soft-delete de la publicación
+          const { error: pubError } = await this.pubService.softDeletePost(this.reporte.publicacion_id);
+          if (pubError) throw pubError;
 
-          if (postError) throw postError;
-
-          const { data, error: reportError } = await this.supabase.deleteReport(this.reporte.id);
-          if (reportError) throw reportError;
-
-          // Verificación RLS
-          if (!data || data.length === 0) {
-            alert('ADVERTENCIA: La publicación fue eliminada, pero no tienes permisos RLS para eliminar el reporte. Configura tus políticas en Supabase para permitir DELETE en "reportes".');
+          // Acción 2: descartar el reporte (preservar historial)
+          const { error: reportError } = await this.reportService.discardReport(this.reporte.id);
+          if (reportError) {
+            console.warn('[ReporteModal] Publicación eliminada pero fallo al descartar reporte:', reportError);
           }
 
           this.actionExecuted.emit();
           this.closed.emit();
         } catch (err) {
-          console.error(err);
+          console.error('[ReporteModal] eliminarPublicacion error:', err);
           alert('Error al eliminar la publicación');
         } finally {
           this.isProcessing.set(false);
@@ -98,38 +102,44 @@ export class ReporteDetalleModal {
     this.showSuspensionOptions.update(v => !v);
   }
 
+  /**
+   * Solicita confirmación y suspende al autor de la publicación.
+   * Acción 1 (atómica): suspender usuario con fecha de expiración.
+   * Acción 2 (atómica): descartar el reporte ('descartado').
+   * Cada acción falla de forma independiente.
+   */
   async suspenderUsuario(periodo: '1d' | '1w' | '1m' | 'perm') {
-    let label = '1 día';
-    let hours: number | null = 24;
-    if (periodo === '1w') { hours = 168; label = '1 semana'; }
-    if (periodo === '1m') { hours = 720; label = '1 mes'; }
-    if (periodo === 'perm') { hours = null; label = 'forma permanente'; }
+    const duraciones: Record<string, { hours: number | null; label: string }> = {
+      '1d':  { hours: 24,   label: '1 día' },
+      '1w':  { hours: 168,  label: '1 semana' },
+      '1m':  { hours: 720,  label: '1 mes' },
+      'perm':{ hours: null, label: 'largo plazo' },
+    };
+    const { hours, label } = duraciones[periodo];
 
     this.configConfirmacion.set({
       titulo: '¿Suspender usuario?',
-      mensaje: `¿Estás seguro de suspender a este usuario por ${label}? El usuario no podrá acceder a su cuenta durante este periodo.`,
+      mensaje: `¿Suspender a este usuario por ${label}? No podrá acceder a su cuenta durante este periodo.`,
       botonTexto: 'Sí, suspender',
       accion: async () => {
         if (this.isProcessing()) return;
         this.isProcessing.set(true);
         this.mostrarConfirmacion.set(false);
-
         try {
-          const { error: suspError } = await this.supabase.suspendUser(this.reporte.autor_id, hours);
+          // Acción 1: suspender con fecha de expiración
+          const { error: suspError } = await this.userService.suspendUser(this.reporte.autor_id, hours);
           if (suspError) throw suspError;
 
-          const { data, error: reportError } = await this.supabase.deleteReport(this.reporte.id);
-          if (reportError) throw reportError;
-
-          // Verificación RLS
-          if (!data || data.length === 0) {
-            alert('ADVERTENCIA: El usuario fue suspendido, pero los permisos RLS (Supabase) están bloqueando la eliminación del reporte. Activa el DELETE para admins en tu base de datos.');
+          // Acción 2: descartar el reporte (preservar historial)
+          const { error: reportError } = await this.reportService.discardReport(this.reporte.id);
+          if (reportError) {
+            console.warn('[ReporteModal] Usuario suspendido pero fallo al descartar reporte:', reportError);
           }
 
           this.actionExecuted.emit();
           this.closed.emit();
         } catch (err) {
-          console.error(err);
+          console.error('[ReporteModal] suspenderUsuario error:', err);
           alert('Error al suspender al usuario');
         } finally {
           this.isProcessing.set(false);

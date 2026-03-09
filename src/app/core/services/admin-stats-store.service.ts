@@ -88,7 +88,7 @@ export class AdminStatsStoreService {
 
         if (error) throw error; // → activará el fallback
 
-        const d = data as any;
+        const d = data;
 
         this.totalUsers.set(Number(d.users_total ?? 0));
         this.usersTrend.set(Number(d.users_trend ?? 0));
@@ -114,12 +114,14 @@ export class AdminStatsStoreService {
         const quickMapped = quickRaw.map((r: any) => ({
             ...r,
             detalles: r.descripcion,
-            informante_id: r.reportado_por
+            informante_id: r.reportado_por,
+            titulo: r.publicaciones?.titulo || 'Publicación no encontrada',
+            tipo: r.publicaciones?.tipo || 'Reporte'
         }));
         this.quickModeration.set(quickMapped);
 
         // Chart data
-        const chartRaw: { creado: string }[] = Array.isArray(d.chart_data) ? d.chart_data : [];
+        const chartRaw: any[] = Array.isArray(d.chart_data) ? d.chart_data : [];
         this._buildChart(chartRaw);
     }
 
@@ -156,13 +158,14 @@ export class AdminStatsStoreService {
 
     // ── Chart builder ──────────────────────────────────────────────
 
-    private _buildChart(data: { creado: string }[]) {
+    private _buildChart(data: any[]) {
         const pointsData = [0, 0, 0, 0, 0];
         const now = new Date();
         const rangeMs = 30 * 86400000;
 
         data.forEach(item => {
-            const diffMs = now.getTime() - new Date(item.creado).getTime();
+            const dateStr = typeof item === 'string' ? item : item.creado;
+            const diffMs = now.getTime() - new Date(dateStr).getTime();
             const index = 4 - Math.floor((diffMs / rangeMs) * 5);
             if (index >= 0 && index <= 4) pointsData[index]++;
         });

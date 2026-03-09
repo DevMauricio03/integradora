@@ -91,10 +91,16 @@ export class ProfileService {
         return { data, error };
     }
 
-    /** Suspender usuario con fecha de fin calculada */
+    /**
+     * Suspender usuario con fecha de fin calculada.
+     * hours = null → suspensión de larga duración (año 2099).
+     * La lógica de reactivación es: si fecha_suspension < now() → activo.
+     * NUNCA usar updateUserStatus('suspendido') directamente; siempre pasar por aquí.
+     */
     async suspendUser(userId: string, hours: number | null) {
+        // null → largo plazo (no permanente semánticamente; expira en 2099)
         const fechaSuspension = hours === null
-            ? '2099-12-31T23:59:59Z'
+            ? new Date('2099-12-31T23:59:59Z').toISOString()
             : new Date(Date.now() + hours * 3600000).toISOString();
 
         return await this.db
@@ -103,42 +109,75 @@ export class ProfileService {
             .eq('id', userId);
     }
 
-    /** Verificar si la suspensión del usuario sigue vigente */
+    /**
+     * Reactivar usuario: limpia fecha_suspension y restablece estado = 'activo'.
+     * Usar SIEMPRE este método en lugar de updateUserStatus('activo').
+     */
+    async unsuspendUser(userId: string) {
+        return await this.db
+            .from('perfiles')
+            .update({ estado: 'activo', fecha_suspension: null })
+            .eq('id', userId);
+    }
+
+    /**
+     * Verifica si la suspensión del usuario activo sigue vigente.
+     * Lógica: si fecha_suspension < now() → reactivar automáticamente.
+     * Si fecha_suspension es null con estado = 'suspendido' → dato inconsistente
+     * (suspensión legacy sin fecha). Se auto-sana reactivando la cuenta.
+     */
     async verifySuspension(): Promise<{ isSuspended: boolean; remains?: string }> {
         const perfil = await this.getPerfilActual();
         if (perfil?.estado !== 'suspendido') return { isSuspended: false };
 
-        if (perfil.fecha_suspension) {
-            const now = new Date();
-            const suspensionEnd = new Date(perfil.fecha_suspension);
-
-            if (now > suspensionEnd) {
-                await this.updateUserStatus(perfil.id, 'activo');
-                return { isSuspended: false };
-            }
-
-            const diffMs = suspensionEnd.getTime() - now.getTime();
-            const hours = Math.floor(diffMs / 3600000);
-            const days = Math.floor(hours / 24);
-            return { isSuspended: true, remains: days > 0 ? `${days} días` : `${hours} horas` };
+        // Dato inconsistente: suspendido sin fecha → auto-sanar
+        if (!perfil.fecha_suspension) {
+            await this.unsuspendUser(perfil.id);
+            return { isSuspended: false };
         }
 
-        return { isSuspended: true, remains: 'indefinido' };
+        const now = new Date();
+        const suspensionEnd = new Date(perfil.fecha_suspension);
+
+        if (now > suspensionEnd) {
+            // Suspensión expirada → reactivar y limpiar fecha
+            await this.unsuspendUser(perfil.id);
+            return { isSuspended: false };
+        }
+
+        const diffMs = suspensionEnd.getTime() - now.getTime();
+        const hours = Math.floor(diffMs / 3600000);
+        const days = Math.floor(hours / 24);
+        return { isSuspended: true, remains: days > 0 ? `${days} días` : `${hours} horas` };
     }
 
     /** Obtener todos los usuarios (admin) */
-    async getAllUsers(searchTerm?: string): Promise<{ data: Perfil[], error: any }> {
+    async getAllUsers(params?: { page?: number; pageSize?: number; filter?: string; searchTerm?: string }) {
         let query = this.db
             .from('perfiles')
-            .select('id, nombre, apellidos, correoInstitucional, foto_url, creado, estado, roles(nombre), universidades(acronimo)')
+            .select('id, nombre, apellidos, correoInstitucional, foto_url, creado, estado, roles(nombre), universidades(acronimo)', { count: 'exact' })
             .order('creado', { ascending: false });
 
-        if (searchTerm) {
-            query = query.or(`nombre.ilike.%${searchTerm}%,apellidos.ilike.%${searchTerm}%,correoInstitucional.ilike.%${searchTerm}%`);
+        if (params?.filter) {
+            const f = params.filter.toLowerCase();
+            if (f.includes('activo')) query = query.eq('estado', 'activo');
+            else if (f.includes('pendiente')) query = query.eq('estado', 'pendiente');
+            else if (f.includes('suspendido')) query = query.eq('estado', 'suspendido');
         }
 
-        const { data, error } = await query;
-        return { data: (data as unknown as Perfil[]) || [], error };
+        if (params?.searchTerm) {
+            const term = params.searchTerm;
+            query = query.or(`nombre.ilike.%${term}%,apellidos.ilike.%${term}%,correoInstitucional.ilike.%${term}%`);
+        }
+
+        if (params?.page !== undefined && params?.pageSize !== undefined) {
+            const from = params.page * params.pageSize;
+            const to = from + params.pageSize - 1;
+            query = query.range(from, to);
+        }
+
+        const { data, count, error } = await query;
+        return { data: (data as unknown as Perfil[]) || [], count: count || 0, error };
     }
 
     /** Obtener usuarios más recientes (admin dashboard) */

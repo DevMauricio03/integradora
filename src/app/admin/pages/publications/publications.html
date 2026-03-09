@@ -9,24 +9,31 @@
     <!-- Filtros y Buscador -->
     <div class="filters-container">
         <div class="select-filters">
-            <button class="custom-select" (click)="toggleType()" type="button">
-                <span>Tipo : <strong>{{selectedType()}}</strong></span>
+            <div class="custom-select-wrapper">
+                <select class="custom-select" [value]="store.typeFilter()" (change)="onTypeChange($event)">
+                    <option value="todos">Tipo: Todos</option>
+                    <option value="aviso">Tipo: Aviso</option>
+                    <option value="oferta">Tipo: Producto</option>
+                    <option value="experiencia">Tipo: Exp. Empresarial</option>
+                    <option value="evento">Tipo: Evento</option>
+                </select>
                 <app-icon name="chevron-down" [size]="14"></app-icon>
-            </button>
-            <button class="custom-select" (click)="toggleStatus()" type="button">
-                <span>Estado : <strong>{{selectedStatus()}}</strong></span>
+            </div>
+            <div class="custom-select-wrapper">
+                <select class="custom-select" [value]="store.statusFilter()" (change)="onStatusChange($event)">
+                    <option value="todos">Estado: Todos</option>
+                    <option value="activo">Estado: Activo</option>
+                    <option value="pendiente">Estado: Pendiente</option>
+                    <option value="suspendido">Estado: Suspendido</option>
+                </select>
                 <app-icon name="chevron-down" [size]="14"></app-icon>
-            </button>
-            <button class="custom-select" type="button">
-                <span>Fecha : <strong>Todas</strong></span>
-                <app-icon name="chevron-down" [size]="14"></app-icon>
-            </button>
+            </div>
         </div>
         <div class="search-box">
             <app-icon name="search" [size]="18" class="search-icon"></app-icon>
-            <input type="text" placeholder="Buscar por ID, usuario o motivo..." class="search-input"
-                [value]="searchTerm()" (input)="onSearch($event)">
-            <button class="btn-refresh" (click)="loadPublications()">
+            <input type="text" placeholder="Buscar por título, descripción..." class="search-input"
+                [value]="store.searchTerm()" (input)="onSearch($event)">
+            <button class="btn-refresh" (click)="store.refresh()" [disabled]="store.isLoading()">
                 <app-icon name="refresh-cw" [size]="18"></app-icon>
                 Actualizar
             </button>
@@ -48,16 +55,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (isLoading()) {
+                    @if (store.isLoading()) {
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 40px;">Cargando publicaciones...</td>
                     </tr>
-                    } @else if (filteredPublications().length === 0) {
+                    } @else if (store.items().length === 0) {
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 40px;">No se encontraron publicaciones.</td>
                     </tr>
                     } @else {
-                    @for (pub of filteredPublications(); track pub.id) {
+                    @for (pub of store.items(); track pub.id) {
                     <tr [class.active-row]="pub.estado === 'pendiente'">
                         <td>
                             <button class="pub-cell" type="button" (click)="abrirPreview(pub)"
@@ -101,20 +108,13 @@
                                 [type]="getStatusType(pub.estado)"></app-status-badge></td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn-action reject" (click)="rejectPublication(pub.id)"
-                                    [disabled]="pub.estado === 'suspendido'" title="Rechazar/Suspender">
+                                <button class="btn-action reject" title="Suspender" (click)="rejectPublication(pub.id)">
                                     <app-icon name="x" [size]="16"></app-icon>
                                 </button>
-
-                                @if (pub.estado === 'pendiente') {
-                                <button class="btn-action approve" (click)="approvePublication(pub.id)"
-                                    title="Aprobar publicación">
-                                    <app-icon name="check" [size]="16"></app-icon>
+                                @if (pub.estado !== 'activo') {
+                                <button class="btn-action approve" title="Aprobar" (click)="approvePublication(pub.id)">
+                                    <app-icon name="check-circle" [size]="16"></app-icon>
                                 </button>
-                                } @else if (pub.estado === 'activo') {
-                                <div class="action-done" title="Esta publicación ya está aprobada">
-                                    <app-icon name="check-circle" [size]="18" style="color: #10B981;"></app-icon>
-                                </div>
                                 }
                             </div>
                         </td>
@@ -125,10 +125,13 @@
             </table>
         </div>
         <div class="table-footer">
-            <span>Mostrando {{filteredPublications().length}} de {{publications().length}} publicaciones</span>
+            <span>Mostrando {{store.items().length}} de {{store.totalCount()}} publicaciones (Página {{
+                store.currentPage() + 1 }})</span>
             <div class="pagination">
-                <button class="btn-paging"><app-icon name="chevron-left" [size]="16"></app-icon></button>
-                <button class="btn-paging"><app-icon name="chevron-right" [size]="16"></app-icon></button>
+                <button class="btn-paging" (click)="store.prevPage()" [disabled]="store.currentPage() === 0"><app-icon
+                        name="chevron-left" [size]="16"></app-icon></button>
+                <button class="btn-paging" (click)="store.nextPage()" [disabled]="!store.hasMore()"><app-icon
+                        name="chevron-right" [size]="16"></app-icon></button>
             </div>
         </div>
     </div>

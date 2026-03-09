@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, signal, inject, OnInit, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject, OnInit } from '@angular/core';
 import { StatusBadge } from '../../../shared/components/statusBadge/statusBadge';
 import { IconComponent, IconName } from '../../../shared/components/icon/icon.component';
 import { UsuarioDetalleModal } from '../../components/usuario-detalle-modal/usuario-detalle-modal';
 import { AdminPublicationService } from '../../services/adminPublication.service';
+import { AdminPublicationsStoreService } from '../../../core/services/admin-publications-store.service';
 import { CommonModule } from '@angular/common';
 import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { PostCardComponent } from '../../../shared/components/Post-card/post-card/post-card';
@@ -17,101 +18,38 @@ import { PostCardComponent } from '../../../shared/components/Post-card/post-car
 })
 export class AdminPublications implements OnInit {
     private readonly publicationService = inject(AdminPublicationService);
+    readonly store = inject(AdminPublicationsStoreService);
 
-    publications = signal<any[]>([]);
-    isLoading = signal(false);
     mostrarModalUsuario = signal(false);
     usuarioSeleccionado = signal<any>(null);
     mostrarModalPublicacion = signal(false);
     publicacionSeleccionada = signal<any>(null);
 
-    // Filtros
-    selectedType = signal('Todos');
-    selectedStatus = signal('Todos');
-    searchTerm = signal('');
-
-    // Listas de opciones
-    types = ['Todos', 'Producto', 'Exp. Empresarial', 'Evento', 'Aviso'];
-    statuses = ['Todos', 'Activo', 'Suspendido', 'Pendiente'];
-
-    filteredPublications = computed(() => {
-        let items = this.publications();
-
-        const type = this.selectedType();
-        if (type !== 'Todos') {
-            items = items.filter(p => this.mapTypeToLabel(p.tipo) === type);
-        }
-
-        const status = this.selectedStatus();
-        if (status !== 'Todos') {
-            items = items.filter(p => p.estado.toLowerCase() === status.toLowerCase());
-        }
-
-        const search = this.searchTerm().toLowerCase();
-        if (search) {
-            items = items.filter(p =>
-                p.titulo.toLowerCase().includes(search) ||
-                p.descripcion.toLowerCase().includes(search) ||
-                `${p.perfiles?.nombre} ${p.perfiles?.apellidos}`.toLowerCase().includes(search)
-            );
-        }
-
-        return items;
-    });
-
     ngOnInit() {
-        this.loadPublications();
-    }
-
-    async loadPublications() {
-        this.isLoading.set(true);
-        const { data, error } = await this.publicationService.getPublications();
-        if (error) {
-            console.error('Error loading publications:', error);
-        } else {
-            this.publications.set(data || []);
-        }
-        this.isLoading.set(false);
+        this.store.loadPublications();
     }
 
     async approvePublication(id: string) {
         const { error } = await this.publicationService.updatePublicationStatus(id, 'activo');
         if (!error) {
-            this.loadPublications(); // Recargar para reflejar cambio
+            this.store.refresh();
         }
     }
 
     async rejectPublication(id: string) {
         const { error } = await this.publicationService.updatePublicationStatus(id, 'suspendido');
         if (!error) {
-            this.loadPublications();
+            this.store.refresh();
         }
     }
 
     onSearch(event: Event) {
         const target = event.target as HTMLInputElement;
-        this.searchTerm.set(target.value);
+        this.store.setSearchTerm(target.value);
     }
 
-    setType(type: string) {
-        this.selectedType.set(type);
-    }
-
-    toggleType() {
-        const current = this.selectedType();
-        const nextIndex = (this.types.indexOf(current) + 1) % this.types.length;
-        this.setType(this.types[nextIndex]);
-    }
-
-    setStatus(status: string) {
-        this.selectedStatus.set(status);
-    }
-
-    toggleStatus() {
-        const current = this.selectedStatus();
-        const nextIndex = (this.statuses.indexOf(current) + 1) % this.statuses.length;
-        this.setStatus(this.statuses[nextIndex]);
-    }
+    onTypeChange(event: Event) { this.store.setTypeFilter((event.target as HTMLSelectElement).value); }
+    onStatusChange(event: Event) { this.store.setStatusFilter((event.target as HTMLSelectElement).value); }
 
     abrirModal(usuario: any): void {
         this.usuarioSeleccionado.set(usuario);

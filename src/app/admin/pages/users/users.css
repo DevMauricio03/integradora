@@ -237,9 +237,38 @@
 
 .table-footer {
     padding: 20px 24px;
+    background: white;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 13px;
     color: var(--text-muted);
     font-weight: 500;
+}
+
+.pagination {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-paging {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.btn-paging:hover {
+    background: #F9FAFB;
+    color: var(--text-main);
 }
 
 /* Media Queries */
@@ -278,5 +307,10 @@
 
     .custom-select {
         justify-content: space-between;
+    }
+
+    .table-footer {
+        flex-direction: column;
+        gap: 16px;
     }
 }

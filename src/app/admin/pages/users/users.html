@@ -16,39 +16,20 @@
     <div class="filters-container">
         <div class="select-filters">
             <div class="custom-select-wrapper">
-                <select class="custom-select" [value]="selectedRol()" (change)="onRolChange($event)">
-                    <option value="">Rol: Todos</option>
-                    <option value="alumno">Rol: Alumno</option>
-                    <option value="admin">Rol: Admin</option>
-                </select>
-                <app-icon name="chevron-down" [size]="14"></app-icon>
-            </div>
-
-            <div class="custom-select-wrapper">
-                <select class="custom-select" [value]="selectedStatus()" (change)="onStatusChange($event)">
-                    <option value="">Estado: Todos</option>
-                    <option value="activo">Estado: Activo</option>
-                    <option value="pendiente">Estado: Pendiente</option>
-                    <option value="suspendido">Estado: Suspendido</option>
-                </select>
-                <app-icon name="chevron-down" [size]="14"></app-icon>
-            </div>
-
-            <div class="custom-select-wrapper">
-                <select class="custom-select" [value]="selectedUniversidad()" (change)="onUniChange($event)">
-                    <option value="">Universidad: Todas</option>
-                    @for (uni of universidades(); track uni.id) {
-                    <option [value]="uni.acronimo">Universidad: {{ uni.acronimo }}</option>
-                    }
+                <select class="custom-select" [value]="store.filter()" (change)="onFilterChange($event)">
+                    <option value="todos">Filtro: Todos</option>
+                    <option value="activos">Solo activos</option>
+                    <option value="pendientes">Solo pendientes</option>
+                    <option value="suspendidos">Solo suspendidos</option>
                 </select>
                 <app-icon name="chevron-down" [size]="14"></app-icon>
             </div>
         </div>
         <div class="search-box">
             <app-icon name="search" [size]="18" class="search-icon"></app-icon>
-            <input type="text" placeholder="Buscar por nombre, correo..." class="search-input" [value]="searchTerm()"
-                (input)="onSearchInput($event)" (keyup)="onSearchKeyup($event)">
-            <button class="btn-refresh" (click)="cargarUsuarios()" [disabled]="isLoading()">
+            <input type="text" placeholder="Buscar por nombre, correo..." class="search-input"
+                [value]="store.searchTerm()" (input)="onSearchInput($event)" (keyup)="onSearchKeyup($event)">
+            <button class="btn-refresh" (click)="store.refresh()" [disabled]="store.isLoading()">
                 <app-icon name="clock" [size]="18"></app-icon>
                 Actualizar
             </button>
@@ -69,12 +50,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (isLoading()) {
+                    @if (store.isLoading()) {
                     <tr>
                         <td colspan="5" class="text-center text-gray" style="padding: 30px;">Cargando usuarios...</td>
                     </tr>
                     } @else {
-                    @for(user of filteredUsuarios(); track user.id) {
+                    @for(user of store.users(); track user.id) {
                     <tr class="clickable-row">
                         <td>
                             <div class="user-cell">
@@ -96,7 +77,7 @@
                     </tr>
                     }
 
-                    @if (filteredUsuarios().length === 0) {
+                    @if (store.users().length === 0) {
                     <tr>
                         <td colspan="5" class="text-center text-gray" style="padding: 30px;">
                             No se encontraron usuarios con esta búsqueda.
@@ -108,14 +89,21 @@
             </table>
         </div>
         <div class="table-footer">
-            <span>Mostrando {{ filteredUsuarios().length }} usuarios en total</span>
+            <span>Mostrando {{ store.users().length }} de {{ store.totalCount() }} usuarios (Página {{
+                store.currentPage() + 1 }})</span>
+            <div class="pagination">
+                <button class="btn-paging" (click)="store.prevPage()" [disabled]="store.currentPage() === 0"><app-icon
+                        name="chevron-left" [size]="16"></app-icon></button>
+                <button class="btn-paging" (click)="store.nextPage()" [disabled]="!store.hasMore()"><app-icon
+                        name="chevron-right" [size]="16"></app-icon></button>
+            </div>
         </div>
     </div>
 </div>
 
 @if(mostrarModalUsuario() && usuarioSeleccionado()) {
 <app-usuario-detalle-modal [usuario]="usuarioSeleccionado()" (closed)="mostrarModalUsuario.set(false)"
-    (refresh)="cargarUsuarios()">
+    (refresh)="store.refresh()">
 </app-usuario-detalle-modal>
 }
 
