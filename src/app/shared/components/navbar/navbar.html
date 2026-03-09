@@ -3,6 +3,10 @@
   <!-- IZQUIERDA: Logo -->
   <div class="navbar-left">
 
+    <button class="menu-mobile-btn" (click)="onToggleMenu.emit()">
+      <app-icon name="menu" [size]="24"></app-icon>
+    </button>
+
     <div class="logo-contenedor" [routerLink]="getLogoRoute()">
       <div class="logo-icono">
         <img width="30" src="icons/tuunka_logo.svg" alt="Tuunka Logo">

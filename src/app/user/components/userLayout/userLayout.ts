@@ -30,6 +30,7 @@ export class UserLayoutComponent {
   showCreateButton = signal(false);
   showSearch = signal(true);
   centerTitle = signal(false);
+  isMenuOpen = signal(false);
 
   constructor() {
     this.router.events
@@ -42,7 +43,12 @@ export class UserLayoutComponent {
         this.showCreateButton.set(data['showCreateButton'] || false);
         this.showSearch.set(data['hideSearch'] !== true);
         this.centerTitle.set(data['centerTitle'] === true);
+        this.isMenuOpen.set(false); // Cierra el menú al navegar
       });
+  }
+
+  toggleMenu() {
+    this.isMenuOpen.update(open => !open);
   }
 
   private getDeepestChild(route: ActivatedRoute): ActivatedRoute {

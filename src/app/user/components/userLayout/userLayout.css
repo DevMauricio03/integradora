@@ -67,8 +67,6 @@
 .contenido {
   flex: 1;
   padding: 16px 32px 32px 32px;
-  max-width: 1200px;
-  margin: 0 auto;
   box-sizing: border-box;
 }
 
@@ -210,5 +208,100 @@
 
   .btn-nueva-pub {
     padding: 10px;
+  }
+}
+/* --- Mobile Drawer and Search --- */
+.search-mobile-btn {
+  display: none;
+}
+
+.menu-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: -285px; /* Hidden by default */
+    width: 280px;
+    height: 100vh;
+    z-index: 2000;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar.open {
+    transform: translateX(285px);
+  }
+
+  .menu-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1999;
+    backdrop-filter: blur(2px);
+  }
+
+  .search-mobile-btn {
+    display: flex !important;
+  }
+}
+
+/* --- Close Menu Button --- */
+.close-menu-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .close-menu-btn {
+    display: flex;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #f1f5f9;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    color: #4b5563;
+    cursor: pointer;
+    z-index: 2100;
+  }
+}
+
+/* --- Mobile Sidebar Header --- */
+.sidebar-header-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-header-mobile {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px;
+    border-bottom: 1px solid #f3f4f6;
+    margin-bottom: 8px;
+  }
+
+  .close-menu-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+
+  .close-menu-btn:hover {
+    background: #f1f5f9;
   }
 }

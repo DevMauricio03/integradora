@@ -46,7 +46,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 64px;
+  margin-bottom: 20px;
 }
 
 .texto-logo {
@@ -178,7 +178,7 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 64px 80px 24px;
+  padding: 20px 80px 24px;
   min-height: 100%;
 }
 
@@ -373,7 +373,7 @@ body {
   }
 
   .contenido-auth {
-    margin-top: 80px;
+    margin-top: 64px;
   }
 
 }

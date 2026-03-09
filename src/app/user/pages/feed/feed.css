@@ -140,6 +140,8 @@
   max-width: 900px;
   width: 100%;
   margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .feed-list {
@@ -210,6 +212,52 @@
 
   .feed-container {
     gap: 20px;
+  }
+}
+
+/* ── Filtros Responsivos ─────────────────────────────── */
+
+@media (max-width: 600px) {
+  .feed-filters {
+    gap: 8px;
+  }
+
+  .filter-btn {
+    padding: 8px 12px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+
+  .native-select {
+    font-size: 13px;
+    max-width: 100px;
+  }
+
+  .filter-btn .filter-icon {
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .feed-filters {
+    gap: 6px;
+  }
+
+  .filter-btn {
+    padding: 8px 8px;
+    gap: 4px;
+  }
+
+  .native-select {
+    font-size: 12px;
+    max-width: 80px;
+    padding-right: 12px;
+  }
+
+  /* Ocultamos el icono para ganar más espacio si es muy pequeño */
+  .filter-btn .filter-icon {
+    display: none;
   }
 }
 

@@ -1,6 +1,6 @@
 import { Component, Input, computed } from '@angular/core';
 
-export type IconName = 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-up' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'rocket';
+export type IconName = 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-up' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'check-circle' | 'rocket' | 'menu';
 
 @Component({
   selector: 'app-icon',
@@ -63,7 +63,7 @@ export class IconComponent {
     check: ['M20 6L9 17l-5-5'],
     'chevron-down': ['M6 9l6 6 6-6'],
     'chevron-up': ['M18 15l-6-6-6 6'],
-    package: ['M12.89 1.45l8 4A2 2 0 0 1 22 7.24v9.52a2 2 0 0 1-1.11 1.79l-8 4a2 2 0 0 1-1.78 0l-8-4A2 2 0 0 1 2 16.76V7.24a2 2 0 0 1 1.11-1.79l8-4a2 2 0 0 1 1.78 0z', 'M2.32 6.16L12 11l9.68-4.84', 'M12 22.76V11'],
+    package: ['M12.89 1.45l8 4A2 2 0 0 1 22 7.24v9.52a2 2 0 0 1-1.11 1.79l-8 4a2 2 0 0 1-1.78 0l-8-4A2 2 0 0 1 1.11 16.76V7.24a2 2 0 0 1 1.11-1.79l8-4a2 2 0 0 1 1.78 0z', 'M2.32 6.16L12 11l9.68-4.84', 'M12 22.76V11'],
     tool: ['M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z'],
     clock: ['M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z', 'M12 6v6l4 2'],
     'map-pin': ['M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z', 'M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'],
@@ -84,7 +84,8 @@ export class IconComponent {
     image: ['M5 19l2.586-2.586a2 2 0 012.828 0L12 18l3.586-3.586a2 2 0 012.828 0L21 17', 'M19 5H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2z', 'M8 10a1 1 0 100-2 1 1 0 000 2z'],
     'trash-2': ['M3 6h18', 'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2', 'M10 11v6', 'M14 11v6'],
     'check-circle': ['M22 11.08V12a10 10 0 1 1-5.93-9.14', 'M22 4L12 14.01l-3-3'],
-    rocket: ['M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z', 'm12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 0-2.72 7.33-6.04 11a22 22 0 0 1-3.96 2z', 'M14 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z']
+    rocket: ['M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z', 'm12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 0-2.72 7.33-6.04 11a22 22 0 0 1-3.96 2z', 'M14 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z'],
+    menu: ['M3 12h18', 'M3 6h18', 'M3 18h18']
   };
 
   paths = computed(() => this.icons[this.name] || []);
