@@ -195,6 +195,30 @@ export class PostStoreService {
   }
 
   /**
+   * Obtiene un post individual por ID.
+   * Primero busca en el store local (sin red); si no lo encuentra
+   * lo fetcha desde la VIEW feed_posts por ID,
+   * con fallback a publicationService.getPosts() + filtro en TS.
+   *
+   * Uso: páginas de detalle (ej. ExperienciaDetallePage).
+   */
+  async getPostById(id: string): Promise<Post | null> {
+    // 1. Buscar en el store ya cargado
+    const cached = [...this._feedPosts(), ...this._pendingPosts()].find(p => p.id === id);
+    if (cached) return cached;
+
+    // 2. Intentar con la VIEW por ID
+    const { data, error } = await this.feedViewService.getFeedPostById(id);
+    if (!error && data) return this.mapFeedPost(data);
+
+    // 3. Fallback: traer todos y filtrar
+    console.warn('[PostStore] getPostById: VIEW no disponible, usando fallback para id:', id);
+    const { data: pubData } = await this.publicationService.getPosts();
+    const found = pubData?.find((p: any) => p.id === id);
+    return found ? this.mapLegacyPost(found as any) : null;
+  }
+
+  /**
    * Carga todos los posts de un tipo específico sin tocar el store paginado.
    * La query va directa a la VIEW con filtro de tipo; si la VIEW no existe
    * hace fallback a publicationService y filtra en TypeScript.

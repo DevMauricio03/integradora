@@ -9,6 +9,7 @@ import {
   signal,
   computed
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { PostStoreService, Post } from '../../../core/services/post-store.service';
 import { AuthStoreService } from '../../../core/services/auth-store.service';
 import { ReportService } from '../../../core/services/report.service';
@@ -37,6 +38,7 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   private readonly reportSvc = inject(ReportService);
   // Layer 3: FeedServices (carreras para filtro)
   private readonly catalogService = inject(CatalogService);
+  readonly router = inject(Router);
 
   // ── Signals del store (expuestos al template) ─────────────────
   posts = this.postStore.posts;

@@ -23,10 +23,23 @@
 
         <section class="feed-list">
             @for (post of posts(); track post.id) {
-            <app-post-card [author]="post.author || 'Usuario'" [role]="post.role || 'Estudiante'"
-                [time]="post.time || 'Ahora'" [title]="post.title" [content]="post.description" [badge]="post.type"
-                [image]="post.image" [images]="post.images" [avatar]="post.avatar" [category]="post.category"
-                [details]="post.details" [expirationDate]="post.expirationDate" />
+            <app-post-card
+                [id]="post.id"
+                [author]="post.author || 'Usuario'"
+                [role]="post.role || 'Estudiante'"
+                [time]="post.time || 'Ahora'"
+                [title]="post.title"
+                [content]="post.description"
+                [badge]="post.type"
+                [image]="post.image"
+                [images]="post.images"
+                [avatar]="post.avatar"
+                [category]="post.category"
+                [details]="post.details"
+                [expirationDate]="post.expirationDate"
+                [truncate]="true"
+                (viewFull)="verExperiencia($event)"
+            />
             }
         </section>
 

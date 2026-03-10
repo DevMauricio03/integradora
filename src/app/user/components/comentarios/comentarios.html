@@ -1,0 +1,117 @@
+<div class="comentarios-box" [class.comentarios-disabled]="disabled">
+
+  <div class="comentarios-header">
+    <span>COMENTARIOS</span>
+    @if (!disabled && comentarios().length > 0) {
+    <span class="comentarios-count">{{ comentarios().length }}</span>
+    }
+  </div>
+
+  <!-- ── Composer ──────────────────────────────────────────── -->
+  @if (!disabled) {
+  <div class="comentarios-composer">
+    <textarea
+      class="comentarios-textarea"
+      placeholder="Escribe una pregunta sobre esta experiencia…"
+      [value]="commentText()"
+      maxlength="1000"
+      rows="3"
+      (input)="onTextInput($event)"
+      (keydown)="handleKey($event)"
+      aria-label="Escribe un comentario"
+    ></textarea>
+
+    <div class="composer-footer">
+      <span class="chars-left" [class.chars-warning]="charsLeft() < 100">
+        {{ charsLeft() }} / {{ MAX_LENGTH }}
+      </span>
+      <button
+        type="button"
+        class="btn-publicar"
+        [disabled]="isPublishing() || !commentText().trim()"
+        (click)="submitComment()"
+      >
+        @if (isPublishing()) {
+        <span class="spinner"></span>
+        Publicando…
+        } @else {
+        Publicar comentario
+        }
+      </button>
+    </div>
+
+    @if (errorPublish()) {
+    <p class="comentarios-error">{{ errorPublish() }}</p>
+    }
+  </div>
+  }
+
+  @if (disabled) {
+  <p class="comentarios-preview-note">
+    Los comentarios estarán disponibles una vez publicada la experiencia.
+  </p>
+  }
+
+  <!-- ── Lista ─────────────────────────────────────────────── -->
+  @if (isLoading()) {
+  <div class="comentarios-skeleton">
+    @for (i of [1,2,3]; track i) {
+    <div class="skeleton-item">
+      <div class="skeleton skeleton-avatar"></div>
+      <div class="skeleton-lines">
+        <div class="skeleton skeleton-name"></div>
+        <div class="skeleton skeleton-text"></div>
+      </div>
+    </div>
+    }
+  </div>
+  } @else if (comentarios().length === 0) {
+  <p class="comentarios-empty">Sé el primero en comentar esta experiencia.</p>
+  } @else {
+  <ul class="comentarios-list">
+    @for (c of comentarios(); track c.id) {
+    <li class="comentario-item">
+      <div class="comentario-avatar">
+        @if (c.perfiles?.foto_url) {
+        <img [src]="c.perfiles!.foto_url" [alt]="authorName(c)" class="avatar-img">
+        } @else {
+        <div class="avatar-placeholder">{{ authorInitial(c) }}</div>
+        }
+      </div>
+      <div class="comentario-body">
+        <div class="comentario-meta">
+          <strong class="comentario-autor">{{ authorName(c) }}</strong>
+          <span class="comentario-tiempo">{{ formatTime(c.creado) }}</span>
+        </div>
+        <p class="comentario-texto">{{ c.contenido }}</p>
+      </div>
+    </li>
+    }
+  </ul>
+
+  <!-- ── Ver más ────────────────────────────────────────────── -->
+  @if (hasMore()) {
+  <button
+    type="button"
+    class="btn-ver-mas"
+    [disabled]="isLoadingMore()"
+    (click)="loadMore()"
+  >
+    @if (isLoadingMore()) {
+    <span class="spinner spinner-sm"></span>
+    Cargando…
+    } @else {
+    Ver más comentarios
+    }
+  </button>
+  }
+  }
+
+  <!-- ── Legal ─────────────────────────────────────────────── -->
+  @if (!disabled) {
+  <p class="comentarios-legal">
+    Al comentar, aceptas las <strong>Normas de la Comunidad</strong> de Tuunka.
+  </p>
+  }
+
+</div>
