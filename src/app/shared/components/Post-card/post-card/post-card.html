@@ -38,9 +38,13 @@
     {{ title }}
   </h3>
 
+  @if (truncate && badge?.toLowerCase() === 'experiencia') {
+  <p class="post-content post-content-truncated">{{ content }}</p>
+  } @else {
   <p class="post-content">
     {{ content }}
   </p>
+  }
 
   <!-- Detalles Dinámicos -->
   @if (details && badge === 'evento') {
@@ -164,28 +168,37 @@
   }
 
   <div class="post-footer">
-    @if (!showControls && badge?.toLowerCase() !== 'aviso oficial') {
-    <button type="button" class="footer-btn report" (click)="notifyReport()">
-      <app-icon name="flag" [size]="18"></app-icon>
-      <span>Reportar</span>
-    </button>
-    } @else if (showControls) {
-    <div class="management-btns">
-      <button type="button" class="footer-btn edit">
-        <app-icon name="settings" [size]="18"></app-icon>
-        <span>Editar</span>
+    @if (!isPreview) {
+    <div class="footer-left">
+      @if (!showControls && badge?.toLowerCase() !== 'aviso oficial') {
+      <button type="button" class="footer-btn report" (click)="notifyReport()">
+        <app-icon name="flag" [size]="18"></app-icon>
+        <span>Reportar</span>
       </button>
-      <button type="button" class="footer-btn delete">
-        <app-icon name="ban" [size]="18"></app-icon>
-        <span>Eliminar</span>
+      } @else if (showControls) {
+      <div class="management-btns">
+        <button type="button" class="footer-btn edit">
+          <app-icon name="settings" [size]="18"></app-icon>
+          <span>Editar</span>
+        </button>
+        <button type="button" class="footer-btn delete">
+          <app-icon name="ban" [size]="18"></app-icon>
+          <span>Eliminar</span>
+        </button>
+      </div>
+      }
+      <button type="button" class="footer-btn share">
+        <app-icon name="plus" [size]="18" style="transform: rotate(45deg);"></app-icon>
+        <span>Compartir</span>
       </button>
     </div>
-    }
 
-    <button type="button" class="footer-btn share">
-      <app-icon name="plus" [size]="18" style="transform: rotate(45deg);"></app-icon>
-      <span>Compartir</span>
+    @if (truncate && badge?.toLowerCase() === 'experiencia') {
+    <button type="button" class="btn-ver-experiencia" (click)="notifyViewFull()">
+      Ver experiencia completa
     </button>
+    }
+    }
   </div>
 
 </div>

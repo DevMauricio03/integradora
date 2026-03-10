@@ -79,6 +79,20 @@ export class FeedViewService {
     }
 
     /**
+     * Obtener un post individual por ID desde la VIEW feed_posts.
+     * Uso: páginas de detalle (ej. experiencia individual).
+     */
+    async getFeedPostById(id: string): Promise<{ data: FeedPost | null; error: any }> {
+        const { data, error } = await this.db
+            .from('feed_posts')
+            .select('*')
+            .eq('id', id)
+            .maybeSingle();
+
+        return { data: data as FeedPost | null, error };
+    }
+
+    /**
      * Obtener todos los anuncios oficiales desde la VIEW sin paginación.
      * Filtra por fuente = 'anuncio' ya que provienen de la tabla anuncios.
      * Uso: página Avisos Oficiales.
