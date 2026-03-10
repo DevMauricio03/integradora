@@ -14,6 +14,7 @@ import {
   Comentario,
   COMENTARIO_PAGE_SIZE,
 } from '../../../core/services/comentario.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 const MAX_LENGTH = 1000;
 
@@ -31,8 +32,9 @@ export class Comentarios implements OnInit {
   /** ID del post — requerido para cargar y publicar comentarios */
   @Input() postId = '';
 
-  private readonly svc = inject(ComentarioService);
-  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly svc  = inject(ComentarioService);
+  private readonly auth = inject(AuthService);
+  private readonly cdr  = inject(ChangeDetectorRef);
 
   readonly MAX_LENGTH = MAX_LENGTH;
 
@@ -44,6 +46,8 @@ export class Comentarios implements OnInit {
   readonly hasMore       = signal(false);
   readonly commentText   = signal('');
   readonly errorPublish  = signal<string | null>(null);
+  readonly currentUserId = signal<string | null>(null);
+  readonly deletingIds   = signal<Set<string>>(new Set());
 
   /** Cuántos comentarios ya fueron cargados (base del próximo offset). */
   private offset = 0;
@@ -51,7 +55,10 @@ export class Comentarios implements OnInit {
   readonly charsLeft = computed(() => MAX_LENGTH - this.commentText().length);
 
   // ── Ciclo de vida ─────────────────────────────────────────────
-  ngOnInit() {
+  async ngOnInit() {
+    const user = await this.auth.getCachedUser();
+    this.currentUserId.set(user?.id ?? null);
+
     if (!this.disabled && this.postId) {
       this.loadPage(0, /* initial */ true);
     }
@@ -120,6 +127,40 @@ export class Comentarios implements OnInit {
       this.isPublishing.set(false);
       this.cdr.markForCheck();
     }
+  }
+
+  // ── Eliminar ──────────────────────────────────────────────────
+
+  async deleteComment(comentarioId: string) {
+    this.deletingIds.update(ids => new Set([...ids, comentarioId]));
+
+    try {
+      const { error } = await this.svc.deleteComentario(comentarioId);
+
+      if (error) {
+        console.error('[Comentarios] Error al eliminar:', error);
+        return;
+      }
+
+      // Eliminación optimista
+      this.comentarios.update(prev => prev.filter(c => c.id !== comentarioId));
+      if (this.offset > 0) this.offset -= 1;
+    } finally {
+      this.deletingIds.update(ids => {
+        const next = new Set(ids);
+        next.delete(comentarioId);
+        return next;
+      });
+      this.cdr.markForCheck();
+    }
+  }
+
+  isOwnComment(c: Comentario): boolean {
+    return !!this.currentUserId() && c.autor_id === this.currentUserId();
+  }
+
+  isDeletingComment(id: string): boolean {
+    return this.deletingIds().has(id);
   }
 
   // ── Input handlers ────────────────────────────────────────────

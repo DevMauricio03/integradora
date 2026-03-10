@@ -235,6 +235,31 @@
   color: #9CA3AF;
 }
 
+.btn-eliminar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding: 2px 4px;
+  border: none;
+  background: none;
+  color: #9CA3AF;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-eliminar:hover:not(:disabled) {
+  color: #DC2626;
+  background: #FEF2F2;
+}
+
+.btn-eliminar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .comentario-texto {
   font-size: 14px;
   color: #374151;
@@ -306,6 +331,17 @@
 .spinner-sm {
   border-color: rgba(55,65,81,0.3);
   border-top-color: #374151;
+}
+
+.spinner-xs {
+  width: 10px;
+  height: 10px;
+  border-width: 1.5px;
+}
+
+.spinner-danger {
+  border-color: rgba(220,38,38,0.3);
+  border-top-color: #DC2626;
 }
 
 @keyframes spin {

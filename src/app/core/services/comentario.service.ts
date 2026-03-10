@@ -92,4 +92,19 @@ export class ComentarioService {
 
         return { data: data as unknown as Comentario | null, error };
     }
+
+    /**
+     * Eliminar un comentario propio.
+     * El RLS garantiza que solo el autor puede borrar su comentario.
+     */
+    async deleteComentario(
+        comentarioId: string,
+    ): Promise<{ error: any }> {
+        const { error } = await this.db
+            .from('comentarios')
+            .delete()
+            .eq('id', comentarioId);
+
+        return { error };
+    }
 }
