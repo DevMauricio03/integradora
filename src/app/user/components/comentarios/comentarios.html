@@ -1,0 +1,94 @@
+<section class="comentarios-section">
+
+  <div class="comentarios-header">
+    <app-icon name="megaphone" [size]="16"></app-icon>
+    <span>COMENTARIOS</span>
+  </div>
+
+  @if (estaAutenticado()) {
+  <div class="comentario-form">
+    <textarea
+      class="comentario-input"
+      placeholder="Escribe una pregunta sobre esta experiencia..."
+      [(ngModel)]="nuevoComentario"
+      (keydown)="onKeydown($event)"
+      [disabled]="isSending()"
+      rows="2"
+      maxlength="500">
+    </textarea>
+    <div class="form-footer">
+      <span class="comentario-legal">
+        Al comentar, aceptas las Normas de la Comunidad de Tuunka.
+      </span>
+      <button
+        class="btn-enviar"
+        (click)="enviarComentario()"
+        [disabled]="!nuevoComentario.trim() || isSending()">
+        @if (isSending()) {
+          <app-icon name="refresh-cw" [size]="14"></app-icon>
+          Enviando…
+        } @else {
+          <app-icon name="plus" [size]="14"></app-icon>
+          Comentar
+        }
+      </button>
+    </div>
+    @if (errorEnvio()) {
+    <p class="error-envio">{{ errorEnvio() }}</p>
+    }
+  </div>
+  } @else {
+  <p class="no-auth-msg">
+    <app-icon name="user" [size]="14"></app-icon>
+    Inicia sesión para dejar un comentario.
+  </p>
+  }
+
+  @if (isLoading()) {
+  <div class="loading-state">
+    <app-icon name="refresh-cw" [size]="18"></app-icon>
+    <span>Cargando comentarios…</span>
+  </div>
+  } @else {
+
+    @if (comentarios().length === 0) {
+    <div class="empty-state">
+      <p>Sé el primero en comentar esta experiencia.</p>
+    </div>
+    } @else {
+    <ul class="comentarios-list">
+      @for (c of comentarios(); track c.id) {
+      <li class="comentario-item">
+        <div class="comentario-avatar">
+          @if (c.perfiles?.foto_url) {
+          <img [src]="c.perfiles!.foto_url" [alt]="getNombreAutor(c)" class="avatar-img">
+          } @else {
+          <div class="avatar-placeholder">{{ getIniciales(c) }}</div>
+          }
+        </div>
+        <div class="comentario-body">
+          <div class="comentario-meta">
+            <strong class="comentario-autor">{{ getNombreAutor(c) }}</strong>
+            <span class="comentario-time">· {{ formatFecha(c.creado) }}</span>
+          </div>
+          <p class="comentario-texto">{{ c.contenido }}</p>
+        </div>
+      </li>
+      }
+    </ul>
+
+    @if (hasMore()) {
+    <button class="btn-cargar-mas" (click)="cargarMas()" [disabled]="isLoadingMore()">
+      @if (isLoadingMore()) {
+        <app-icon name="refresh-cw" [size]="14"></app-icon>
+        Cargando…
+      } @else {
+        <app-icon name="chevron-down" [size]="14"></app-icon>
+        Cargar más comentarios
+      }
+    </button>
+    }
+    }
+  }
+
+</section>

@@ -65,6 +65,19 @@ export class FeedViewService {
     }
 
     /**
+     * Obtener un único post por ID desde la VIEW feed_posts.
+     */
+    async getPostById(id: string): Promise<{ data: FeedPost | null; error: any }> {
+        const { data, error } = await this.db
+            .from('feed_posts')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        return { data: data as FeedPost || null, error };
+    }
+
+    /**
      * Obtener todos los posts de un tipo específico sin paginación.
      * Uso: vistas filtradas (Experiencias, etc.) que necesitan todos los registros.
      */

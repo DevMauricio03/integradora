@@ -550,6 +550,17 @@
   background: #f5f3ff;
 }
 
+a.footer-btn.ver-experiencia {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.9);
+  margin-right: auto;
+}
+
+a.footer-btn.ver-experiencia:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
 /* Media Queries */
 @media (max-width: 768px) {
   .post-card {

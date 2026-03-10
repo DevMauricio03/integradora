@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, signal, ViewChild, ElementRef, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { IconComponent, IconName } from "../../icon/icon.component";
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, RouterModule, IconComponent],
   templateUrl: './post-card.html',
   styleUrls: ['./post-card.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

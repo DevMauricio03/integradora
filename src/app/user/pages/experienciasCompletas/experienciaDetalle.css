@@ -1,94 +1,249 @@
 .detalle-layout {
   max-width: 720px;
   margin: 0 auto;
-  padding: 32px 0 48px 0;
+  padding: 32px 16px 48px 16px;
 }
 
 .btn-volver {
-  position: absolute;
-  right: 32px;
-  top: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: none;
   border: none;
-  color: #64748B;
-  font-size: 16px;
+  color: #64748b;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  transition: color 0.15s;
+}
+
+.btn-volver:hover {
+  color: #2E3192;
+}
+
+.btn-volver-link {
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #2E3192;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  gap: 16px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.error-state {
+  color: #dc2626;
 }
 
 .banner-warning {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #FEF3C7;
-  color: #92400E;
+  background: #fef3c7;
+  color: #92400e;
   border-radius: 8px;
   padding: 12px 18px;
   font-size: 15px;
   margin-bottom: 24px;
-  box-shadow: 0px 2px 8px rgba(253,230,138,0.08);
+  box-shadow: 0 2px 8px rgba(253, 230, 138, 0.08);
+}
+
+/* ── Tarjeta de experiencia ─────────────────────────────────── */
+
+.card-exp {
+  background: #2E3192;
+  color: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 0;
 }
 
 .card-exp-detalle {
-  box-shadow: 0px 4px 16px rgba(19,91,236,0.08);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 32px;
+  box-shadow: 0 4px 16px rgba(19, 91, 236, 0.12);
+  margin-bottom: 0;
 }
 
-.exp-texto-detalle {
-  max-height: none;
-  overflow: visible;
+.exp-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.comentarios-box {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.04);
-  padding: 24px 18px;
-  margin-top: 24px;
+.exp-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
-.comentarios-header {
+.exp-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.exp-user {
+  flex: 1;
+}
+
+.exp-nombre {
   font-weight: 700;
   font-size: 15px;
-  color: #64748B;
-  margin-bottom: 12px;
+  color: white;
 }
 
-.comentarios-input {
-  width: 100%;
-  height: 44px;
-  border-radius: 8px;
-  border: 1px solid #E5E7EB;
-  padding: 0 16px;
-  font-size: 15px;
-  margin-bottom: 10px;
-}
-
-.comentarios-legal {
+.exp-rol {
   font-size: 13px;
-  color: #64748B;
-  margin-top: 8px;
-  text-align: left;
+  color: rgba(255, 255, 255, 0.75);
 }
+
+.badge-exp {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.exp-empresa {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.exp-icon {
+  flex-shrink: 0;
+}
+
+.exp-info {
+  flex: 1;
+}
+
+.exp-empresa-nombre {
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+}
+
+.exp-area {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.exp-periodo {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+}
+
+.exp-titulo {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+
+.exp-texto {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  white-space: pre-wrap;
+}
+
+.exp-recomendacion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 16px;
+}
+
+.exp-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 16px;
+  margin-top: 8px;
+}
+
+.exp-acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.exp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.exp-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
   .detalle-layout {
-    max-width: 100%;
-    padding: 16px 0 24px 0;
+    padding: 16px 12px 24px 12px;
   }
-  .btn-volver {
-    right: 12px;
-    top: 12px;
-    font-size: 14px;
-  }
-  .card-exp-detalle {
-    padding: 12px;
+
+  .card-exp {
     border-radius: 10px;
+    padding: 16px;
   }
-  .comentarios-box {
-    padding: 12px 8px;
-    border-radius: 8px;
+
+  .exp-empresa {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .exp-titulo {
+    font-size: 17px;
+  }
+
+  .exp-texto {
+    font-size: 14px;
   }
 }
