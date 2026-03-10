@@ -15,6 +15,7 @@ export class Navbar {
 
   @Input() title: string = '';
   @Input() showLogout: boolean = false;
+  @Input() showMenu: boolean = false;
   @Output() onToggleMenu = new EventEmitter<void>();
 
   private readonly supabaseService = inject(SupabaseService);

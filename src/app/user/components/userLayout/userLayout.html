@@ -1,4 +1,4 @@
-<app-navbar [title]="centerTitle() ? '' : title()" (onToggleMenu)="toggleMenu()">
+<app-navbar [title]="centerTitle() ? '' : title()" [showMenu]="true" (onToggleMenu)="toggleMenu()">
 
   @if (centerTitle()) {
   <div navbar-center class="user-top-title">

@@ -3,9 +3,11 @@
   <!-- IZQUIERDA: Logo -->
   <div class="navbar-left">
 
+    @if (showMenu) {
     <button class="menu-mobile-btn" (click)="onToggleMenu.emit()">
       <app-icon name="menu" [size]="24"></app-icon>
     </button>
+    }
 
     <div class="logo-contenedor" [routerLink]="getLogoRoute()">
       <div class="logo-icono">
