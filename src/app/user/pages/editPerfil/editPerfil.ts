@@ -5,14 +5,18 @@ import { AuthStoreService } from '../../../core/services/auth-store.service';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { form, required, submit, FormField, SchemaPathTree, pattern, maxLength } from '@angular/forms/signals';
+import { Carrera } from '../../../core/models/supabase.models';
+
+// ── Constantes del módulo ──────────────────────────────────────────────────────
+/** Solo letras (incluye tildes y Ñ) y espacios. Sin dígitos ni símbolos. */
+const SOLO_LETRAS = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/;
+const ANIO_ACTUAL = new Date().getFullYear();
 
 interface EditPerfilModel {
   nombre: string;
   apellidos: string;
-  rol_id: string;
-  universidad_id: string;
-  carrera_id: string;
   anioGraduacion: string;
+  carreraId: string;
 }
 
 @Component({
@@ -24,103 +28,152 @@ interface EditPerfilModel {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditarPerfilPage implements OnInit {
-  mostrarExito = signal(false);
-  perfil = signal<any>(null);
-  readonly defaultAvatarUrl = 'https://i.pinimg.com/236x/6c/55/d4/6c55d49dd6839b5b79e84a1aa6d2260d.jpg';
+  // ── Signals de UI ────────────────────────────────────────────────────────────
+  readonly mostrarExito = signal(false);
+  readonly guardando    = signal(false);
+  readonly perfil       = signal<any>(null);
+  readonly carreras     = signal<Carrera[]>([]);
+  readonly errorGuardando = signal<string | null>(null);
 
-  private readonly authStore = inject(AuthStoreService);
-  private readonly supabaseService = inject(SupabaseService);
-  private readonly router = inject(Router);
+  readonly defaultAvatarUrl =
+    'https://i.pinimg.com/236x/6c/55/d4/6c55d49dd6839b5b79e84a1aa6d2260d.jpg';
 
-  editModel = signal<EditPerfilModel>({
-    nombre: '',
-    apellidos: '',
-    rol_id: '',
-    universidad_id: '',
-    carrera_id: '',
-    anioGraduacion: ''
+  /**
+   * Rango dinámico de años de graduación.
+   * Desde 5 años atrás hasta 10 años adelante respecto al año actual.
+   */
+  readonly aniosGraduacion: number[] = Array.from(
+    { length: 16 },
+    (_, i) => ANIO_ACTUAL - 5 + i,
+  );
+
+  // ── Servicios ────────────────────────────────────────────────────────────────
+  private readonly authStore        = inject(AuthStoreService);
+  private readonly supabaseService  = inject(SupabaseService);
+  private readonly router           = inject(Router);
+
+  // ── Modelo y formulario (signal-based forms) ─────────────────────────────────
+  readonly editModel = signal<EditPerfilModel>({
+    nombre:          '',
+    apellidos:       '',
+    anioGraduacion:  '',
+    carreraId:       '',
   });
 
-  editForm = form(this.editModel, (schema: SchemaPathTree<EditPerfilModel>) => {
-    required(schema.nombre, { message: 'El nombre es obligatorio' });
-    pattern(schema.nombre, /.*\S.*/, { message: 'El nombre no puede estar vacío' });
-    maxLength(schema.nombre, 50, { message: 'Máximo 50 caracteres' });
+  readonly editForm = form(this.editModel, (schema: SchemaPathTree<EditPerfilModel>) => {
+    // --- Nombre ---
+    required(schema.nombre,  { message: 'El nombre es obligatorio' });
+    pattern( schema.nombre,  /^.{2,}$/,   { message: 'Mínimo 2 caracteres' });
+    pattern( schema.nombre,  SOLO_LETRAS, { message: 'Solo letras y espacios, sin números' });
+    maxLength(schema.nombre, 50,          { message: 'Máximo 50 caracteres' });
 
-    required(schema.apellidos, { message: 'Los apellidos son obligatorios' });
-    pattern(schema.apellidos, /.*\S.*/, { message: 'Los apellidos no pueden estar vacíos' });
-    maxLength(schema.apellidos, 50, { message: 'Máximo 50 caracteres' });
+    // --- Apellidos ---
+    required(schema.apellidos,  { message: 'Los apellidos son obligatorios' });
+    pattern( schema.apellidos,  /^.{2,}$/,   { message: 'Mínimo 2 caracteres' });
+    pattern( schema.apellidos,  SOLO_LETRAS, { message: 'Solo letras y espacios, sin números' });
+    maxLength(schema.apellidos, 50,          { message: 'Máximo 50 caracteres' });
   });
 
-  ngOnInit() {
-    this.loadPerfil();
+  // ── Ciclo de vida ────────────────────────────────────────────────────────────
+  ngOnInit(): void {
+    this.cargarPerfil();
+    this.cargarCarreras();
   }
 
-  private async loadPerfil() {
-    // Usa el caché del AuthStoreService → no genera query si ya fue cargado
+  // ── Carga de datos ───────────────────────────────────────────────────────────
+  private async cargarPerfil(): Promise<void> {
     const data = await this.authStore.getPerfilActual();
-    if (data) {
-      this.perfil.set(data);
-      this.editModel.update(m => ({
-        ...m,
-        nombre: data.nombre || '',
-        apellidos: data.apellidos || '',
-        rol_id: data.rol_id || '',
-        universidad_id: data.universidad_id || '',
-        carrera_id: data.carrera_id || '',
-        anioGraduacion: data.anioGraduacion || ''
-      }));
-    }
+    if (!data) return;
+
+    this.perfil.set(data);
+    this.editModel.update(m => ({
+      ...m,
+      nombre:         data.nombre          || '',
+      apellidos:      data.apellidos        || '',
+      anioGraduacion: data.anio_graduacion?.toString() || '',
+      // Prefiere el id del join (carrera.id); fallback a carrera_id plano
+      carreraId:      data.carrera?.id ?? data.carrera_id ?? '',
+    }));
   }
 
-  irPerfil() {
-    this.mostrarExito.set(false);
-    this.router.navigate(['/user/perfil']);
+  private async cargarCarreras(): Promise<void> {
+    const { data } = await this.supabaseService.getCarreras();
+    if (data) this.carreras.set(data);
   }
 
-  async guardarCambios(event: Event) {
+  // ── Guardado ─────────────────────────────────────────────────────────────────
+  guardarCambios(event: Event): void {
     event.preventDefault();
+    this.errorGuardando.set(null);
 
-    if (this.editForm().pending()) return;
-
+    /**
+     * submit() es síncrono: llama el callback solo si la validación pasa.
+     * guardando se activa DENTRO del callback para no romper el estado
+     * cuando la validación falla.
+     */
     submit(this.editForm, async () => {
+      this.guardando.set(true);
       try {
         await this.supabaseService.updatePerfil(this.editModel());
+        this.authStore.invalidatePerfil();
         this.mostrarExito.set(true);
-      } catch (error) {
-        console.error('Error actualizando perfil', error);
+      } catch (err) {
+        console.error('[EditarPerfil] Error al guardar:', err);
+        this.errorGuardando.set('Ocurrió un error al guardar. Intenta de nuevo.');
+      } finally {
+        this.guardando.set(false);
       }
     });
   }
 
-  async onFileSelected(event: Event) {
+  // ── Handlers de selects nativos ──────────────────────────────────────────────
+  onAnioChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.editModel.update(m => ({ ...m, anioGraduacion: value }));
+  }
+
+  onCarreraChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.editModel.update(m => ({ ...m, carreraId: value }));
+  }
+
+  // ── Navegación ───────────────────────────────────────────────────────────────
+  irPerfil(): void {
+    this.mostrarExito.set(false);
+    this.router.navigate(['/user/perfil']);
+  }
+
+  // ── Avatar ───────────────────────────────────────────────────────────────────
+  async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const file  = input.files?.[0];
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      alert('La imagen debe pesar menos de 2MB');
+      alert('La imagen debe pesar menos de 2 MB');
       return;
     }
 
     try {
       const url = await this.supabaseService.subirAvatar(file);
       this.perfil.update(p => ({ ...p, foto_url: url }));
-    } catch (error) {
-      console.error('Error subiendo avatar', error);
+      this.authStore.invalidatePerfil();
+    } catch (err) {
+      console.error('[EditarPerfil] Error subiendo avatar:', err);
     }
   }
 
-  async eliminarFoto() {
+  async eliminarFoto(): Promise<void> {
     try {
       await this.supabaseService.eliminarAvatar();
       this.perfil.update(p => ({ ...p, foto_url: null }));
-    } catch (error) {
-      console.error('Error eliminando avatar', error);
+      this.authStore.invalidatePerfil();
+    } catch (err) {
+      console.error('[EditarPerfil] Error eliminando avatar:', err);
     }
   }
 
-  onAvatarError(event: Event) {
-    const imageElement = event.target as HTMLImageElement;
-    imageElement.src = this.defaultAvatarUrl;
+  onAvatarError(event: Event): void {
+    (event.target as HTMLImageElement).src = this.defaultAvatarUrl;
   }
 }

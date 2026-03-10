@@ -346,6 +346,57 @@
     }
 }
 
+/* ================= Duration Selector (suspension) ================= */
+.duration-selector {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.duration-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+}
+
+.duration-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.duration-btn {
+    padding: 9px 12px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 8px;
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+
+.duration-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.duration-btn.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.duration-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Responsividad para móviles */
 @media (max-width: 768px) {
     .modal-overlay {

@@ -1,9 +1,10 @@
 <main class="feed-container">
 
+	<!-- Header del perfil -->
 	<section class="perfil-header">
 		<div class="perfil-info">
 			<div class="avatar">
-				<img [src]="perfil?.foto_url || perfil?.foto_perfil || perfil?.fotoPerfil || defaultAvatarUrl"
+				<img [src]="perfil?.foto_url || defaultAvatarUrl"
 					(error)="onAvatarError($event)" alt="avatar">
 			</div>
 
@@ -11,18 +12,77 @@
 				<h1>{{ (perfil?.nombre || 'Usuario') + ' ' + (perfil?.apellidos || '') }}</h1>
 
 				<div class="meta">
-					<span class="badge-rol">{{ perfil?.roles?.nombre || 'Estudiante' }}</span>
-					<span class="universidad">{{ perfil?.correoInstitucional || 'Sin correo institucional' }}</span>
+					<span class="badge-rol">{{ perfil?.roles?.nombre || 'Sin rol' }}</span>
+					@if (perfil?.universidades?.acronimo) {
+						<span class="universidad">{{ perfil?.universidades?.acronimo }}</span>
+					}
+					<span class="correo-meta">{{ perfil?.correoInstitucional || '' }}</span>
 				</div>
 			</div>
 		</div>
 
 		<button class="btn-secundario" routerLink="/user/perfil/editar">
-			<app-icon name="settings" [size]="18"></app-icon>
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+				stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+				<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+			</svg>
 			Editar perfil
 		</button>
 	</section>
 
+	<!-- Información del perfil -->
+	<section class="perfil-info-detalle">
+
+		<div class="info-card">
+			<h4 class="info-card-titulo">Información Básica</h4>
+			<div class="info-grid">
+				<div class="info-item">
+					<span class="info-label">Nombre(s)</span>
+					<span class="info-valor">{{ perfil?.nombre || '—' }}</span>
+				</div>
+				<div class="info-item">
+					<span class="info-label">Apellidos</span>
+					<span class="info-valor">{{ perfil?.apellidos || '—' }}</span>
+				</div>
+				<div class="info-item">
+					<span class="info-label">Correo institucional</span>
+					<span class="info-valor">{{ perfil?.correoInstitucional || '—' }}</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="info-card">
+			<h4 class="info-card-titulo">Comunidad Académica</h4>
+			<div class="info-grid">
+				<div class="info-item">
+					<span class="info-label">Universidad</span>
+					<span class="info-valor">
+						{{ perfil?.universidades?.nombre || perfil?.universidades?.acronimo || '—' }}
+					</span>
+				</div>
+				<div class="info-item">
+					<span class="info-label">Rol académico</span>
+					<span class="info-valor">{{ perfil?.roles?.nombre || '—' }}</span>
+				</div>
+				@if (perfil?.carrera?.nombre) {
+					<div class="info-item">
+						<span class="info-label">Carrera</span>
+						<span class="info-valor">{{ perfil?.carrera?.nombre }}</span>
+					</div>
+				}
+				@if (perfil?.anio_graduacion) {
+					<div class="info-item">
+						<span class="info-label">Año de graduación estimado</span>
+						<span class="info-valor">{{ perfil?.anio_graduacion }}</span>
+					</div>
+				}
+			</div>
+		</div>
+
+	</section>
+
+	<!-- Feed de publicaciones -->
 	<div class="feed-content">
 
 		<section class="tabs">
@@ -33,32 +93,37 @@
 
 		<section class="feed-list">
 			@if (isLoading()) {
-			<div class="skeleton-container">
-				@for (i of [1,2,3]; track i) {
-				<app-post-skeleton></app-post-skeleton>
+				<div class="skeleton-container">
+					@for (i of [1,2,3]; track i) {
+						<app-post-skeleton></app-post-skeleton>
+					}
+				</div>
+			} @else {
+				@if (misPosts().length === 0) {
+					<div class="empty-state">
+						<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+							stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+						</svg>
+						<p>Aún no has realizado ninguna publicación.</p>
+					</div>
+				} @else {
+					@for (post of misPosts(); track post.id) {
+						<app-post-card [author]="post.author" [role]="post.role" [time]="post.time"
+							[title]="post.title" [content]="post.description" [badge]="post.type"
+							[image]="post.image" [images]="post.images" [avatar]="post.avatar"
+							[category]="post.category" [details]="post.details"
+							[expirationDate]="post.expirationDate" [showControls]="true"
+							[estado]="post.status" />
+					}
 				}
-			</div>
-			} @else {
-			@if (misPosts().length === 0) {
-			<div class="empty-state">
-				<app-icon name="megaphone" [size]="48"></app-icon>
-				<p>Aún no has realizado ninguna publicación.</p>
-			</div>
-			} @else {
-			@for (post of misPosts(); track post.id) {
-			<app-post-card [author]="post.author" [role]="post.role" [time]="post.time" [title]="post.title"
-				[content]="post.description" [badge]="post.type" [image]="post.image" [images]="post.images"
-				[avatar]="post.avatar" [category]="post.category" [details]="post.details"
-				[expirationDate]="post.expirationDate" [showControls]="true" [estado]="post.status" />
-			}
-			}
 			}
 		</section>
 
 		@if (misPosts().length > 5) {
-		<div class="cargar-mas">
-			<button class="btn-outline-sm">Cargar más publicaciones</button>
-		</div>
+			<div class="cargar-mas">
+				<button class="btn-outline-sm">Cargar más publicaciones</button>
+			</div>
 		}
 
 	</div>

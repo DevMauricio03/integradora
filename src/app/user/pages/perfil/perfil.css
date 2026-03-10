@@ -96,6 +96,62 @@
   box-sizing: border-box;
 }
 
+.correo-meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ============ INFO DETALLE ============ */
+.perfil-info-detalle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.info-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.info-card-titulo {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.info-valor {
+  font-size: 14px;
+  color: var(--text-main);
+  font-weight: 500;
+  word-break: break-word;
+}
+
 /* ============ TABS ============ */
 .tabs {
   margin-bottom: 0;
@@ -230,8 +286,8 @@
     justify-content: center;
   }
 
-  .feed-container {
-    gap: 20px;
+  .perfil-info-detalle {
+    grid-template-columns: 1fr;
   }
 
   .tabs-descripcion {

@@ -108,14 +108,23 @@ export class InicioSesion implements OnInit {
           return;
         }
 
-        // Verificamos si la cuenta está suspendida antes de dejarlo entrar
-        const perfil = await this.supabaseService.getPerfilActual();
-        if (perfil?.estado === 'suspendido') {
-          // Si está suspendido, le cerramos la sesión y le mandamos el error
+        // Verificamos suspensión antes de dejar entrar.
+        // verifySuspension() evalúa estado = 'suspendido' AND fecha_suspension > now(),
+        // por lo que suspensiones expiradas no bloquean el acceso.
+        const { isSuspended, remains } = await this.supabaseService.verifySuspension();
+        if (isSuspended) {
           await this.supabaseService.signOut();
-          this.errorMensaje.set('Tu cuenta ha sido suspendida. Contacta a administración para más detalles.');
+          const esPermanente = !remains || remains === 'Indefinido';
+          this.errorMensaje.set(
+            esPermanente
+              ? 'Tu cuenta ha sido suspendida. Contacta a administración para más detalles.'
+              : `Tu cuenta está suspendida. Tiempo restante: ${remains}.`
+          );
           return;
         }
+
+        // Obtenemos el perfil para la navegación por roles
+        const perfil = await this.supabaseService.getPerfilActual();
 
         // Lógica de persistencia local
         if (recordarme) {

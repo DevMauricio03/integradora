@@ -8,35 +8,9 @@ import { AnuncioService } from './anuncio.service';
 import { ReportService } from './report.service';
 import { CatalogService } from './catalog.service';
 import { StorageService } from './storage.service';
+import { AuthStoreService } from './auth-store.service';
 
-/**
- * @deprecated Este servicio es una FACHADA de compatibilidad.
- * Toda la lógica ha sido migrada a servicios especializados:
- *   - AuthService         → autenticación
- *   - ProfileService      → tabla perfiles
- *   - PublicationService  → tabla publicaciones
- *   - AnuncioService      → tabla anuncios
- *   - ReportService       → tabla reportes
- *   - CatalogService      → universidades, carreras, roles
- *   - StorageService      → subida de archivos
- *
- * Todos los métodos aquí delegan a los servicios correspondientes.
- * Puede eliminarse progresivamente a medida que los componentes
- * migren a usar los servicios especializados directamente.
-CREATE OR REPLACE FUNCTION es_admin()
-RETURNS boolean
-LANGUAGE sql
-SECURITY DEFINER
-SET search_path  = public
-SET row_security = off
-AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM perfiles p
-    JOIN roles r ON r.id = p.rol_id
-    WHERE p.id = auth.uid()
-      AND r.nombre = 'admin'
-  );
-$$; */
+
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
   // Conservamos la propiedad `client` para compatibilidad con adminPublication.service.ts
@@ -44,6 +18,7 @@ export class SupabaseService {
   get client(): SupabaseClient { return this._clientService.client; }
 
   private readonly authSvc = inject(AuthService);
+  private readonly authStoreSvc = inject(AuthStoreService);
   private readonly profileSvc = inject(ProfileService);
   private readonly pubSvc = inject(PublicationService);
   private readonly anuncioSvc = inject(AnuncioService);
@@ -70,8 +45,15 @@ export class SupabaseService {
   }
   checkIfUserExists(email: string) { return this.profileSvc.checkIfUserExists(email); }
   updateUserStatus(userId: string, estado: string) { return this.profileSvc.updateUserStatus(userId, estado); }
+  /** @deprecated Usa suspendUserRpc() para suspensiones seguras vía RPC. */
   suspendUser(userId: string, hours: number | null) { return this.profileSvc.suspendUser(userId, hours); }
-  verifySuspension() { return this.profileSvc.verifySuspension(); }
+  /** Suspend via secure SECURITY DEFINER RPC. Validates admin role server-side. */
+  suspendUserRpc(userId: string, duration: '1_day' | '7_days' | '30_days' | 'permanent') {
+    return this.profileSvc.suspendUserRpc(userId, duration);
+  }
+  /** Unsuspend via secure SECURITY DEFINER RPC. Validates admin role server-side. */
+  unsuspendUserRpc(userId: string) { return this.profileSvc.unsuspendUserRpc(userId); }
+  verifySuspension() { return this.authStoreSvc.verifySuspension(); }
   getAllUsers(search?: string) { return this.profileSvc.getAllUsers({ searchTerm: search }); }
   getRecentUsers(limit = 5) { return this.profileSvc.getRecentUsers(limit); }
   updateUserRole(userId: string, roleId: string) { return this.profileSvc.updateUserRole(userId, roleId); }

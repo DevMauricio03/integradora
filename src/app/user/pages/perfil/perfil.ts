@@ -1,18 +1,15 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, computed } from '@angular/core';
-// Reutilizando PostSkeletonComponent para el estado de carga
 import { RouterLink } from '@angular/router';
 import { AuthStoreService } from '../../../core/services/auth-store.service';
 import { PostStoreService } from '../../../core/services/post-store.service';
 import { PostCardComponent } from '../../../shared/components/Post-card/post-card/post-card';
 import { CommonModule } from '@angular/common';
-import { IconComponent } from '../../../shared/components/icon/icon.component';
-
 import { PostSkeletonComponent } from '../../../shared/components/post-skeleton/post-skeleton.component';
 
 @Component({
   selector: 'app-perfil-publico-page',
   standalone: true,
-  imports: [RouterLink, PostCardComponent, CommonModule, IconComponent, PostSkeletonComponent],
+  imports: [RouterLink, PostCardComponent, CommonModule, PostSkeletonComponent],
   templateUrl: './perfil.html',
   styleUrls: ['./perfil.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

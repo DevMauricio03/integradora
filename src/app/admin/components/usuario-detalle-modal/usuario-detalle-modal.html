@@ -70,10 +70,10 @@
             <button class="action-btn" (click)="prepararRestablecerContrasena()" [disabled]="isProcessing()">
                 <app-icon name="refresh-cw" [size]="16"></app-icon> Restablecer contraseña
             </button>
-            <button class="action-btn" [ngClass]="usuario.estado === 'suspendido' ? 'btn-active' : 'danger'"
+            <button class="action-btn" [ngClass]="esSuspendido ? 'btn-active' : 'danger'"
                 (click)="prepararSuspenderCuenta()" [disabled]="isProcessing()">
-                <app-icon [name]="usuario.estado === 'suspendido' ? 'user-check' : 'ban'" [size]="16"></app-icon>
-                {{ usuario.estado === 'suspendido' ? 'Activar cuenta' : 'Suspender cuenta' }}
+                <app-icon [name]="esSuspendido ? 'user-check' : 'ban'" [size]="16"></app-icon>
+                {{ esSuspendido ? 'Activar cuenta' : 'Suspender cuenta' }}
             </button>
         </div>
 
@@ -88,6 +88,24 @@
             <div class="confirm-box">
                 <h3>{{ confirmacionConfig().titulo }}</h3>
                 <p>{{ confirmacionConfig().mensaje }}</p>
+
+                <!-- Duration selector (only shown for suspension flow) -->
+                @if (mostrarSelectorDuracion()) {
+                <div class="duration-selector">
+                    <span class="duration-label">Duración de la suspensión</span>
+                    <div class="duration-options">
+                        @for (opt of durationOptions; track opt.value) {
+                        <button class="duration-btn"
+                            [class.selected]="selectedDuration() === opt.value"
+                            (click)="selectedDuration.set(opt.value)"
+                            [disabled]="isProcessing()">
+                            {{ opt.label }}
+                        </button>
+                        }
+                    </div>
+                </div>
+                }
+
                 <div class="confirm-actions">
                     <button class="btn-cancel" (click)="mostrarConfirmacion.set(false)"
                         [disabled]="isProcessing()">Cancelar</button>

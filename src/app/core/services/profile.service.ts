@@ -17,7 +17,7 @@ export class ProfileService {
     async getPerfilById(userId: string): Promise<Perfil | null> {
         const { data, error } = await this.db
             .from('perfiles')
-            .select('*, roles(nombre)')
+            .select('*, roles(nombre), universidades(nombre, acronimo), carrera(nombre, id)')
             .eq('id', userId)
             .single();
 
@@ -45,7 +45,6 @@ export class ProfileService {
         universidad_id?: string;
         carrera_id?: string | null;
         foto_url?: string | null;
-        foto_perfil?: string | null;
         creado?: string;
         estado?: string;
     }) {
@@ -54,18 +53,29 @@ export class ProfileService {
     }
 
     /** Actualizar datos del perfil del usuario autenticado */
-    async updatePerfil(datos: Partial<Perfil> & { rol_id: string }) {
+    async updatePerfil(datos: {
+        nombre?: string;
+        apellidos?: string;
+        anioGraduacion?: string;
+        carreraId?: string | null;
+    }) {
         const user = await this.auth.getCachedUser();
         if (!user) throw new Error('Usuario no autenticado');
 
+        const cambios: Record<string, unknown> = {
+            nombre: datos.nombre,
+            apellidos: datos.apellidos,
+            anio_graduacion: datos.anioGraduacion ? Number(datos.anioGraduacion) : null,
+            actualizado: new Date().toISOString(),
+        };
+
+        if (datos.carreraId !== undefined) {
+            cambios['carrera_id'] = datos.carreraId || null;
+        }
+
         const { error } = await this.db
             .from('perfiles')
-            .update({
-                nombre: datos.nombre,
-                apellidos: datos.apellidos,
-                rol_id: datos.rol_id,
-                actualizado: new Date()
-            })
+            .update(cambios)
             .eq('id', user.id);
 
         if (error) throw error;
@@ -121,41 +131,42 @@ export class ProfileService {
     }
 
     /**
-     * Verifica si la suspensión del usuario activo sigue vigente.
-     * Lógica: si fecha_suspension < now() → reactivar automáticamente.
-     * Si fecha_suspension es null con estado = 'suspendido' → dato inconsistente
-     * (suspensión legacy sin fecha). Se auto-sana reactivando la cuenta.
+     * Suspender usuario via secure RPC (SECURITY DEFINER).
+     * Validates admin role server-side; prevents self-suspension.
+     *
+     * @param userId   Target user UUID
+     * @param duration '1_day' | '7_days' | '30_days' | 'permanent'
      */
-    async verifySuspension(): Promise<{ isSuspended: boolean; remains?: string }> {
-        const perfil = await this.getPerfilActual();
-        if (perfil?.estado !== 'suspendido') return { isSuspended: false };
+    async suspendUserRpc(userId: string, duration: '1_day' | '7_days' | '30_days' | 'permanent') {
+        const { data, error } = await this.db.rpc('suspend_user', {
+            target_user_id: userId,
+            duration
+        });
+        if (error) return { error };
+        const result = data as { success: boolean; error?: string };
+        if (!result.success) return { error: { message: result.error ?? 'Error al suspender usuario' } };
+        return { error: null };
+    }
 
-        // Dato inconsistente: suspendido sin fecha → auto-sanar
-        if (!perfil.fecha_suspension) {
-            await this.unsuspendUser(perfil.id);
-            return { isSuspended: false };
-        }
-
-        const now = new Date();
-        const suspensionEnd = new Date(perfil.fecha_suspension);
-
-        if (now > suspensionEnd) {
-            // Suspensión expirada → reactivar y limpiar fecha
-            await this.unsuspendUser(perfil.id);
-            return { isSuspended: false };
-        }
-
-        const diffMs = suspensionEnd.getTime() - now.getTime();
-        const hours = Math.floor(diffMs / 3600000);
-        const days = Math.floor(hours / 24);
-        return { isSuspended: true, remains: days > 0 ? `${days} días` : `${hours} horas` };
+    /**
+     * Reactivar usuario via secure RPC (SECURITY DEFINER).
+     * Validates admin role server-side.
+     */
+    async unsuspendUserRpc(userId: string) {
+        const { data, error } = await this.db.rpc('unsuspend_user', {
+            target_user: userId
+        });
+        if (error) return { error };
+        const result = data as { success: boolean; error?: string };
+        if (!result.success) return { error: { message: result.error ?? 'Error al reactivar usuario' } };
+        return { error: null };
     }
 
     /** Obtener todos los usuarios (admin) */
     async getAllUsers(params?: { page?: number; pageSize?: number; filter?: string; searchTerm?: string }) {
         let query = this.db
             .from('perfiles')
-            .select('id, nombre, apellidos, correoInstitucional, foto_url, creado, estado, roles(nombre), universidades(acronimo)', { count: 'exact' })
+            .select('id, nombre, apellidos, correoInstitucional, foto_url, creado, estado, fecha_suspension, roles(nombre), universidades(acronimo)', { count: 'exact' })
             .order('creado', { ascending: false });
 
         if (params?.filter) {

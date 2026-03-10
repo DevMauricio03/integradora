@@ -65,6 +65,35 @@ export class FeedViewService {
     }
 
     /**
+     * Obtener todos los posts de un tipo específico sin paginación.
+     * Uso: vistas filtradas (Experiencias, etc.) que necesitan todos los registros.
+     */
+    async getFeedPostsByTipo(tipo: string): Promise<{ data: FeedPost[] | null; error: any }> {
+        const { data, error } = await this.db
+            .from('feed_posts')
+            .select('*')
+            .eq('tipo', tipo)
+            .order('creado', { ascending: false });
+
+        return { data: data as FeedPost[] || null, error };
+    }
+
+    /**
+     * Obtener todos los anuncios oficiales desde la VIEW sin paginación.
+     * Filtra por fuente = 'anuncio' ya que provienen de la tabla anuncios.
+     * Uso: página Avisos Oficiales.
+     */
+    async getFeedAnuncios(): Promise<{ data: FeedPost[] | null; error: any }> {
+        const { data, error } = await this.db
+            .from('feed_posts')
+            .select('*')
+            .eq('fuente', 'anuncio')
+            .order('creado', { ascending: false });
+
+        return { data: data as FeedPost[] || null, error };
+    }
+
+    /**
      * Obtener publicaciones pendientes del usuario autenticado.
      * Se mezclan en el store para que el autor vea sus posts antes
      * de que sean aprobados. Solo se llama una vez (no se pagina).

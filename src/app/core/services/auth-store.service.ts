@@ -68,24 +68,16 @@ export class AuthStoreService {
     async verifySuspension(): Promise<{ isSuspended: boolean; remains?: string }> {
         const perfil = await this.getPerfilActual();
         if (perfil?.estado !== 'suspendido') return { isSuspended: false };
+        if (!perfil.fecha_suspension) return { isSuspended: false };
 
-        if (perfil.fecha_suspension) {
-            const now = new Date();
-            const suspensionEnd = new Date(perfil.fecha_suspension);
+        const now = new Date();
+        const suspensionEnd = new Date(perfil.fecha_suspension);
 
-            if (now > suspensionEnd) {
-                // Suspensión expirada → reactivar
-                await this.profileService.updateUserStatus(perfil.id, 'activo');
-                this.invalidatePerfil();
-                return { isSuspended: false };
-            }
+        if (now >= suspensionEnd) return { isSuspended: false };
 
-            const diffMs = suspensionEnd.getTime() - now.getTime();
-            const hours = Math.floor(diffMs / 3600000);
-            const days = Math.floor(hours / 24);
-            return { isSuspended: true, remains: days > 0 ? `${days} días` : `${hours} horas` };
-        }
-
-        return { isSuspended: true, remains: 'indefinido' };
+        const diffMs = suspensionEnd.getTime() - now.getTime();
+        const hours = Math.floor(diffMs / 3600000);
+        const days = Math.floor(hours / 24);
+        return { isSuspended: true, remains: days > 0 ? `${days} días` : `${hours} horas` };
     }
 }

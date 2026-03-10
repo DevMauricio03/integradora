@@ -6,13 +6,14 @@
 			<p>Actualiza tu información personal y académica.</p>
 		</div>
 
+		<!-- Foto de perfil -->
 		<section class="card-seccion foto-perfil">
 
 			<div class="foto-wrapper">
 				<input type="file" accept="image/png, image/jpeg" (change)="onFileSelected($event)" hidden #fileInput>
-				<img [src]="perfil()?.foto_url || perfil()?.foto_perfil || perfil()?.fotoPerfil || defaultAvatarUrl"
+				<img [src]="perfil()?.foto_url || defaultAvatarUrl"
 					(error)="onAvatarError($event)" alt="avatar">
-				<button type="button" class="btn-edit-foto" (click)="fileInput.click()">
+				<button type="button" class="btn-edit-foto" (click)="fileInput.click()" title="Cambiar foto">
 					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
 						aria-hidden="true">
 						<path
@@ -23,102 +24,150 @@
 			</div>
 
 			<div class="foto-info">
-				<h3>Foto de Perfil</h3>
-				<p>
-					Se recomienda una imagen cuadrada de al menos 400x400px.
-					JPG, PNG o GIF.
-				</p>
+				<h3>{{ perfil()?.nombre || 'Perfil' }} {{ perfil()?.apellidos || '' }}</h3>
+				<p class="correo-label">{{ perfil()?.correoInstitucional || '' }}</p>
+				<p class="hint">Se recomienda una imagen cuadrada de al menos 400×400 px. JPG o PNG.</p>
 				<button type="button" class="btn-outline-danger" (click)="eliminarFoto()">Eliminar foto</button>
 			</div>
 
 		</section>
 
+		<!-- Información Básica -->
 		<section class="card-seccion">
 
 			<h3>Información Básica</h3>
 			<p class="sub">Tu nombre real visible para la comunidad.</p>
 
 			<div class="grid-2">
+
 				<div class="grupo-form">
-					<label>Nombre(s) *</label>
-					<input type="text" [formField]="editForm.nombre"
-						[class.error-border]="editForm.nombre().touched() && editForm.nombre().invalid()">
+					<label for="campo-nombre">Nombre(s) *</label>
+					<input id="campo-nombre" type="text" [formField]="editForm.nombre"
+						[class.error-border]="editForm.nombre().touched() && editForm.nombre().invalid()"
+						placeholder="Ej. María">
 					@if (editForm.nombre().touched() && editForm.nombre().invalid()) {
-					<span class="error-campo"
-						style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{
-						editForm.nombre().errors()[0].message }}</span>
+						<span class="error-campo" role="alert">
+							{{ editForm.nombre().errors()[0].message }}
+						</span>
 					}
 				</div>
 
 				<div class="grupo-form">
-					<label>Apellidos *</label>
-					<input type="text" [formField]="editForm.apellidos"
-						[class.error-border]="editForm.apellidos().touched() && editForm.apellidos().invalid()">
+					<label for="campo-apellidos">Apellidos *</label>
+					<input id="campo-apellidos" type="text" [formField]="editForm.apellidos"
+						[class.error-border]="editForm.apellidos().touched() && editForm.apellidos().invalid()"
+						placeholder="Ej. García López">
 					@if (editForm.apellidos().touched() && editForm.apellidos().invalid()) {
-					<span class="error-campo"
-						style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{
-						editForm.apellidos().errors()[0].message }}</span>
+						<span class="error-campo" role="alert">
+							{{ editForm.apellidos().errors()[0].message }}
+						</span>
 					}
 				</div>
+
 			</div>
 
 		</section>
 
+		<!-- Comunidad Académica -->
 		<section class="card-seccion">
 
 			<h3>Comunidad Académica</h3>
-			<p class="sub">Gestiona tu afiliación universitaria.</p>
+			<p class="sub">Información de tu afiliación universitaria.</p>
 
 			<div class="grupo-form">
 				<label>Universidad / Institución</label>
 				<input type="text"
-					[value]="perfil()?.correoInstitucional?.toLowerCase()?.includes('utvco') ? 'Universidad Tecnológica de los Valles Centrales de Oaxaca' : ''"
-					disabled>
+					[value]="perfil()?.universidades?.nombre || perfil()?.universidades?.acronimo || 'No registrada'"
+					disabled class="input-readonly">
 			</div>
 
 			<div class="grid-2">
-				<div class="grupo-form">
-					<label>Rol Académico</label>
-					<input type="text" [value]="'Estudiante'" disabled>
-				</div>
 
 				<div class="grupo-form">
-					<label>Año de Graduación (Estimado)</label>
-					<input type="text" [formField]="editForm.anioGraduacion">
+					<label>Rol Académico</label>
+					<input type="text"
+						[value]="perfil()?.roles?.nombre || 'Sin rol asignado'"
+						disabled class="input-readonly">
 				</div>
+
+				<!-- Año de graduación — dropdown dinámico -->
+				<div class="grupo-form">
+					<label for="campo-anio">Año de Graduación (Estimado)</label>
+					<select id="campo-anio" (change)="onAnioChange($event)">
+						<option value="">Selecciona un año</option>
+						@for (anio of aniosGraduacion; track anio) {
+							<option
+								[value]="anio.toString()"
+								[selected]="editModel().anioGraduacion === anio.toString()">
+								{{ anio }}
+							</option>
+						}
+					</select>
+				</div>
+
 			</div>
+
+			<!-- Carrera — selector conectado a Supabase -->
+			<div class="grupo-form">
+				<label for="campo-carrera">Carrera</label>
+				@if (carreras().length === 0) {
+					<select id="campo-carrera" disabled>
+						<option>Cargando carreras…</option>
+					</select>
+				} @else {
+					<select id="campo-carrera" (change)="onCarreraChange($event)">
+						<option value="">Selecciona una carrera</option>
+						@for (c of carreras(); track c.id) {
+							<option [value]="c.id" [selected]="editModel().carreraId === c.id">
+								{{ c.nombre }}
+							</option>
+						}
+					</select>
+				}
+			</div>
+
+			<p class="hint-readonly">
+				La universidad y el rol académico son asignados por el administrador y no pueden modificarse aquí.
+			</p>
 
 		</section>
 
+		<!-- Acciones -->
 		<div class="acciones-finales">
+
+			@if (errorGuardando()) {
+				<p class="error-guardando" role="alert">{{ errorGuardando() }}</p>
+			}
+
 			<button type="button" class="btn-link" (click)="irPerfil()">Cancelar</button>
-			<button type="submit" class="btn-primary" [disabled]="editForm().pending()">
-				Guardar cambios
+
+			<button type="submit" class="btn-primary" [disabled]="guardando()">
+				@if (guardando()) {
+					Guardando…
+				} @else {
+					Guardar cambios
+				}
 			</button>
+
 		</div>
 
 	</form>
 </div>
 
-<app-modal-base *ngIf="mostrarExito()" [ancho]="'420px'" [mostrarCerrar]="false" (closed)="mostrarExito.set(false)">
-
-	<div class="modal-exito">
-		<div class="icono-exito">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M9 12L11 14L15 10" stroke="#135BEC" stroke-width="2" stroke-linecap="round"
-					stroke-linejoin="round" />
-				<circle cx="12" cy="12" r="9" stroke="#135BEC" stroke-width="2" />
-			</svg>
+@if (mostrarExito()) {
+	<app-modal-base [ancho]="'420px'" [mostrarCerrar]="false" (closed)="mostrarExito.set(false)">
+		<div class="modal-exito">
+			<div class="icono-exito">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M9 12L11 14L15 10" stroke="#135BEC" stroke-width="2" stroke-linecap="round"
+						stroke-linejoin="round" />
+					<circle cx="12" cy="12" r="9" stroke="#135BEC" stroke-width="2" />
+				</svg>
+			</div>
+			<h2>¡Cambios Guardados!</h2>
+			<p>Tu información ha sido actualizada con éxito.</p>
+			<div class="divider"></div>
+			<button type="button" class="btn-primary" (click)="irPerfil()">Ir a perfil</button>
 		</div>
-
-		<h2>¡Cambios Guardados!</h2>
-		<p>Tu información ha sido modificada con éxito</p>
-
-		<div class="divider"></div>
-
-		<button type="button" class="btn-primary" (click)="irPerfil()">
-			Ir a perfil
-		</button>
-	</div>
-
-</app-modal-base>
+	</app-modal-base>
+}

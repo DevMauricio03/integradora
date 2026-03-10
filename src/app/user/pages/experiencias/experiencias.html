@@ -10,11 +10,15 @@
 
     <div class="feed-content">
 
-        @if (posts().length === 0) {
-        <div class="empty-state">
-            <app-icon name="briefcase" [size]="48"></app-icon>
-            <p>No hay experiencias compartidas aún. ¡Sé el primero en contar la tuya!</p>
-        </div>
+        @if (isLoading()) {
+            <div class="empty-state">
+                <p>Cargando experiencias…</p>
+            </div>
+        } @else if (posts().length === 0) {
+            <div class="empty-state">
+                <app-icon name="briefcase" [size]="48"></app-icon>
+                <p>No hay experiencias compartidas aún. ¡Sé el primero en contar la tuya!</p>
+            </div>
         }
 
         <section class="feed-list">

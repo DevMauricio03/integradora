@@ -8,6 +8,16 @@ import { AdminUserService } from '../../services/adminUser.service';
 import { PublicationService } from '../../../core/services/publication.service';
 import { AuthService } from '../../../core/services/auth.service';
 
+type SuspensionDuration = '1_day' | '7_days' | '30_days' | 'permanent';
+
+/** Duration options shown in the suspension selector */
+const DURATION_OPTIONS: { value: SuspensionDuration; label: string }[] = [
+    { value: '1_day',    label: '1 día' },
+    { value: '7_days',   label: '7 días' },
+    { value: '30_days',  label: '30 días' },
+    { value: 'permanent', label: 'Permanente' },
+];
+
 @Component({
     selector: 'app-usuario-detalle-modal',
     standalone: true,
@@ -28,6 +38,11 @@ export class UsuarioDetalleModal implements OnInit {
     roles = signal<{ id: string; nombre: string }[]>([]);
     isEditingRole = signal(false);
     isProcessing = signal(false);
+
+    // Suspension duration selector
+    readonly durationOptions = DURATION_OPTIONS;
+    selectedDuration = signal<SuspensionDuration>('7_days');
+    mostrarSelectorDuracion = signal(false);
 
     // Estados para alertas y confirmaciones
     mostrarConfirmacion = signal(false);
@@ -128,6 +143,7 @@ export class UsuarioDetalleModal implements OnInit {
     }
 
     prepararRestablecerContrasena() {
+        this.mostrarSelectorDuracion.set(false);
         this.confirmacionConfig.set({
             titulo: 'Restablecer contraseña',
             textoBoton: 'Enviar correo',
@@ -148,40 +164,80 @@ export class UsuarioDetalleModal implements OnInit {
         this.mostrarConfirmacion.set(true);
     }
 
-    prepararSuspenderCuenta() {
-        const esSuspender = this.usuario.estado !== 'suspendido';
-        this.confirmacionConfig.set({
-            titulo: esSuspender ? 'Suspender cuenta' : 'Activar cuenta',
-            textoBoton: esSuspender ? 'Sí, suspender' : 'Sí, activar',
-            mensaje: esSuspender
-                ? '¿Suspender esta cuenta por 7 días? El usuario no podrá acceder durante ese periodo. Usa la sección de Reportes para suspensiones más largas.'
-                : '¿Activar nuevamente esta cuenta para permitir el acceso?',
-            tipo: esSuspender ? 'danger' : 'info',
-            accion: async () => {
-                this.isProcessing.set(true);
-                // Suspender siempre con fecha de expiración (nunca updateUserStatus directamente).
-                // Desde el modal de usuario: 7 días por defecto.
-                // Para suspensiones más largas, usar el flujo de Reportes.
-                const { error } = esSuspender
-                    ? await this.adminUserService.suspendUser(this.usuario.id, 24 * 7)
-                    : await this.adminUserService.unsuspendUser(this.usuario.id);
+    /** Returns true if the user is actively suspended: estado = 'suspendido' AND fecha_suspension > now(). */
+    get esSuspendido(): boolean {
+        if (this.usuario?.estado !== 'suspendido') return false;
+        if (!this.usuario?.fecha_suspension) return false;
+        return new Date(this.usuario.fecha_suspension) > new Date();
+    }
 
-                if (error) {
-                    this.mostrarFeedback('Error al actualizar el estado: ' + error.message, 'error');
-                } else {
-                    const nuevoEstado = esSuspender ? 'suspendido' : 'activo';
-                    this.mostrarFeedback(esSuspender ? 'Cuenta suspendida por 7 días.' : 'Cuenta activada con éxito.', 'success');
-                    this.usuario.estado = nuevoEstado;
-                    this.refresh.emit();
+    prepararSuspenderCuenta() {
+        if (this.esSuspendido) {
+            // Reactivation flow — no duration needed
+            this.mostrarSelectorDuracion.set(false);
+            this.confirmacionConfig.set({
+                titulo: 'Activar cuenta',
+                textoBoton: 'Sí, activar',
+                mensaje: '¿Activar nuevamente esta cuenta para permitir el acceso?',
+                tipo: 'info',
+                accion: async () => {
+                    this.isProcessing.set(true);
+                    const { error } = await this.adminUserService.unsuspendUserRpc(this.usuario.id);
+                    if (error) {
+                        this.mostrarFeedback('Error al activar la cuenta: ' + (error as any).message, 'error');
+                    } else {
+                        this.usuario.estado = 'activo';
+                        this.usuario.fecha_suspension = null;
+                        this.mostrarFeedback('Cuenta activada con éxito.', 'success');
+                        this.refresh.emit();
+                    }
+                    this.isProcessing.set(false);
+                    this.mostrarConfirmacion.set(false);
                 }
-                this.isProcessing.set(false);
-                this.mostrarConfirmacion.set(false);
-            }
-        });
+            });
+        } else {
+            // Suspension flow — show duration selector
+            this.selectedDuration.set('7_days');
+            this.mostrarSelectorDuracion.set(true);
+            this.confirmacionConfig.set({
+                titulo: 'Suspender cuenta',
+                textoBoton: 'Sí, suspender',
+                mensaje: `¿Suspender la cuenta de ${this.usuario.nombre} ${this.usuario.apellidos}? El usuario no podrá acceder durante el periodo seleccionado.`,
+                tipo: 'danger',
+                accion: async () => {
+                    this.isProcessing.set(true);
+                    const duration = this.selectedDuration();
+                    const { error } = await this.adminUserService.suspendUserRpc(this.usuario.id, duration);
+                    if (error) {
+                        this.mostrarFeedback('Error al suspender la cuenta: ' + (error as any).message, 'error');
+                    } else {
+                        this.usuario.estado = 'suspendido';
+                        this.usuario.fecha_suspension = this.computeSuspensionEnd(duration);
+                        const label = DURATION_OPTIONS.find(o => o.value === duration)?.label ?? duration;
+                        this.mostrarFeedback(`Cuenta suspendida por ${label}.`, 'success');
+                        this.refresh.emit();
+                    }
+                    this.isProcessing.set(false);
+                    this.mostrarConfirmacion.set(false);
+                }
+            });
+        }
         this.mostrarConfirmacion.set(true);
+    }
+
+    /** Compute optimistic fecha_suspension after a successful suspension. Matches the SQL values. */
+    private computeSuspensionEnd(duration: SuspensionDuration): string {
+        if (duration === 'permanent') return '9999-12-31T23:59:59.000Z';
+        const ms: Record<string, number> = {
+            '1_day':   86400000,
+            '7_days':  7 * 86400000,
+            '30_days': 30 * 86400000,
+        };
+        return new Date(Date.now() + (ms[duration] ?? 0)).toISOString();
     }
 
     ejecutarConfirmacion() {
         this.confirmacionConfig().accion();
     }
 }
+

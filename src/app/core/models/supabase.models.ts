@@ -7,20 +7,15 @@ export interface Perfil {
     universidad_id?: string;
     carrera_id?: string | null;
     foto_url?: string | null;
-    foto_perfil?: string | null;
+    anio_graduacion?: number | null;
     creado?: string;
+    actualizado?: string;
     estado?: string;
+    /** Expiry timestamp of an active suspension. Null = not suspended. Past date = suspension expired (treated as active). */
     fecha_suspension?: string | null;
-    anioGraduacion?: string;
-    roles?: {
-        nombre: string;
-    } | { nombre: string }[];
-    universidades?: {
-        acronimo: string;
-    } | { acronimo: string }[];
-    carrera?: {
-        nombre: string;
-    };
+    roles?: { nombre: string } | { nombre: string }[];
+    universidades?: { nombre: string; acronimo: string } | { nombre: string; acronimo: string }[];
+    carrera?: { nombre: string; id: string } | null;
 }
 
 export interface Universidad {

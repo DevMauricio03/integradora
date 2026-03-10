@@ -194,6 +194,52 @@ export class PostStoreService {
     this._feedPosts.set([]);
   }
 
+  /**
+   * Carga todos los posts de un tipo específico sin tocar el store paginado.
+   * La query va directa a la VIEW con filtro de tipo; si la VIEW no existe
+   * hace fallback a publicationService y filtra en TypeScript.
+   *
+   * Uso: `Experiencias`, cualquier vista filtrada por tipo.
+   */
+  async getPostsByTipo(tipo: string): Promise<Post[]> {
+    const { data, error } = await this.feedViewService.getFeedPostsByTipo(tipo);
+
+    if (!error && data !== null) {
+      return data.map(row => this.mapFeedPost(row));
+    }
+
+    // Fallback: query directa, filtramos en TS
+    console.warn('[PostStore] getPostsByTipo: VIEW no disponible, usando fallback para tipo:', tipo);
+    const { data: pubData } = await this.publicationService.getPosts();
+    return pubData
+      ? pubData
+          .filter((p: any) => p.tipo?.toLowerCase() === tipo.toLowerCase())
+          .map(p => this.mapLegacyPost(p as any))
+      : [];
+  }
+
+  /**
+   * Carga todos los avisos oficiales sin tocar el store paginado.
+   * La query filtra por fuente = 'anuncio' en la VIEW; si la VIEW no existe
+   * hace fallback a anuncioService.
+   *
+   * Uso: página `AvisosOficiales`.
+   */
+  async getAvisosOficiales(): Promise<Post[]> {
+    const { data, error } = await this.feedViewService.getFeedAnuncios();
+
+    if (!error && data !== null) {
+      return data.map(row => this.mapFeedPost(row));
+    }
+
+    // Fallback: anuncios directamente
+    console.warn('[PostStore] getAvisosOficiales: VIEW no disponible, usando fallback');
+    const { data: anunciosData } = await this.anuncioService.getAnuncios();
+    return anunciosData
+      ? anunciosData.map(a => this.mapLegacyAnuncio(a as any))
+      : [];
+  }
+
   // ── Internos ──────────────────────────────────────────────────
 
   /**

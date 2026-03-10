@@ -14,10 +14,24 @@ export class AdminUserService {
   getAllUsers(search?: string) { return this.profileService.getAllUsers({ searchTerm: search }); }
   getRecentUsers(limit = 5) { return this.profileService.getRecentUsers(limit); }
   updateUserRole(userId: string, roleId: string) { return this.profileService.updateUserRole(userId, roleId); }
-  /** Suspender con fecha de expiración. hours = null → largo plazo (año 2099). */
-  suspendUser(userId: string, hours: number | null) { return this.profileService.suspendUser(userId, hours); }
-  /** Reactivar cuenta y limpiar fecha_suspension. */
-  unsuspendUser(userId: string) { return this.profileService.unsuspendUser(userId); }
+
+  /**
+   * Suspend a user via secure server-side RPC.
+   * All validation (admin role, self-suspension guard) happens in the DB function.
+   *
+   * @param duration '1_day' | '7_days' | '30_days' | 'permanent'
+   */
+  suspendUserRpc(userId: string, duration: '1_day' | '7_days' | '30_days' | 'permanent') {
+    return this.profileService.suspendUserRpc(userId, duration);
+  }
+
+  /**
+   * Reactivate a user via secure server-side RPC.
+   * All validation (admin role) happens in the DB function.
+   */
+  unsuspendUserRpc(userId: string) {
+    return this.profileService.unsuspendUserRpc(userId);
+  }
 
   getUniversidades() { return this.catalogService.getUniversidades(); }
   getRoles() { return this.catalogService.getRoles(); }

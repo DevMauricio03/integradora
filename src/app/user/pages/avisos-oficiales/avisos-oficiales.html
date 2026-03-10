@@ -10,11 +10,15 @@
 
     <div class="feed-content">
 
-        @if (posts().length === 0) {
-        <div class="empty-state">
-            <app-icon name="bell" [size]="48"></app-icon>
-            <p>No hay avisos oficiales aún. ¡Revisa más tarde!</p>
-        </div>
+        @if (isLoading()) {
+            <div class="empty-state">
+                <p>Cargando avisos…</p>
+            </div>
+        } @else if (posts().length === 0) {
+            <div class="empty-state">
+                <app-icon name="bell" [size]="48"></app-icon>
+                <p>No hay avisos oficiales aún. ¡Revisa más tarde!</p>
+            </div>
         }
 
         <section class="feed-list">
