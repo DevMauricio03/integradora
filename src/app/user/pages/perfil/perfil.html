@@ -2,23 +2,23 @@
 
 	<!-- Header del perfil -->
 	<section class="perfil-header">
-		<div class="perfil-info">
-			<div class="avatar">
-				<img [src]="perfil?.foto_url || defaultAvatarUrl"
-					(error)="onAvatarError($event)" alt="avatar">
-			</div>
+		<div class="avatar">
+			<img [src]="perfil?.foto_url || defaultAvatarUrl"
+				(error)="onAvatarError($event)" alt="avatar">
+		</div>
 
-			<div class="datos">
-				<h1>{{ (perfil?.nombre || 'Usuario') + ' ' + (perfil?.apellidos || '') }}</h1>
+		<div class="datos">
+			<h1>{{ (perfil?.nombre || 'Usuario') + ' ' + (perfil?.apellidos || '') }}</h1>
 
-				<div class="meta">
-					<span class="badge-rol">{{ perfil?.roles?.nombre || 'Sin rol' }}</span>
-					@if (perfil?.universidades?.acronimo) {
-						<span class="universidad">{{ perfil?.universidades?.acronimo }}</span>
-					}
-					<span class="correo-meta">{{ perfil?.correoInstitucional || '' }}</span>
-				</div>
-			</div>
+			<p class="rol-universidad">
+				<span>{{ perfil?.roles?.nombre || 'Sin rol' }}</span>
+				<span class="meta-separador">•</span>
+				<span>{{ perfil?.universidades?.acronimo || 'UTVCO' }}</span>
+			</p>
+
+			<p class="dato-linea">{{ perfil?.correoInstitucional || '—' }}</p>
+			<p class="dato-linea">{{ perfil?.carrera?.nombre || '—' }}</p>
+			<p class="dato-linea dato-linea-graduacion">Graduación {{ perfil?.anio_graduacion || '—' }}</p>
 		</div>
 
 		<button class="btn-secundario" routerLink="/user/perfil/editar">
@@ -29,57 +29,6 @@
 			</svg>
 			Editar perfil
 		</button>
-	</section>
-
-	<!-- Información del perfil -->
-	<section class="perfil-info-detalle">
-
-		<div class="info-card">
-			<h4 class="info-card-titulo">Información Básica</h4>
-			<div class="info-grid">
-				<div class="info-item">
-					<span class="info-label">Nombre(s)</span>
-					<span class="info-valor">{{ perfil?.nombre || '—' }}</span>
-				</div>
-				<div class="info-item">
-					<span class="info-label">Apellidos</span>
-					<span class="info-valor">{{ perfil?.apellidos || '—' }}</span>
-				</div>
-				<div class="info-item">
-					<span class="info-label">Correo institucional</span>
-					<span class="info-valor">{{ perfil?.correoInstitucional || '—' }}</span>
-				</div>
-			</div>
-		</div>
-
-		<div class="info-card">
-			<h4 class="info-card-titulo">Comunidad Académica</h4>
-			<div class="info-grid">
-				<div class="info-item">
-					<span class="info-label">Universidad</span>
-					<span class="info-valor">
-						{{ perfil?.universidades?.nombre || perfil?.universidades?.acronimo || '—' }}
-					</span>
-				</div>
-				<div class="info-item">
-					<span class="info-label">Rol académico</span>
-					<span class="info-valor">{{ perfil?.roles?.nombre || '—' }}</span>
-				</div>
-				@if (perfil?.carrera?.nombre) {
-					<div class="info-item">
-						<span class="info-label">Carrera</span>
-						<span class="info-valor">{{ perfil?.carrera?.nombre }}</span>
-					</div>
-				}
-				@if (perfil?.anio_graduacion) {
-					<div class="info-item">
-						<span class="info-label">Año de graduación estimado</span>
-						<span class="info-valor">{{ perfil?.anio_graduacion }}</span>
-					</div>
-				}
-			</div>
-		</div>
-
 	</section>
 
 	<!-- Feed de publicaciones -->
