@@ -240,6 +240,11 @@ export class PostStoreService {
       : [];
   }
 
+  /** Feed_posts VIEW row → Post (datos ya joinados en BD) — public for external usage */
+  mapFeedPostPublic(row: FeedPost): Post {
+    return this.mapFeedPost(row);
+  }
+
   // ── Internos ──────────────────────────────────────────────────
 
   /**

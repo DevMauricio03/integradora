@@ -182,6 +182,13 @@
     </div>
     }
 
+    @if (badge?.toLowerCase() === 'experiencia') {
+    <a [routerLink]="['/user/experiencias', id]" class="footer-btn ver-experiencia">
+      <app-icon name="briefcase" [size]="18"></app-icon>
+      <span>Ver experiencia completa</span>
+    </a>
+    }
+
     <button type="button" class="footer-btn share">
       <app-icon name="plus" [size]="18" style="transform: rotate(45deg);"></app-icon>
       <span>Compartir</span>

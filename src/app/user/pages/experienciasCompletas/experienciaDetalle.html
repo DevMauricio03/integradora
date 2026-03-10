@@ -1,47 +1,88 @@
 <app-navbar title="Exp. Empresarial"></app-navbar>
 <div class="detalle-layout">
-  <button class="btn-volver" (click)="volver()">&larr; Volver</button>
+
+  <button class="btn-volver" (click)="volver()">
+    <app-icon name="arrow-left" [size]="16"></app-icon>
+    Volver
+  </button>
+
+  @if (isLoading()) {
+  <div class="loading-state">
+    <app-icon name="refresh-cw" [size]="24"></app-icon>
+    <p>Cargando experiencia…</p>
+  </div>
+  } @else if (error()) {
+  <div class="error-state">
+    <app-icon name="alert-triangle" [size]="24"></app-icon>
+    <p>{{ error() }}</p>
+    <button class="btn-volver-link" (click)="volver()">Volver a Experiencias</button>
+  </div>
+  } @else if (post(); as p) {
+
   <div class="banner-warning">
     <svg width="20" height="20" fill="none"><circle cx="10" cy="10" r="10" fill="#FDE68A"/><path d="M10 6v4m0 4h.01" stroke="#F59E1B" stroke-width="2" stroke-linecap="round"/></svg>
     <span>Esta experiencia refleja únicamente la opinión personal del estudiante.</span>
   </div>
+
   <div class="card-exp card-exp-detalle">
     <div class="exp-header">
-      <img class="exp-avatar" src="https://i.imgur.com/0y0y0y0.png" alt="avatar">
+      @if (p.avatar) {
+      <img class="exp-avatar" [src]="p.avatar" [alt]="p.author">
+      } @else {
+      <div class="exp-avatar exp-avatar-placeholder">{{ getAutorIniciales() }}</div>
+      }
       <div class="exp-user">
-        <div class="exp-nombre">Tu Usuario</div>
-        <div class="exp-rol">Estudiante • Ahora</div>
+        <div class="exp-nombre">{{ p.author }}</div>
+        <div class="exp-rol">{{ p.role }} · {{ p.time }}</div>
       </div>
       <span class="badge-exp">EXP. EMPRESARIAL</span>
     </div>
+
+    @if (p.details?.company) {
     <div class="exp-empresa">
       <svg class="exp-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
         <rect x="2" y="3" width="20" height="14" rx="2" stroke="#fff" stroke-width="2"/>
         <path d="M8 21H16M12 17V21" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
       </svg>
       <div class="exp-info">
-        <div class="exp-empresa-nombre">Tech Solutions Global</div>
-        <div class="exp-area">Área: Desarrollo de Software</div>
+        <div class="exp-empresa-nombre">{{ p.details.company }}</div>
+        @if (p.details.area) {
+        <div class="exp-area">Área: {{ p.details.area }}</div>
+        }
       </div>
-      <div class="exp-periodo">Enero 2024 - Junio 2024</div>
+      @if (p.details.period) {
+      <div class="exp-periodo">{{ p.details.period }}</div>
+      }
     </div>
-    <div class="exp-texto exp-texto-detalle">
-      Mi experiencia en Tech Solutions Global fue sumamente enriquecedora. Durante estos seis meses, tuve la oportunidad de integrarme al equipo de desarrollo backend, donde trabajé principalmente con arquitecturas de microservicios.
-      Lo que más destaco de la empresa es su cultura de mentoría. Siempre hubo disposición por parte de los desarrolladores senior para resolver dudas y guiarme en las mejores prácticas de codificación. Participé activamente en los sprints y en la implementación de una nueva funcionalidad para el módulo de pagos, lo que me permitió aplicar mis conocimientos universitarios en un entorno real y de alta exigencia.
-      Los desafíos técnicos fueron constantes, pero el ambiente colaborativo facilitó mucho el proceso de aprendizaje. Es un excelente lugar para iniciar una carrera profesional si buscas un entorno dinámico y tecnológico.
+    }
+
+    <h2 class="exp-titulo">{{ p.title }}</h2>
+
+    <div class="exp-texto exp-texto-detalle">{{ p.description }}</div>
+
+    @if (p.details?.recommendation) {
+    <div class="exp-recomendacion">
+      <app-icon name="check-circle" [size]="16"></app-icon>
+      <span>{{ p.details.recommendation === 'si' ? 'Recomienda esta empresa' : 'No recomienda esta empresa' }}</span>
     </div>
+    }
+
     <div class="exp-footer">
       <div class="exp-acciones">
-        <button class="exp-btn">Reportar</button>
-        <button class="exp-btn">Compartir</button>
+        <button class="exp-btn" type="button">
+          <app-icon name="flag" [size]="14"></app-icon>
+          Reportar
+        </button>
+        <button class="exp-btn" type="button">
+          <app-icon name="plus" [size]="14" style="transform: rotate(45deg);"></app-icon>
+          Compartir
+        </button>
       </div>
     </div>
   </div>
-  <div class="comentarios-box">
-    <div class="comentarios-header">COMENTARIOS</div>
-    <input class="comentarios-input" placeholder="Escribe una pregunta sobre esta experiencia...">
-    <div class="comentarios-legal">
-      Al comentar, aceptas las Normas de la Comunidad de Tuunka.
-    </div>
-  </div>
+
+  <app-comentarios [publicacionId]="p.id"></app-comentarios>
+
+  }
+
 </div>
