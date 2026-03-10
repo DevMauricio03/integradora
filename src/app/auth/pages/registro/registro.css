@@ -145,6 +145,109 @@
   padding: 0 44px;
 }
 
+.contenedor-carrera-dropdown {
+  position: relative;
+}
+
+.input-carrera-display {
+  cursor: pointer;
+}
+
+.input-carrera-control {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.contenedor-carrera-dropdown.abierto .input-carrera-display {
+  border-color: var(--primary);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(19, 91, 236, 0.08);
+}
+
+.contenedor-carrera-dropdown .icono-dropdown {
+  transition: transform 0.2s ease;
+}
+
+.contenedor-carrera-dropdown.abierto .icono-dropdown {
+  transform: rotate(180deg);
+}
+
+.menu-carrera {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: min(100%, 520px);
+  max-height: 320px;
+  z-index: 50;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  box-shadow:
+    0px 16px 30px -20px rgba(2, 6, 23, 0.35),
+    0px 10px 18px -14px rgba(2, 6, 23, 0.3);
+  padding: 8px;
+}
+
+.lista-carreras-menu {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.lista-carreras-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.lista-carreras-menu::-webkit-scrollbar-thumb {
+  background: #D7DCE5;
+  border-radius: 99px;
+}
+
+.lista-carreras-menu li {
+  margin: 0;
+}
+
+.opcion-carrera {
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  padding: 11px 12px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.35;
+  font-family: 'Lexend', sans-serif;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.opcion-carrera:hover {
+  background: #F3F4F6;
+}
+
+.opcion-carrera:focus-visible {
+  outline: none;
+  background: #EEF2FF;
+}
+
+.opcion-carrera.seleccionada {
+  background: rgba(19, 91, 236, 0.1);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.sin-resultados-carreras {
+  padding: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
 /* CONTENEDOR CONTRASEÑA CON OJO */
 .contenedor-password {
   position: relative;
@@ -378,6 +481,10 @@
 
   .lista-requisitos {
     grid-template-columns: 1fr;
+  }
+
+  .menu-carrera {
+    width: 100%;
   }
 
 }

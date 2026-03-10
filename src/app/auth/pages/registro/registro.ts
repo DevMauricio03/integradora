@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed, ElementRef, HostListener } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Navbar } from "../../../shared/components/navbar/navbar";
@@ -103,6 +103,18 @@ export class RegistroPage implements OnInit {
   universidades = signal<{ id: string; nombre: string; acronimo: string }[]>([]);
   carreras = signal<{ id: string; nombre: string }[]>([]);
 
+  carreraDropdownAbierto = signal(false);
+  carreraBusqueda = signal('');
+
+  carrerasFiltradas = computed(() => {
+    const termino = this.carreraBusqueda().trim().toLowerCase();
+    if (!termino) return this.carreras();
+
+    return this.carreras().filter(carrera =>
+      carrera.nombre.toLowerCase().includes(termino)
+    );
+  });
+
   universidadId = signal('');
   carreraId = signal('');
 
@@ -116,6 +128,7 @@ export class RegistroPage implements OnInit {
 
   private readonly supabaseService = inject(SupabaseService);
   private readonly router = inject(Router);
+  private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
 
   ngOnInit() {
     this.loadData();
@@ -180,6 +193,62 @@ export class RegistroPage implements OnInit {
     const texto = this.registerModel().carrera.toLowerCase();
     const encontrada = this.carreras().find(c => c.nombre.toLowerCase() === texto);
     this.carreraId.set(encontrada ? encontrada.id : '');
+  }
+
+  onCarreraTriggerKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.registroForm.carrera().markAsTouched();
+      this.abrirCarreraDropdown();
+    }
+
+    if (event.key === 'Escape') {
+      this.cerrarCarreraDropdown();
+    }
+  }
+
+  onCarreraDisplayInput(event: Event) {
+    const texto = (event.target as HTMLInputElement).value;
+    this.registroForm.carrera().markAsTouched();
+    this.carreraDropdownAbierto.set(true);
+    this.carreraBusqueda.set(texto);
+  }
+
+  seleccionarCarrera(carrera: { id: string; nombre: string }) {
+    this.registroForm.carrera().markAsTouched();
+    this.registerModel.update(model => ({ ...model, carrera: carrera.nombre }));
+    this.carreraId.set(carrera.id);
+    this.cerrarCarreraDropdown();
+  }
+
+  abrirCarreraDropdown() {
+    this.registroForm.carrera().markAsTouched();
+    this.carreraDropdownAbierto.set(true);
+    this.carreraBusqueda.set('');
+  }
+
+  cerrarCarreraDropdown() {
+    this.carreraDropdownAbierto.set(false);
+    this.carreraBusqueda.set('');
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.carreraDropdownAbierto()) return;
+
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+
+    if (!this.hostElement.nativeElement.contains(target)) {
+      this.cerrarCarreraDropdown();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    if (this.carreraDropdownAbierto()) {
+      this.cerrarCarreraDropdown();
+    }
   }
 
   /**
