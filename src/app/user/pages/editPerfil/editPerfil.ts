@@ -29,10 +29,12 @@ interface EditPerfilModel {
 })
 export class EditarPerfilPage implements OnInit {
   // ── Signals de UI ────────────────────────────────────────────────────────────
-  readonly mostrarExito = signal(false);
-  readonly guardando    = signal(false);
-  readonly perfil       = signal<any>(null);
-  readonly carreras     = signal<Carrera[]>([]);
+  readonly mostrarExito   = signal(false);
+  readonly guardando      = signal(false);
+  readonly subiendoFoto   = signal(false);
+  readonly errorFoto      = signal<string | null>(null);
+  readonly perfil         = signal<any>(null);
+  readonly carreras       = signal<Carrera[]>([]);
   readonly errorGuardando = signal<string | null>(null);
 
   readonly defaultAvatarUrl =
@@ -147,19 +149,37 @@ export class EditarPerfilPage implements OnInit {
   async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file  = input.files?.[0];
+    // Reset input so the same file can be selected again if needed
+    input.value = '';
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert('La imagen debe pesar menos de 2 MB');
+    const MAX_SIZE_MB = 5;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      this.errorFoto.set(`La imagen debe pesar menos de ${MAX_SIZE_MB} MB`);
       return;
     }
 
+    this.errorFoto.set(null);
+    this.subiendoFoto.set(true);
+
+    // Show an instant local preview while the upload is in progress
+    // (same FileReader pattern used in the post image flow)
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.perfil.update(p => ({ ...p, foto_url: reader.result as string }));
+    };
+    reader.readAsDataURL(file);
+
     try {
       const url = await this.supabaseService.subirAvatar(file);
+      // Replace the local blob preview with the persisted remote URL
       this.perfil.update(p => ({ ...p, foto_url: url }));
       this.authStore.invalidatePerfil();
     } catch (err) {
       console.error('[EditarPerfil] Error subiendo avatar:', err);
+      this.errorFoto.set('No se pudo subir la foto. Inténtalo de nuevo.');
+    } finally {
+      this.subiendoFoto.set(false);
     }
   }
 

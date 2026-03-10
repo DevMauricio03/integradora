@@ -17,11 +17,15 @@ export class StorageService {
         const user = await this.auth.getCachedUser();
         if (!user) throw new Error('Usuario no autenticado');
 
-        const fileName = `avatars/${user.id}-${Date.now()}.jpg`;
+        // Preserve real extension (same strategy as post images) so Supabase
+        // can infer the correct Content-Type. Fallback to 'jpg' is safe because
+        // 'image/jpeg' is the most common camera output on mobile.
+        const rawExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileName = `avatars/${user.id}-${Date.now()}.${rawExt}`;
 
         const { error: uploadError } = await this.db.storage
             .from('avatars')
-            .upload(fileName, file);
+            .upload(fileName, file, { contentType: file.type });
 
         if (uploadError) throw uploadError;
 
