@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { PostStoreService, Post } from '../../../core/services/post-store.service';
 import { PostCardComponent } from "../../../shared/components/Post-card/post-card/post-card";
 import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { PostSkeletonComponent } from '../../../shared/components/post-skeleton/post-skeleton.component';
 
 @Component({
     selector: 'app-avisos-oficiales',
     standalone: true,
-    imports: [CommonModule, PostCardComponent, IconComponent],
+    imports: [CommonModule, PostCardComponent, IconComponent, PostSkeletonComponent],
     templateUrl: './avisos-oficiales.html',
     styleUrls: ['./avisos-oficiales.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,

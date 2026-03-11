@@ -59,6 +59,18 @@ export class ComentarioService {
     }
 
     /**
+     * Eliminar un comentario propio.
+     * La política RLS garantiza que solo el autor (o admin) puede borrar.
+     */
+    async deleteComentario(id: string): Promise<{ error: any }> {
+        const { error } = await this.db
+            .from('comentarios')
+            .delete()
+            .eq('id', id);
+        return { error };
+    }
+
+    /**
      * Publicar un comentario nuevo.
      * Devuelve el comentario recién creado (con datos de perfil) para
      * mostrarlo inmediatamente sin recargar la lista.

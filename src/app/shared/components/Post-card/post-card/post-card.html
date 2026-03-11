@@ -171,17 +171,24 @@
     @if (!isPreview) {
     <div class="footer-left">
       @if (!showControls && badge?.toLowerCase() !== 'aviso oficial') {
-      <button type="button" class="footer-btn report" (click)="notifyReport()">
-        <app-icon name="flag" [size]="18"></app-icon>
-        <span>Reportar</span>
-      </button>
+        @if (isAuthor) {
+        <button type="button" class="footer-btn delete" (click)="notifyDelete()">
+          <app-icon name="ban" [size]="18"></app-icon>
+          <span>Eliminar</span>
+        </button>
+        } @else {
+        <button type="button" class="footer-btn report" (click)="notifyReport()">
+          <app-icon name="flag" [size]="18"></app-icon>
+          <span>Reportar</span>
+        </button>
+        }
       } @else if (showControls) {
       <div class="management-btns">
         <button type="button" class="footer-btn edit">
           <app-icon name="settings" [size]="18"></app-icon>
           <span>Editar</span>
         </button>
-        <button type="button" class="footer-btn delete">
+        <button type="button" class="footer-btn delete" (click)="notifyDelete()">
           <app-icon name="ban" [size]="18"></app-icon>
           <span>Eliminar</span>
         </button>

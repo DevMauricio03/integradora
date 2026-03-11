@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  HostListener,
   Input,
   OnInit,
   inject,
@@ -14,13 +15,16 @@ import {
   Comentario,
   COMENTARIO_PAGE_SIZE,
 } from '../../../core/services/comentario.service';
+import { AuthStoreService } from '../../../core/services/auth-store.service';
+import { ReportService } from '../../../core/services/report.service';
+import { ReportModalComponent } from '../../../shared/components/report-modal/report-modal';
 
-const MAX_LENGTH = 1000;
+const MAX_WORDS = 50;
 
 @Component({
   selector: 'app-comentarios',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReportModalComponent],
   templateUrl: './comentarios.html',
   styleUrls: ['./comentarios.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,29 +35,57 @@ export class Comentarios implements OnInit {
   /** ID del post — requerido para cargar y publicar comentarios */
   @Input() postId = '';
 
-  private readonly svc = inject(ComentarioService);
-  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly svc       = inject(ComentarioService);
+  private readonly authStore = inject(AuthStoreService);
+  private readonly reportSvc = inject(ReportService);
+  private readonly cdr       = inject(ChangeDetectorRef);
 
-  readonly MAX_LENGTH = MAX_LENGTH;
+  readonly MAX_WORDS = MAX_WORDS;
 
   // ── Estado ────────────────────────────────────────────────────
-  readonly comentarios   = signal<Comentario[]>([]);
-  readonly isLoading     = signal(false);
-  readonly isLoadingMore = signal(false);
-  readonly isPublishing  = signal(false);
-  readonly hasMore       = signal(false);
-  readonly commentText   = signal('');
-  readonly errorPublish  = signal<string | null>(null);
+  readonly comentarios    = signal<Comentario[]>([]);
+  readonly isLoading      = signal(false);
+  readonly isLoadingMore  = signal(false);
+  readonly isPublishing   = signal(false);
+  readonly hasMore        = signal(false);
+  readonly commentText    = signal('');
+  readonly errorPublish   = signal<string | null>(null);
 
-  /** Cuántos comentarios ya fueron cargados (base del próximo offset). */
+  /** ID del usuario autenticado (para saber si es autor de un comentario) */
+  readonly currentUserId  = signal<string | null>(null);
+  readonly isAdmin        = signal(false);
+
+  /** ID del comentario cuyo menú ⋯ está abierto */
+  readonly openMenuId     = signal<string | null>(null);
+
+  /** Control del modal de reporte de comentario */
+  readonly showReportModal    = signal(false);
+  readonly reportingComment   = signal<Comentario | null>(null);
+
   private offset = 0;
 
-  readonly charsLeft = computed(() => MAX_LENGTH - this.commentText().length);
+  // ── Conteo de palabras ────────────────────────────────────────
+  readonly wordCount = computed(() => {
+    const t = this.commentText().trim();
+    return t ? t.split(/\s+/).length : 0;
+  });
+
+  readonly wordsLeft = computed(() => MAX_WORDS - this.wordCount());
+
+  readonly isOverLimit = computed(() => this.wordCount() > MAX_WORDS);
 
   // ── Ciclo de vida ─────────────────────────────────────────────
-  ngOnInit() {
+  async ngOnInit() {
+    const perfil = await this.authStore.getPerfilActual();
+    if (perfil) {
+      this.currentUserId.set(perfil.id);
+      const roles: any = perfil.roles;
+      const roleName = Array.isArray(roles) ? roles[0]?.nombre : roles?.nombre;
+      this.isAdmin.set(!!roleName?.toLowerCase().includes('admin'));
+    }
+
     if (!this.disabled && this.postId) {
-      this.loadPage(0, /* initial */ true);
+      this.loadPage(0, true);
     }
   }
 
@@ -74,10 +106,7 @@ export class Comentarios implements OnInit {
         return;
       }
 
-      this.comentarios.update(prev =>
-        initial ? data : [...prev, ...data],
-      );
-
+      this.comentarios.update(prev => initial ? data : [...prev, ...data]);
       this.offset = offset + data.length;
       this.hasMore.set(data.length === COMENTARIO_PAGE_SIZE);
     } finally {
@@ -99,7 +128,10 @@ export class Comentarios implements OnInit {
 
     const text = this.commentText().trim();
     if (!text) return;
-    if (text.length > MAX_LENGTH) return;
+    if (this.isOverLimit()) {
+      this.errorPublish.set(`El comentario no puede superar ${MAX_WORDS} palabras.`);
+      return;
+    }
 
     this.errorPublish.set(null);
     this.isPublishing.set(true);
@@ -112,7 +144,6 @@ export class Comentarios implements OnInit {
         return;
       }
 
-      // Inserción optimista: el nuevo comentario va al inicio (más reciente)
       this.comentarios.update(prev => [data, ...prev]);
       this.offset += 1;
       this.commentText.set('');
@@ -122,17 +153,81 @@ export class Comentarios implements OnInit {
     }
   }
 
+  // ── Eliminar ──────────────────────────────────────────────────
+
+  async deleteComment(id: string) {
+    this.closeMenu();
+    const { error } = await this.svc.deleteComentario(id);
+    if (!error) {
+      this.comentarios.update(prev => prev.filter(c => c.id !== id));
+      this.offset = Math.max(0, this.offset - 1);
+      this.cdr.markForCheck();
+    } else {
+      console.error('[Comentarios] Error al eliminar:', error);
+    }
+  }
+
+  // ── Reportar comentario ───────────────────────────────────────
+
+  openCommentReport(c: Comentario) {
+    this.closeMenu();
+    this.reportingComment.set(c);
+    this.showReportModal.set(true);
+  }
+
+  async handleCommentReport(event: { reason: string; details: string }) {
+    const comentario = this.reportingComment();
+    if (!comentario) return;
+
+    const perfil = await this.authStore.getPerfilActual();
+    if (!perfil) return;
+
+    await this.reportSvc.createReport({
+      publicacion_id: this.postId,
+      autor_id:       comentario.autor_id,
+      informante_id:  perfil.id,
+      motivo:         event.reason,
+      detalles:       event.details,
+      comentario_id:  comentario.id,
+    });
+
+    this.showReportModal.set(false);
+    this.reportingComment.set(null);
+  }
+
+  closeReportModal() {
+    this.showReportModal.set(false);
+    this.reportingComment.set(null);
+  }
+
+  // ── Menú ⋯ ───────────────────────────────────────────────────
+
+  toggleMenu(id: string) {
+    this.openMenuId.update(current => current === id ? null : id);
+  }
+
+  closeMenu() {
+    this.openMenuId.set(null);
+  }
+
+  /** Cierra el menú al hacer clic fuera de él */
+  @HostListener('document:click')
+  onDocumentClick() {
+    if (this.openMenuId() !== null) {
+      this.closeMenu();
+      this.cdr.markForCheck();
+    }
+  }
+
   // ── Input handlers ────────────────────────────────────────────
 
   onTextInput(event: Event) {
     const value = (event.target as HTMLTextAreaElement).value;
-    // Cortar en límite sin necesidad de un validator externo
-    this.commentText.set(value.slice(0, MAX_LENGTH));
+    this.commentText.set(value);
     this.errorPublish.set(null);
   }
 
   handleKey(event: KeyboardEvent) {
-    // Ctrl+Enter (o Cmd+Enter en Mac) publica el comentario
     if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
       event.preventDefault();
       this.submitComment();
@@ -165,5 +260,22 @@ export class Comentarios implements OnInit {
   authorInitial(c: Comentario): string {
     return this.authorName(c).charAt(0).toUpperCase();
   }
-}
 
+  isOwn(c: Comentario): boolean {
+    return !!this.currentUserId() && c.autor_id === this.currentUserId();
+  }
+
+  canDelete(c: Comentario): boolean {
+    return this.isOwn(c) || this.isAdmin();
+  }
+
+  canReport(c: Comentario): boolean {
+    return !this.isOwn(c);
+  }
+
+  reportModalAutor(): string {
+    const c = this.reportingComment();
+    if (!c) return '';
+    return this.authorName(c);
+  }
+}

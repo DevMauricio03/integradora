@@ -27,12 +27,19 @@ export class PostCardComponent implements OnInit, OnChanges {
   @Input() details: any = {};
   @Input() showControls: boolean = false;
   @Input() estado: string = 'activo';
+  @Input() authorId: string = '';
+  @Input() currentUserId: string = '';
   /** En vista previa: oculta acciones del footer (reporte, compartir) */
   @Input() isPreview: boolean = false;
   /** En feed de experiencias: trunca el contenido y muestra CTA */
   @Input() truncate: boolean = false;
   @Output() report = new EventEmitter<void>();
   @Output() viewFull = new EventEmitter<string>();
+  @Output() deleted = new EventEmitter<string>();
+
+  get isAuthor(): boolean {
+    return !!this.currentUserId && this.currentUserId === this.authorId;
+  }
 
   selectedImage = signal<string | null>(null);
   firstImageOrientation = signal<'landscape' | 'portrait' | 'square'>('landscape');
@@ -103,6 +110,10 @@ export class PostCardComponent implements OnInit, OnChanges {
 
   notifyReport() {
     this.report.emit();
+  }
+
+  notifyDelete() {
+    this.deleted.emit(this.id);
   }
 
   notifyViewFull() {

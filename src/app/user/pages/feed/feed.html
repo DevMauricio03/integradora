@@ -77,8 +77,10 @@
         [time]="post.time || 'Ahora'" [title]="post.title" [content]="post.description" [badge]="post.type"
         [image]="post.image" [images]="post.images" [avatar]="post.avatar" [category]="post.category"
         [details]="post.details" [expirationDate]="post.expirationDate" [estado]="post.status"
+        [authorId]="post.authorId" [currentUserId]="currentUserId() ?? ''"
         [truncate]="post.type === 'experiencia'"
         (report)="openReportModal(post)"
+        (deleted)="handleDeletePost($event)"
         (viewFull)="router.navigate(['/user/experiencias', $event])" />
       }
     </section>

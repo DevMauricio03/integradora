@@ -63,6 +63,12 @@ export class PostStoreService {
   private _feedPromise: Promise<void> | null = null;
   private _morePromise: Promise<void> | null = null;
 
+  // Caché para secciones filtradas (avisos y tipo)
+  private _avisosCache: Post[] | null = null;
+  private _avisosPromise: Promise<Post[]> | null = null;
+  private readonly _tipoCache = new Map<string, Post[]>();
+  private readonly _tipoPromises = new Map<string, Promise<Post[]>>();
+
   // ── Computed signals ──────────────────────────────────────────
 
   public readonly posts = computed<Post[]>(() =>
@@ -192,6 +198,17 @@ export class PostStoreService {
     this._currentPage.set(0);
     this._hasMore.set(true);
     this._feedPosts.set([]);
+    this._avisosCache = null;
+    this._tipoCache.clear();
+  }
+
+  /** Elimina un post del estado local (optimistic delete). */
+  removePost(id: string) {
+    this._feedPosts.update(posts => posts.filter(p => p.id !== id));
+    this._avisosCache = this._avisosCache?.filter(p => p.id !== id) ?? null;
+    for (const [tipo, posts] of this._tipoCache) {
+      this._tipoCache.set(tipo, posts.filter(p => p.id !== id));
+    }
   }
 
   /**
@@ -225,21 +242,36 @@ export class PostStoreService {
    *
    * Uso: `Experiencias`, cualquier vista filtrada por tipo.
    */
-  async getPostsByTipo(tipo: string): Promise<Post[]> {
-    const { data, error } = await this.feedViewService.getFeedPostsByTipo(tipo);
+  async getPostsByTipo(tipo: string, force = false): Promise<Post[]> {
+    const cached = this._tipoCache.get(tipo);
+    if (cached !== undefined && !force) return cached;
 
-    if (!error && data !== null) {
-      return data.map(row => this.mapFeedPost(row));
-    }
+    const existing = this._tipoPromises.get(tipo);
+    if (existing) return existing;
 
-    // Fallback: query directa, filtramos en TS
-    console.warn('[PostStore] getPostsByTipo: VIEW no disponible, usando fallback para tipo:', tipo);
-    const { data: pubData } = await this.publicationService.getPosts();
-    return pubData
-      ? pubData
-          .filter((p: any) => p.tipo?.toLowerCase() === tipo.toLowerCase())
-          .map(p => this.mapLegacyPost(p as any))
-      : [];
+    const promise = (async () => {
+      const { data, error } = await this.feedViewService.getFeedPostsByTipo(tipo);
+
+      if (!error && data !== null) {
+        const result = data.map(row => this.mapFeedPost(row));
+        this._tipoCache.set(tipo, result);
+        return result;
+      }
+
+      // Fallback: query directa, filtramos en TS
+      console.warn('[PostStore] getPostsByTipo: VIEW no disponible, usando fallback para tipo:', tipo);
+      const { data: pubData } = await this.publicationService.getPosts();
+      const result = pubData
+        ? pubData
+            .filter((p: any) => p.tipo?.toLowerCase() === tipo.toLowerCase())
+            .map(p => this.mapLegacyPost(p as any))
+        : [];
+      this._tipoCache.set(tipo, result);
+      return result;
+    })().finally(() => { this._tipoPromises.delete(tipo); });
+
+    this._tipoPromises.set(tipo, promise);
+    return promise;
   }
 
   /**
@@ -249,19 +281,27 @@ export class PostStoreService {
    *
    * Uso: página `AvisosOficiales`.
    */
-  async getAvisosOficiales(): Promise<Post[]> {
-    const { data, error } = await this.feedViewService.getFeedAnuncios();
+  async getAvisosOficiales(force = false): Promise<Post[]> {
+    if (this._avisosCache !== null && !force) return this._avisosCache;
+    if (this._avisosPromise) return this._avisosPromise;
 
-    if (!error && data !== null) {
-      return data.map(row => this.mapFeedPost(row));
-    }
+    this._avisosPromise = (async () => {
+      const { data, error } = await this.feedViewService.getFeedAnuncios();
 
-    // Fallback: anuncios directamente
-    console.warn('[PostStore] getAvisosOficiales: VIEW no disponible, usando fallback');
-    const { data: anunciosData } = await this.anuncioService.getAnuncios();
-    return anunciosData
-      ? anunciosData.map(a => this.mapLegacyAnuncio(a as any))
-      : [];
+      if (!error && data !== null) {
+        this._avisosCache = data.map(row => this.mapFeedPost(row));
+        return this._avisosCache;
+      }
+
+      console.warn('[PostStore] getAvisosOficiales: VIEW no disponible, usando fallback');
+      const { data: anunciosData } = await this.anuncioService.getAnuncios();
+      this._avisosCache = anunciosData
+        ? anunciosData.map(a => this.mapLegacyAnuncio(a as any))
+        : [];
+      return this._avisosCache;
+    })().finally(() => { this._avisosPromise = null; });
+
+    return this._avisosPromise;
   }
 
   // ── Internos ──────────────────────────────────────────────────

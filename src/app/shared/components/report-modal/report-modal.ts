@@ -15,8 +15,8 @@ import { ModalBase } from '../modalBase/modalBase';
           <div class="icon-warning">
             <app-icon name="alert-triangle" [size]="24"></app-icon>
           </div>
-          <h2>Reportar publicación</h2>
-          <p>Ayúdanos a entender qué está pasando con esta publicación de <strong>{{ post?.author || 'un usuario' }}</strong>.</p>
+          <h2>{{ titulo }}</h2>
+          <p>Ayúdanos a entender qué está pasando con este contenido de <strong>{{ contextoAutor || post?.author || 'un usuario' }}</strong>.</p>
         </header>
 
         <div class="reasons-grid">
@@ -217,6 +217,8 @@ import { ModalBase } from '../modalBase/modalBase';
 })
 export class ReportModalComponent {
   @Input() post: any;
+  @Input() titulo: string = 'Reportar publicación';
+  @Input() contextoAutor: string = '';
   @Output() closed = new EventEmitter<void>();
   @Output() reported = new EventEmitter<{ reason: string, details: string }>();
 

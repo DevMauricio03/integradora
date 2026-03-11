@@ -179,13 +179,14 @@ export class ReportService {
 
     // ── Escritura ────────────────────────────────────────────────
 
-    /** Crear un nuevo reporte de publicación */
+    /** Crear un nuevo reporte (publicación o comentario) */
     async createReport(reporte: {
         publicacion_id: string;
         autor_id: string;
         informante_id: string;
         motivo: string;
         detalles?: string;
+        comentario_id?: string;
     }) {
         return await this.db.from('reportes').insert({
             publicacion_id: reporte.publicacion_id,
@@ -193,7 +194,11 @@ export class ReportService {
             motivo:         reporte.motivo,
             descripcion:    reporte.detalles || '',
             estado:         'pendiente',
-            creado:         new Date().toISOString()
+            creado:         new Date().toISOString(),
+            ...(reporte.comentario_id
+                ? { comentario_id: reporte.comentario_id, tipo_reporte: 'comentario' }
+                : { tipo_reporte: 'publicacion' }
+            )
         });
     }
 

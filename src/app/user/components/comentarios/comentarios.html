@@ -12,9 +12,9 @@
   <div class="comentarios-composer">
     <textarea
       class="comentarios-textarea"
+      [class.textarea-error]="isOverLimit()"
       placeholder="Escribe una pregunta sobre esta experiencia…"
       [value]="commentText()"
-      maxlength="1000"
       rows="3"
       (input)="onTextInput($event)"
       (keydown)="handleKey($event)"
@@ -22,20 +22,22 @@
     ></textarea>
 
     <div class="composer-footer">
-      <span class="chars-left" [class.chars-warning]="charsLeft() < 100">
-        {{ charsLeft() }} / {{ MAX_LENGTH }}
-      </span>
+      <div class="words-counter" [class.words-warning]="wordsLeft() <= 10 && !isOverLimit()" [class.words-error]="isOverLimit()">
+        <span class="words-num">{{ wordCount() }}</span>
+        <span class="words-sep">/</span>
+        <span class="words-max">{{ MAX_WORDS }} palabras</span>
+      </div>
       <button
         type="button"
         class="btn-publicar"
-        [disabled]="isPublishing() || !commentText().trim()"
+        [disabled]="isPublishing() || !commentText().trim() || isOverLimit()"
         (click)="submitComment()"
       >
         @if (isPublishing()) {
         <span class="spinner"></span>
         Publicando…
         } @else {
-        Publicar comentario
+        Publicar
         }
       </button>
     </div>
@@ -78,11 +80,46 @@
         <div class="avatar-placeholder">{{ authorInitial(c) }}</div>
         }
       </div>
+
       <div class="comentario-body">
         <div class="comentario-meta">
-          <strong class="comentario-autor">{{ authorName(c) }}</strong>
-          <span class="comentario-tiempo">{{ formatTime(c.creado) }}</span>
+          <div class="meta-left">
+            <strong class="comentario-autor">{{ authorName(c) }}</strong>
+            <span class="comentario-tiempo">{{ formatTime(c.creado) }}</span>
+          </div>
+
+          <!-- ⋯ Menú de opciones -->
+          @if (!disabled && (canDelete(c) || canReport(c))) {
+          <div class="menu-wrapper" (click)="$event.stopPropagation()">
+            <button
+              type="button"
+              class="menu-trigger"
+              [class.menu-trigger--active]="openMenuId() === c.id"
+              (click)="toggleMenu(c.id)"
+              aria-label="Opciones del comentario"
+            >
+              ···
+            </button>
+
+            @if (openMenuId() === c.id) {
+            <div class="menu-dropdown">
+              @if (canDelete(c)) {
+              <button type="button" class="menu-item menu-item--danger" (click)="deleteComment(c.id)">
+                <span class="menu-icon"></span>
+                Eliminar comentario
+              </button>
+              }
+              @if (canReport(c)) {
+              <button type="button" class="menu-item menu-item--danger" (click)="openCommentReport(c)">
+                Reportar comentario
+              </button>
+              }
+            </div>
+            }
+          </div>
+          }
         </div>
+
         <p class="comentario-texto">{{ c.contenido }}</p>
       </div>
     </li>
@@ -115,3 +152,13 @@
   }
 
 </div>
+
+<!-- ── Modal de reporte de comentario ────────────────────── -->
+@if (showReportModal()) {
+<app-report-modal
+  titulo="Reportar comentario"
+  [contextoAutor]="reportModalAutor()"
+  (closed)="closeReportModal()"
+  (reported)="handleCommentReport($event)"
+></app-report-modal>
+}

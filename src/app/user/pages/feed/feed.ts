@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { PostStoreService, Post } from '../../../core/services/post-store.service';
 import { AuthStoreService } from '../../../core/services/auth-store.service';
 import { ReportService } from '../../../core/services/report.service';
+import { PublicationService } from '../../../core/services/publication.service';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { Carrera } from '../../../core/models/supabase.models';
 import { PostCardComponent } from '../../../shared/components/Post-card/post-card/post-card';
@@ -36,6 +37,8 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   private readonly authStore = inject(AuthStoreService);
   // Layer 1: ReportService
   private readonly reportSvc = inject(ReportService);
+  // Layer 1: PublicationService (para soft-delete de posts propios)
+  private readonly publicationSvc = inject(PublicationService);
   // Layer 3: FeedServices (carreras para filtro)
   private readonly catalogService = inject(CatalogService);
   readonly router = inject(Router);
@@ -43,10 +46,11 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   // ── Signals del store (expuestos al template) ─────────────────
   posts = this.postStore.posts;
   isLoading = this.postStore.isLoading;
-  isLoadingMore = this.postStore.isLoadingMore; // true solo al cargar páginas adicionales
-  hasMore = this.postStore.hasMore;       // false cuando no hay más posts
+  isLoadingMore = this.postStore.isLoadingMore;
+  hasMore = this.postStore.hasMore;
 
   carreras = signal<Carrera[]>([]);
+  currentUserId = signal<string | null>(null);
 
   // ── Filtros ───────────────────────────────────────────────────
   selectedTipo = signal<string>('todas');
@@ -130,11 +134,13 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   private readonly _prefetched = new Set<string>();
 
   private async initialLoad() {
-    const [, carrerasRes] = await Promise.all([
+    const [, carrerasRes, perfil] = await Promise.all([
       this.postStore.loadFeed(),
-      this.catalogService.getCarreras()
+      this.catalogService.getCarreras(),
+      this.authStore.getPerfilActual()
     ]);
     if (carrerasRes.data) this.carreras.set(carrerasRes.data);
+    if (perfil) this.currentUserId.set(perfil.id);
 
     const posts = this.postStore.posts();
     const firstImageUrl = posts[0]?.images?.[0] ?? posts[0]?.image;
@@ -262,6 +268,19 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
 
   // ── Reporte ───────────────────────────────────────────────────
 
+  // ── Eliminar publicación propia ───────────────────────────
+
+  async handleDeletePost(postId: string) {
+    try {
+      await this.publicationSvc.softDeletePost(postId);
+      this.postStore.removePost(postId);
+    } catch (err) {
+      console.error('[Feed] Error al eliminar publicación:', err);
+    }
+  }
+
+  // ── Reporte ───────────────────────────────────────────────
+
   openReportModal(post: any) {
     this.selectedPostForReport.set(post);
     this.showReportModal.set(true);
@@ -273,7 +292,6 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async handleReport(event: { reason: string; details: string }) {
-    if (this.isReporting()) return;
     this.isReporting.set(true);
 
     try {
