@@ -88,6 +88,40 @@ export class ReporteDetalleModal {
     this.mostrarConfirmacion.set(true);
   }
 
+  /**
+   * Solicita confirmación y ejecuta el RPC moderar_reporte('eliminar_comentario').
+   * El RPC en una sola transacción:
+   *   1. Elimina el comentario de la base de datos.
+   *   2. Resuelve el reporte como procesado.
+   */
+  async eliminarComentario() {
+    this.configConfirmacion.set({
+      titulo: '¿Eliminar comentario?',
+      mensaje: 'El comentario será eliminado de la base de datos. No será visible para otros usuarios. Esta acción no se puede deshacer.',
+      botonTexto: 'Sí, eliminar',
+      accion: async () => {
+        if (this.isProcessing()) return;
+        this.isProcessing.set(true);
+        this.mostrarConfirmacion.set(false);
+        try {
+          const { error } = await this.reportService.moderarReporte(
+            this.reporte.id,
+            'eliminar_comentario',
+          );
+          if (error) throw error;
+          this.actionExecuted.emit();
+          this.closed.emit();
+        } catch (err) {
+          console.error('[ReporteModal] eliminarComentario error:', err);
+          alert('Error al eliminar el comentario');
+        } finally {
+          this.isProcessing.set(false);
+        }
+      }
+    });
+    this.mostrarConfirmacion.set(true);
+  }
+
   toggleSuspension() {
     this.showSuspensionOptions.update(v => !v);
   }

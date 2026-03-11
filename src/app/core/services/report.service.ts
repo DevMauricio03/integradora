@@ -109,6 +109,8 @@ export class ReportService {
             // Campos del reporte
             id:             r.id,
             publicacion_id: r.publicacion_id,
+            comentario_id:  r.comentario_id ?? null,
+            tipo_reporte:   r.tipo_reporte ?? 'publicacion',
             reportado_por:  r.reportado_por,
             motivo:         r.motivo,
             descripcion:    r.descripcion,
@@ -119,12 +121,19 @@ export class ReportService {
             resuelto_en:    r.resuelto_en   ?? null,
             resolucion:     r.resolucion    ?? null,
 
-            // Objeto publicaciones
+            // Objeto publicaciones (siempre presente)
             publicaciones: r.pub_titulo ? {
                 titulo:      r.pub_titulo,
                 descripcion: r.pub_descripcion,
                 imagen_url:  r.pub_imagen_url,
                 tipo:        r.pub_tipo,
+            } : null,
+
+            // Objeto comentario (solo si es reportes de comentario)
+            comentario: (r.tipo_reporte === 'comentario' && r.com_contenido) ? {
+                id:        r.comentario_id,
+                contenido: r.com_contenido,
+                creado:    r.com_creado,
             } : null,
 
             // Datos del autor
@@ -134,7 +143,6 @@ export class ReportService {
                 nombre:              r.autor_nombre,
                 apellidos:           r.autor_apellidos,
                 foto_url:            r.autor_foto_url,
-                correoInstitucional: r.autor_correo,
             } : null,
 
             // Datos del informante
@@ -144,7 +152,6 @@ export class ReportService {
                 nombre:              r.informante_nombre,
                 apellidos:           r.informante_apellidos,
                 foto_url:            r.informante_foto_url,
-                correoInstitucional: r.informante_correo,
             } : null,
         };
     }
@@ -240,12 +247,12 @@ export class ReportService {
      * está pendiente antes de operar.
      *
      * @param reportId  UUID del reporte a moderar.
-     * @param accion    'eliminar_publicacion' | 'suspender_usuario' | 'descartar'
+     * @param accion    'eliminar_publicacion' | 'eliminar_comentario' | 'suspender_usuario' | 'descartar'
      * @param horas     Solo para 'suspender_usuario'. null = largo plazo (2099).
      */
     async moderarReporte(
         reportId: string,
-        accion: 'eliminar_publicacion' | 'suspender_usuario' | 'descartar',
+        accion: 'eliminar_publicacion' | 'eliminar_comentario' | 'suspender_usuario' | 'descartar',
         horas?: number | null,
     ) {
         return await this.db.rpc('moderar_reporte', {

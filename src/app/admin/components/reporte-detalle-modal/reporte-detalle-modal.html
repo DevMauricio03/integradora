@@ -34,25 +34,46 @@
 
         <!-- Vista previa del contenido -->
         <div class="preview-section">
-            <span class="section-label">VISTA PREVIA DEL CONTENIDO</span>
-            <div class="content-preview-card">
-                <div class="author-row">
-                    <img [src]="reporte.autor?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte.autor?.nombre + '+' + reporte.autor?.apellidos + '&background=random&color=fff'"
-                        class="mini-avatar" alt="Avatar autor">
-                    <div class="author-meta">
-                        <span class="user-handle">{{ reporte.autor?.nombre }} {{ reporte.autor?.apellidos }}</span>
-                        <span class="post-time">{{ reporte.publicaciones?.tipo | uppercase }}</span>
+            <span class="section-label">VISTA PREVIA DEL {{ reporte.tipo_reporte === 'comentario' ? 'COMENTARIO' : 'CONTENIDO' }}</span>
+
+            <!-- Mostrar comentario reportado -->
+            <ng-container *ngIf="reporte.tipo_reporte === 'comentario' && reporte.comentario">
+                <div class="content-preview-card">
+                    <div class="author-row">
+                        <img [src]="reporte.autor?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte.autor?.nombre + '+' + reporte.autor?.apellidos + '&background=random&color=fff'"
+                            class="mini-avatar" alt="Avatar autor">
+                        <div class="author-meta">
+                            <span class="user-handle">{{ reporte.autor?.nombre }} {{ reporte.autor?.apellidos }}</span>
+                            <span class="post-time">{{ reporte.comentario.creado | date:'medium' }}</span>
+                        </div>
+                    </div>
+                    <div class="post-body">
+                        <p>{{ reporte.comentario.contenido }}</p>
                     </div>
                 </div>
-                <div class="post-body">
-                    <h4>{{ reporte.publicaciones?.titulo }}</h4>
-                    <p>{{ reporte.publicaciones?.descripcion }}</p>
+            </ng-container>
+
+            <!-- Mostrar publicación reportada (comportamiento actual) -->
+            <ng-container *ngIf="reporte.tipo_reporte !== 'comentario' && reporte.publicaciones">
+                <div class="content-preview-card">
+                    <div class="author-row">
+                        <img [src]="reporte.autor?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte.autor?.nombre + '+' + reporte.autor?.apellidos + '&background=random&color=fff'"
+                            class="mini-avatar" alt="Avatar autor">
+                        <div class="author-meta">
+                            <span class="user-handle">{{ reporte.autor?.nombre }} {{ reporte.autor?.apellidos }}</span>
+                            <span class="post-time">{{ reporte.publicaciones?.tipo | uppercase }}</span>
+                        </div>
+                    </div>
+                    <div class="post-body">
+                        <h4>{{ reporte.publicaciones?.titulo }}</h4>
+                        <p>{{ reporte.publicaciones?.descripcion }}</p>
+                    </div>
+                    <div class="post-image-placeholder" *ngIf="reporte.publicaciones?.imagen_url">
+                        <img [src]="reporte.publicaciones?.imagen_url" style="width: 100%; border-radius: 8px;"
+                            alt="Publicación reportada">
+                    </div>
                 </div>
-                <div class="post-image-placeholder" *ngIf="reporte.publicaciones?.imagen_url">
-                    <img [src]="reporte.publicaciones?.imagen_url" style="width: 100%; border-radius: 8px;"
-                        alt="Publicación reportada">
-                </div>
-            </div>
+            </ng-container>
         </div>
 
         <!-- Acciones -->
@@ -60,7 +81,12 @@
             <button class="action-btn success" (click)="descartarReporte()">
                 <app-icon name="check" [size]="16"></app-icon> Descartar reporte
             </button>
-            <button class="action-btn danger" (click)="eliminarPublicacion()">
+
+            <!-- Botón dinámico: cambia según sea publicación o comentario -->
+            <button *ngIf="reporte.tipo_reporte === 'comentario'" class="action-btn danger" (click)="eliminarComentario()">
+                <app-icon name="trash-2" [size]="16"></app-icon> Eliminar comentario
+            </button>
+            <button *ngIf="reporte.tipo_reporte !== 'comentario'" class="action-btn danger" (click)="eliminarPublicacion()">
                 <app-icon name="trash-2" [size]="16"></app-icon> Eliminar publicación
             </button>
 

@@ -132,6 +132,7 @@ GRANT EXECUTE ON FUNCTION public.unsuspend_user(uuid) TO authenticated;
 -- p_accion values (existing frontend contract):
 --   'descartar'           → mark report resolved, no content action
 --   'eliminar_publicacion'→ set publicacion.estado = 'eliminado'
+--   'eliminar_comentario' → delete comentario from the database
 --   'suspender_usuario'   → suspend post author via apply_user_suspension()
 --
 -- p_horas → duration mapping:
@@ -183,6 +184,11 @@ BEGIN
       UPDATE public.publicaciones
       SET estado = 'eliminado'
       WHERE id = v_pub_id;
+
+    WHEN 'eliminar_comentario' THEN
+      -- Delete the comment (reported comment case only)
+      DELETE FROM public.comentarios
+      WHERE id = (SELECT comentario_id FROM public.reportes WHERE id = p_reporte_id);
 
     WHEN 'suspender_usuario' THEN
       v_duration := CASE

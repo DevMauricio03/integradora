@@ -26,7 +26,7 @@ export class AdminReportService {
    */
   moderarReporte(
     reportId: string,
-    accion: 'eliminar_publicacion' | 'suspender_usuario' | 'descartar',
+    accion: 'eliminar_publicacion' | 'eliminar_comentario' | 'suspender_usuario' | 'descartar',
     horas?: number | null,
   ) {
     return this.reportService.moderarReporte(reportId, accion, horas);
