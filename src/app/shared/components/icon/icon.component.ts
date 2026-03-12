@@ -1,6 +1,6 @@
 import { Component, Input, computed } from '@angular/core';
 
-export type IconName = 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'share' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-up' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'check-circle' | 'rocket' | 'menu';
+export type IconName = 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-up' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'check-circle' | 'rocket' | 'menu' | 'share';
 
 @Component({
   selector: 'app-icon',
@@ -92,7 +92,14 @@ export class IconComponent {
     'trash-2': ['M3 6h18', 'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2', 'M10 11v6', 'M14 11v6'],
     'check-circle': ['M22 11.08V12a10 10 0 1 1-5.93-9.14', 'M22 4L12 14.01l-3-3'],
     rocket: ['M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z', 'm12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 0-2.72 7.33-6.04 11a22 22 0 0 1-3.96 2z', 'M14 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z'],
-    menu: ['M3 12h18', 'M3 6h18', 'M3 18h18']
+    menu: ['M3 12h18', 'M3 6h18', 'M3 18h18'],
+    share: [
+      'M8.59 13.51l6.83 3.98',
+      'M15.41 6.51l-6.82 3.98',
+      'M21 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
+      'M9 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
+      'M21 19a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'
+    ]
   };
 
   paths = computed(() => this.icons[this.name] || []);

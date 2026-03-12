@@ -202,6 +202,27 @@ export class PostStoreService {
     this._tipoCache.clear();
   }
 
+  /**
+   * Carga todos los posts de un usuario por su autor_id.
+   * Combina posts activos (de la VIEW) + pendientes del propio usuario.
+   * Uso exclusivo del perfil — no toca el store paginado del feed.
+   */
+  async getPostsForPerfil(autorId: string): Promise<Post[]> {
+    const [activosResult, pendientesResult] = await Promise.all([
+      this.feedViewService.getFeedPostsByAutor(autorId),
+      this.feedViewService.getOwnPendingPosts(),
+    ]);
+
+    const activos = (activosResult.data ?? []).map(row => this.mapFeedPost(row));
+    const pendientes = (pendientesResult.data ?? []).map(p => this.mapPendingPost(p));
+
+    const combinado = [...pendientes, ...activos];
+    const unique = combinado.filter(
+      (post, i, self) => self.findIndex(p => p.id === post.id) === i
+    );
+    return unique.sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime());
+  }
+
   /** Elimina un post del estado local (optimistic delete). */
   removePost(id: string) {
     this._feedPosts.update(posts => posts.filter(p => p.id !== id));

@@ -2,10 +2,12 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, signal
 import { CommonModule } from '@angular/common';
 import { IconComponent, IconName } from "../../icon/icon.component";
 
+import { ShareModalComponent } from '../../share-modal/share-modal';
+
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconComponent, ShareModalComponent],
   templateUrl: './post-card.html',
   styleUrls: ['./post-card.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -43,6 +45,8 @@ export class PostCardComponent implements OnInit, OnChanges {
 
   selectedImage = signal<string | null>(null);
   firstImageOrientation = signal<'landscape' | 'portrait' | 'square'>('landscape');
+  showShareModal = signal(false);
+  shareUrl = signal('');
 
   @ViewChild('imageDialog') imageDialog!: ElementRef<HTMLDialogElement>;
 
@@ -160,6 +164,9 @@ export class PostCardComponent implements OnInit, OnChanges {
    *
    * URLs que no sean de Supabase Storage se devuelven sin cambios.
    */
+  /**
+   * Convierte una URL de Supabase Storage a una versión thumbnail ultra-ligera.
+   */
   getThumbnailUrl(url: string | undefined): string {
     if (!url) return '';
     const marker = '/storage/v1/object/public/';
@@ -170,4 +177,83 @@ export class PostCardComponent implements OnInit, OnChanges {
     return `${base}/storage/v1/render/image/public/${cleanPath}?width=40&quality=20&resize=cover`;
   }
 
+  /**
+   * Genera la URL de la publicación y abre el modal de compartir.
+   */
+  handleShare(event: Event) {
+    event.stopPropagation();
+    const baseUrl = window.location.origin;
+
+    const isExperiencia = this.badge?.toLowerCase() === 'experiencia';
+    const path = isExperiencia
+      ? `/user/experiencias/${this.id}`
+      : `/user/post/${this.id}`;
+
+    this.shareUrl.set(`${baseUrl}${path}`);
+    this.showShareModal.set(true);
+  }
+
+  closeShareModal() {
+    this.showShareModal.set(false);
+  }
+
+  /**
+   * Verifica si el método de contacto es WhatsApp
+   */
+  isWhatsAppContact(): boolean {
+    return this.details?.contactMethod?.toLowerCase() === 'whatsapp';
+  }
+
+  /**
+   * Limpia el número de teléfono removiendo espacios, guiones y caracteres especiales
+   * excepto el símbolo + inicial si existe
+   */
+  cleanPhoneNumber(phone: string): string {
+    if (!phone) return '';
+    
+    // Si comienza con +, lo preservamos temporalmente
+    const hasPlus = phone.trim().startsWith('+');
+    
+    // Remover todos los caracteres que no sean dígitos
+    let cleaned = phone.replace(/\D/g, '');
+    
+    // Si no tiene código de país y tiene 10 dígitos (formato mexicano sin código)
+    // agregamos el código de país de México (52)
+    if (cleaned.length === 10 && !hasPlus) {
+      cleaned = '52' + cleaned;
+    }
+    
+    return cleaned;
+  }
+
+  /**
+   * Genera el enlace de WhatsApp con mensaje prellenado
+   */
+  getWhatsAppLink(): string {
+    if (!this.details?.phoneNumber) return '#';
+    
+    const cleanedNumber = this.cleanPhoneNumber(this.details.phoneNumber);
+    
+    if (!cleanedNumber) return '#';
+    
+    // Crear mensaje prellenado
+    const message = `Hola, vi tu publicación "${this.title}" en Tuunka y me gustaría pedir más información.`;
+    const encodedMessage = encodeURIComponent(message);
+    
+    return `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
+  }
+
+  /**
+   * Abre WhatsApp en una nueva pestaña
+   */
+  openWhatsApp(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const link = this.getWhatsAppLink();
+    
+    if (link !== '#') {
+      window.open(link, '_blank', 'noopener,noreferrer');
+    }
+  }
 }

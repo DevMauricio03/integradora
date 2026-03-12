@@ -108,7 +108,21 @@ export class FeedViewService {
     }
 
     /**
-     * Obtener publicaciones pendientes del usuario autenticado.
+     * Obtener TODOS los posts activos de un autor específico sin paginación.
+     * Uso: página de perfil (muestra todas las publicaciones del usuario).
+     */
+    async getFeedPostsByAutor(autorId: string): Promise<{ data: FeedPost[] | null; error: any }> {
+        const { data, error } = await this.db
+            .from('feed_posts')
+            .select('*')
+            .eq('autor_id', autorId)
+            .eq('fuente', 'publicacion')
+            .order('creado', { ascending: false });
+
+        return { data: data as FeedPost[] || null, error };
+    }
+
+    /**
      * Se mezclan en el store para que el autor vea sus posts antes
      * de que sean aprobados. Solo se llama una vez (no se pagina).
      */

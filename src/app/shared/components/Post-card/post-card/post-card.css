@@ -145,6 +145,36 @@
   color: #2563eb;
 }
 
+.whatsapp-link {
+  background: none;
+  border: none;
+  color: #25D366;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.whatsapp-link:hover {
+  color: #128C7E;
+  text-decoration-color: transparent;
+}
+
+.whatsapp-link:active {
+  transform: scale(0.98);
+}
+
+.post-card.experiencia .whatsapp-link {
+  color: #25D366;
+}
+
+.post-card.experiencia .whatsapp-link:hover {
+  color: #34E877;
+}
+
 .badge-container.badge-evento {
   background: #EEF2FF;
   color: #4F46E5;
@@ -550,6 +580,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  margin-left: auto;
 }
 .footer-btn {
   background: transparent;
@@ -588,11 +619,6 @@
   color: white;
   background: #dc2626;
   box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2);
-}
-
-.footer-btn.edit:hover {
-  color: #7c3aed;
-  background: #f5f3ff;
 }
 
 /* Media Queries */

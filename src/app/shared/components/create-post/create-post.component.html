@@ -106,6 +106,17 @@
           }
         </div>
 
+        <!-- CAMPOS ESPECÍFICOS: AVISO -->
+        @if (currentType() === 'aviso') {
+        <div class="form-field">
+          <label for="postContactAviso">Número de contacto (opcional)</label>
+          <div class="input-with-icon">
+            <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
+            <input id="postContactAviso" type="text" [formField]="postForm.phoneNumber" placeholder="Ej: 9511234567">
+          </div>
+        </div>
+        }
+
         <!-- CAMPOS ESPECÍFICOS: EVENTO -->
         @if (currentType() === 'evento') {
         <div class="form-row">

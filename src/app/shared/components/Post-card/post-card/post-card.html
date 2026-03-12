@@ -34,10 +34,65 @@
 
   </div>
 
+  <!-- Galería de Imágenes (primero la imagen) -->
+  @if ((images && images.length > 0) || image) {
+  <div class="post-gallery"
+    [attr.data-count]="images && images.length > 0 ? (images.length > 3 ? '4-plus' : images.length) : 1"
+    [attr.data-orientation]="firstImageOrientation()">
+    @if (images && images.length > 0) {
+    @for (img of images.slice(0, 4); track img; let i = $index) {
+    <button type="button" class="gallery-item" (click)="openImage(img)">
+      <div class="blurred-bg" [style.background-image]="'url(' + getThumbnailUrl(img) + ')'"></div>
+      <img [src]="img" alt="Foto de publicación" loading="lazy">
+      @if (i === 3 && images.length > 4) {
+      <div class="more-images-overlay">
+        <span>+{{ images.length - 4 }}</span>
+      </div>
+      }
+    </button>
+    }
+    } @else if (image) {
+    <button type="button" class="gallery-item single" (click)="openImage(image)">
+      <div class="blurred-bg" [style.background-image]="'url(' + getThumbnailUrl(image) + ')'"></div>
+      <img [src]="image" alt="Foto de publicación" loading="lazy">
+    </button>
+    }
+  </div>
+  }
+
+  <!-- Lightbox Modal -->
+  @if (selectedImage()) {
+  <dialog #imageDialog class="image-modal" (click)="closeImage()" (cancel)="closeImage()" (keydown.enter)="closeImage()"
+    (keydown.space)="closeImage()">
+    <div class="modal-content" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+
+      @if (images && images.length > 1) {
+      <button type="button" class="nav-btn prev" (click)="prevImage($event)" aria-label="Imagen anterior">
+        <app-icon name="chevron-left" [size]="32"></app-icon>
+      </button>
+      }
+
+      <img [src]="selectedImage()" alt="Vista ampliada">
+
+      @if (images && images.length > 1) {
+      <button type="button" class="nav-btn next" (click)="nextImage($event)" aria-label="Siguiente imagen">
+        <app-icon name="chevron-right" [size]="32"></app-icon>
+      </button>
+      }
+
+      <button type="button" class="close-modal" (click)="closeImage()" aria-label="Cerrar">
+        <app-icon name="x" [size]="24"></app-icon>
+      </button>
+    </div>
+  </dialog>
+  }
+
+  <!-- Título -->
   <h3 class="post-title">
     {{ title }}
   </h3>
 
+  <!-- Descripción -->
   @if (truncate && badge?.toLowerCase() === 'experiencia') {
   <p class="post-content post-content-truncated">{{ content }}</p>
   } @else {
@@ -47,6 +102,15 @@
   }
 
   <!-- Detalles Dinámicos -->
+  @if (details && badge === 'aviso' && details.phoneNumber) {
+  <div class="details-section">
+    <div class="detail-item contact-info">
+      <app-icon name="phone" [size]="14"></app-icon>
+      <span>Contacto: {{ details.phoneNumber }}</span>
+    </div>
+  </div>
+  }
+
   @if (details && badge === 'evento') {
   <div class="details-section">
     <div class="detail-item">
@@ -101,7 +165,13 @@
     @if (details.phoneNumber) {
     <div class="detail-item contact-info">
       <app-icon name="phone" [size]="14"></app-icon>
+      @if (details.contactMethod?.toLowerCase() === 'whatsapp') {
+      <button type="button" class="whatsapp-link" (click)="openWhatsApp($event)">
+        {{ details.phoneNumber }} (WhatsApp)
+      </button>
+      } @else {
       <span>{{ details.phoneNumber }} ({{ details.contactMethod }})</span>
+      }
     </div>
     }
   </div>
@@ -114,88 +184,30 @@
   </div>
   }
 
-  <!-- Galería de Imágenes Estilo Facebook (Inteligente) -->
-  @if ((images && images.length > 0) || image) {
-  <div class="post-gallery"
-    [attr.data-count]="images && images.length > 0 ? (images.length > 3 ? '4-plus' : images.length) : 1"
-    [attr.data-orientation]="firstImageOrientation()">
-    @if (images && images.length > 0) {
-    @for (img of images.slice(0, 4); track img; let i = $index) {
-    <button type="button" class="gallery-item" (click)="openImage(img)">
-      <div class="blurred-bg" [style.background-image]="'url(' + getThumbnailUrl(img) + ')'"></div>
-      <img [src]="img" alt="Foto de publicación" loading="lazy">
-      @if (i === 3 && images.length > 4) {
-      <div class="more-images-overlay">
-        <span>+{{ images.length - 4 }}</span>
-      </div>
-      }
-    </button>
-    }
-    } @else if (image) {
-    <button type="button" class="gallery-item single" (click)="openImage(image)">
-      <div class="blurred-bg" [style.background-image]="'url(' + getThumbnailUrl(image) + ')'"></div>
-      <img [src]="image" alt="Foto de publicación" loading="lazy">
-    </button>
-    }
-  </div>
-  }
-
-  <!-- Lightbox Modal -->
-  @if (selectedImage()) {
-  <dialog #imageDialog class="image-modal" (click)="closeImage()" (cancel)="closeImage()" (keydown.enter)="closeImage()"
-    (keydown.space)="closeImage()">
-    <div class="modal-content" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-
-      @if (images && images.length > 1) {
-      <button type="button" class="nav-btn prev" (click)="prevImage($event)" aria-label="Imagen anterior">
-        <app-icon name="chevron-left" [size]="32"></app-icon>
-      </button>
-      }
-
-      <img [src]="selectedImage()" alt="Vista ampliada">
-
-      @if (images && images.length > 1) {
-      <button type="button" class="nav-btn next" (click)="nextImage($event)" aria-label="Siguiente imagen">
-        <app-icon name="chevron-right" [size]="32"></app-icon>
-      </button>
-      }
-
-      <button type="button" class="close-modal" (click)="closeImage()" aria-label="Cerrar">
-        <app-icon name="x" [size]="24"></app-icon>
-      </button>
-    </div>
-  </dialog>
-  }
-
   <div class="post-footer">
     @if (!isPreview) {
     <div class="footer-left">
       @if (!showControls && badge?.toLowerCase() !== 'aviso oficial') {
-        @if (isAuthor) {
-        <button type="button" class="footer-btn delete" (click)="notifyDelete()">
-          <app-icon name="ban" [size]="18"></app-icon>
-          <span>Eliminar</span>
-        </button>
-        } @else {
-        <button type="button" class="footer-btn report" (click)="notifyReport()">
-          <app-icon name="flag" [size]="18"></app-icon>
-          <span>Reportar</span>
-        </button>
-        }
+      @if (isAuthor) {
+      <button type="button" class="footer-btn delete" (click)="notifyDelete()">
+        <app-icon name="ban" [size]="18"></app-icon>
+        <span>Eliminar</span>
+      </button>
+      } @else {
+      <button type="button" class="footer-btn report" (click)="notifyReport()">
+        <app-icon name="flag" [size]="18"></app-icon>
+        <span>Reportar</span>
+      </button>
+      }
       } @else if (showControls) {
       <div class="management-btns">
-        <button type="button" class="footer-btn edit">
-          <app-icon name="settings" [size]="18"></app-icon>
-          <span>Editar</span>
-        </button>
         <button type="button" class="footer-btn delete" (click)="notifyDelete()">
           <app-icon name="ban" [size]="18"></app-icon>
           <span>Eliminar</span>
         </button>
       </div>
       }
-      <button type="button" class="footer-btn share">
-        <!-- <app-icon name="share" [size]="18" style="transform: rotate(45deg);"></app-icon> -->
+      <button type="button" class="footer-btn share" (click)="handleShare($event)">
         <app-icon name="share" [size]="18"></app-icon>
         <span>Compartir</span>
       </button>
@@ -210,3 +222,8 @@
   </div>
 
 </div>
+
+@if (showShareModal()) {
+<app-share-modal [url]="shareUrl()" (closed)="closeShareModal()">
+</app-share-modal>
+}

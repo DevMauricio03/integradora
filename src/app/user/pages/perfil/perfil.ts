@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthStoreService } from '../../../core/services/auth-store.service';
-import { PostStoreService } from '../../../core/services/post-store.service';
+import { PostStoreService, Post } from '../../../core/services/post-store.service';
 import { PostCardComponent } from '../../../shared/components/Post-card/post-card/post-card';
 import { CommonModule } from '@angular/common';
 import { PostSkeletonComponent } from '../../../shared/components/post-skeleton/post-skeleton.component';
@@ -20,21 +20,10 @@ export class PerfilPublicoPage implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   public perfil: any;
-  cargando = true;
-  isLoading = this.postStore.isLoading;
   readonly defaultAvatarUrl = 'https://i.pinimg.com/236x/6c/55/d4/6c55d49dd6839b5b79e84a1aa6d2260d.jpg';
 
-  // Filtramos los posts para mostrar solo los que pertenecen al usuario actual
-  misPosts = computed(() => {
-    const allPosts = this.postStore.posts();
-    const userId = this.perfil?.id;
-
-    if (!userId) return [];
-
-    return allPosts.filter(post =>
-      String(post.authorId).toLowerCase() === String(userId).toLowerCase()
-    );
-  });
+  readonly isLoading = signal<boolean>(true);
+  readonly misPosts = signal<Post[]>([]);
 
   ngOnInit() {
     this.loadPerfil();
@@ -42,19 +31,21 @@ export class PerfilPublicoPage implements OnInit {
 
   private async loadPerfil() {
     try {
-      // Usa el caché del AuthStoreService → no genera una nueva query a Supabase
       this.perfil = await this.authStore.getPerfilActual();
-      await this.postStore.loadFeed();
       this.cdr.markForCheck();
+
+      if (!this.perfil?.id) return;
+
+      const posts = await this.postStore.getPostsForPerfil(this.perfil.id);
+      this.misPosts.set(posts);
     } catch (e) {
-      console.error('Error en ngOnInit Perfil:', e);
+      console.error('Error en loadPerfil:', e);
     } finally {
-      this.cargando = false;
+      this.isLoading.set(false);
       this.cdr.markForCheck();
     }
   }
 
-  // Si falla la imagen del avatar, usa una imagen por defecto.
   onAvatarError(event: Event) {
     const imageElement = event.target as HTMLImageElement;
     imageElement.src = this.defaultAvatarUrl;

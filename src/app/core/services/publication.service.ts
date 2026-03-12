@@ -86,6 +86,10 @@ export class PublicationService {
         } else if (post.type === 'experiencia') {
             detalles.company = post.company; detalles.area = post.area;
             detalles.period = post.period; detalles.recommendation = post.recommendation;
+        } else if (post.type === 'aviso') {
+            if (post.phoneNumber) {
+                detalles.phoneNumber = post.phoneNumber;
+            }
         }
 
         const { data, error } = await this.db
