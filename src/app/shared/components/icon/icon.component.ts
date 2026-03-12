@@ -1,6 +1,6 @@
 import { Component, Input, computed } from '@angular/core';
 
-export type IconName = 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-up' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'check-circle' | 'rocket' | 'menu';
+export type IconName = 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'share' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-up' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'check-circle' | 'rocket' | 'menu';
 
 @Component({
   selector: 'app-icon',
@@ -38,12 +38,19 @@ export class IconComponent {
       'M13.73 21a2 2 0 0 1-3.46 0'
     ],
     flag: [
-      'M4 15V5a2 2 0 0 1 2-2h11l-1.68 5.06a2 2 0 0 0 0 1.88L17 15H6a2 2 0 0 1-2-2z'
+      'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z', 'M4 22v-7'
     ],
     home: ['M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z', 'M9 22V12h6v10'],
     briefcase: ['M4 7h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z', 'M9 7V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v3'],
     megaphone: ['M11 5L6 9H2v6h4l5 4V5z', 'M19.07 4.93a10 10 0 0 1 0 14.14', 'M15.54 8.46a5 5 0 0 1 0 7.07'],
     user: ['M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2', 'M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+    share: [
+      'M18 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+      'M6 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+      'M18 16a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+      'M8.59 13.51l6.83 3.98',
+      'M15.41 6.51L8.59 10.49'
+    ],
     settings: ['M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'],
     search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z', 'M21 21l-4.35-4.35'],
     users: [

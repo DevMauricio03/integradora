@@ -30,16 +30,15 @@
           @for (type of types; track type.id) {
           <button type="button" class="type-card" [class.selected]="postModel().type === type.id"
             [attr.data-type]="type.id" (click)="selectType(type.id)" (keydown.enter)="selectType(type.id)"
-            (keydown.space)="selectType(type.id)"
-            style="background: none; border: inherit; font: inherit; text-align: inherit; color: inherit; padding: 0; cursor: pointer;">
+            (keydown.space)="selectType(type.id)">
             <div class="type-icon-wrapper">
               <app-icon [name]="$any(type.icon)" [size]="24"></app-icon>
-              @if (postModel().type === type.id) {
-              <div class="check-badge">
-                <app-icon name="check" [size]="12"></app-icon>
-              </div>
-              }
             </div>
+            @if (postModel().type === type.id) {
+            <div class="check-badge">
+              <app-icon name="check" [size]="12"></app-icon>
+            </div>
+            }
             <span class="type-name">{{type.name}}</span>
             <span class="type-desc">{{type.desc}}</span>
           </button>
@@ -55,8 +54,7 @@
           @for (st of subtypes; track st.id) {
           <button type="button" class="subtype-card" [class.selected]="selectedSubtype() === st.id"
             (click)="selectSubtype($any(st.id))" (keydown.enter)="selectSubtype($any(st.id))"
-            (keydown.space)="selectSubtype($any(st.id))"
-            style="background: none; border: inherit; font: inherit; text-align: inherit; color: inherit; padding: 0; cursor: pointer; display: flex;">
+            (keydown.space)="selectSubtype($any(st.id))">
             <div class="subtype-icon">
               <app-icon [name]="$any(st.icon)" [size]="20"></app-icon>
             </div>
@@ -64,6 +62,11 @@
               <span class="st-name">{{st.name}}</span>
               <span class="st-desc">{{st.desc}}</span>
             </div>
+            @if (selectedSubtype() === st.id) {
+            <div class="check-badge">
+              <app-icon name="check" [size]="12"></app-icon>
+            </div>
+            }
           </button>
           }
         </div>
@@ -310,8 +313,7 @@
           Imágenes o Documentos
         </h3>
         <button type="button" class="upload-zone" (click)="fileInput.click()" (keydown.enter)="fileInput.click()"
-          (keydown.space)="fileInput.click()"
-          style="background: none; border: inherit; font: inherit; color: inherit; width: 100%; cursor: pointer;">
+          (keydown.space)="fileInput.click()">
           <input type="file" #fileInput (change)="handleFile($event)" style="display: none"
             accept="image/png, image/jpeg, image/webp" multiple>
           <div class="upload-content">
