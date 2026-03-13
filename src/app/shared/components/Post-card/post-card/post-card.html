@@ -34,6 +34,24 @@
 
   </div>
 
+  @if (details && badge === 'experiencia') {
+  <div class="experiencia-details">
+    <div class="company-info">
+      <div class="company-icon-wrapper">
+        <app-icon name="building" [size]="24" class="company-icon"></app-icon>
+      </div>
+      <div class="company-text">
+        <strong class="company-name">{{ details.company }}</strong>
+        <span class="company-area">Área: {{ details.area }}</span>
+      </div>
+    </div>
+    <div class="period-info">
+      <span class="period-label">Periodo</span>
+      <strong class="period-value">{{ details.period }}</strong>
+    </div>
+  </div>
+  }
+
   <!-- Galería de Imágenes (primero la imagen) -->
   @if ((images && images.length > 0) || image) {
   <div class="post-gallery"
@@ -132,21 +150,6 @@
   </div>
   }
 
-  @if (details && badge === 'experiencia') {
-  <div class="details-section">
-    <div class="detail-item">
-      <app-icon name="building" [size]="14"></app-icon>
-      <strong>{{ details.company }}</strong>
-    </div>
-    <div class="detail-item">
-      <span>Área: {{ details.area }}</span>
-    </div>
-    <div class="detail-item">
-      <app-icon name="calendar" [size]="14"></app-icon>
-      <span>Periodo: {{ details.period }}</span>
-    </div>
-  </div>
-  }
 
   @if (details && badge === 'oferta') {
   <div class="details-section">

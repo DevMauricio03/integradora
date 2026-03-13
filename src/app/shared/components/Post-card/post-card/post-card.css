@@ -37,8 +37,79 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-.post-card.experiencia .details-section {
-  background: rgba(255, 255, 255, 0.1);
+.post-card.experiencia .experiencia-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.post-card.experiencia .company-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-card.experiencia .company-icon-wrapper {
+  background: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #2E3192;
+  flex-shrink: 0;
+}
+
+.post-card.experiencia .company-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.post-card.experiencia .company-name {
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.post-card.experiencia .company-area {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.post-card.experiencia .period-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.post-card.experiencia .period-label {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.post-card.experiencia .period-value {
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+@media (max-width: 576px) {
+  .post-card.experiencia .experiencia-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .post-card.experiencia .period-info {
+    align-items: flex-start;
+  }
 }
 
 .post-card.experiencia .footer-btn {

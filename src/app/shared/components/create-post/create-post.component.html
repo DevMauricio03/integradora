@@ -49,7 +49,7 @@
       <!-- SECCIÓN DINÁMICA: OFERTA (SUBTIPOS) -->
       @if (currentType() === 'oferta') {
       <div class="section-group fade-in">
-        <h3 class="section-label">¿QUÉ OFRECES?</h3>
+        <h3 class="section-label">¿Qué ofreces?</h3>
         <div class="subtype-grid">
           @for (st of subtypes; track st.id) {
           <button type="button" class="subtype-card" [class.selected]="selectedSubtype() === st.id"
