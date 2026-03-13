@@ -209,4 +209,42 @@ export class ProfileService {
             .eq('id', userId);
         return { data, error };
     }
+
+    /**
+     * Solicitar copia de datos personales.
+     * En una fase real, esto dispararía una función edge de Supabase o un trigger.
+     */
+    async solicitarDescargaDatos(): Promise<{ success: boolean; error?: string }> {
+        const user = await this.auth.getCachedUser();
+        if (!user) throw new Error('Usuario no autenticado');
+
+        // Simulación: registramos la solicitud o disparamos un proceso
+        // console.log('Simulación: Solicitud de descarga enviada para:', user.email);
+        
+        // Simular latencia de red
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        return { success: true };
+    }
+
+    /** 
+     * Iniciar proceso de eliminación de cuenta.
+     * Realiza un borrado lógico o físico dependiendo de la política del backend.
+     */
+    async solicitarEliminacionCuenta(): Promise<{ success: boolean; error?: string }> {
+        const user = await this.auth.getCachedUser();
+        if (!user) throw new Error('Usuario no autenticado');
+
+        // En Supabase, borrar el registro de auth.users borra en cascada si está configurado.
+        // Opcionalmente se puede llamar a un RPC especializado.
+        const { error } = await this.db.from('perfiles').delete().eq('id', user.id);
+        
+        if (error) {
+            console.error('[ProfileService] solicitarEliminacionCuenta:', error);
+            return { success: false, error: error.message };
+        }
+
+        // Importante: El usuario debe quedar deslogueado tras esto.
+        return { success: true };
+    }
 }

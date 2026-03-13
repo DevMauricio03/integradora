@@ -1,1 +1,145 @@
-<p>configuracion works!</p>,
+<div class="contenedor-configuracion">
+	<div class="contenido-configuracion">
+
+		<!-- Privacidad Section -->
+		<div class="config-seccion-wrapper">
+			<div class="config-titulo-seccion">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="texto-primario">
+					<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+					<circle cx="12" cy="12" r="3"/>
+				</svg>
+				<h2>Privacidad</h2>
+			</div>
+			
+			<section class="card-seccion">
+				<div class="config-fila">
+					<div class="config-info">
+						<h3>Descargar datos personales</h3>
+						<p>Obtén una copia de toda tu información en Tuunka.</p>
+					</div>
+					<button 
+						class="btn-enlace-azul" 
+						(click)="solicitarDescarga()"
+						[disabled]="isDownloading()"
+					>
+						@if (isDownloading()) {
+							Cargando...
+						} @else {
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+								<polyline points="7 10 12 15 17 10"/>
+								<line x1="12" x2="12" y1="15" y2="3"/>
+							</svg>
+							Solicitar descarga
+						}
+					</button>
+				</div>
+			</section>
+		</div>
+
+		<!-- Seguridad Section -->
+		<div class="config-seccion-wrapper">
+			<div class="config-titulo-seccion">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="texto-primario">
+					<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+					<path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+				</svg>
+				<h2>Seguridad</h2>
+			</div>
+			
+			<section class="card-seccion">
+				<div class="config-fila">
+					<div class="config-info-con-icono">
+						<div class="icono-fondo">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="texto-primario">
+								<circle cx="12" cy="12" r="1"/>
+								<circle cx="19" cy="12" r="1"/>
+								<circle cx="5" cy="12" r="1"/>
+							</svg>
+						</div>
+						<div class="config-info">
+							<h3>Cambiar contraseña</h3>
+							<p>Mantén tu cuenta protegida con una contraseña segura.</p>
+						</div>
+					</div>
+					<button class="btn-outline-sm" (click)="abrirCambiarPassword()">Actualizar</button>
+				</div>
+			</section>
+		</div>
+
+		<!-- Zona de peligro Section -->
+		<div class="config-seccion-wrapper">
+			<div class="config-titulo-seccion peligro">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="texto-peligro">
+					<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+					<line x1="12" x2="12" y1="9" y2="13"/>
+					<line x1="12" x2="12.01" y1="17" y2="17"/>
+				</svg>
+				<h2>Zona de peligro</h2>
+			</div>
+			
+			<section class="card-seccion card-danger">
+				<div class="config-fila con-borde">
+					<p class="texto-peligro-info">Cierra tu sesión actual de forma segura en este navegador.</p>
+					<button class="btn-outline-danger" (click)="cerrarSesion()">Cerrar sesión</button>
+				</div>
+				<div class="config-fila">
+					<p class="texto-peligro-info">Eliminar tu cuenta es una acción permanente y no se puede deshacer.</p>
+					<button class="btn-solid-danger" (click)="abrirConfirmacionEliminar()">Eliminar cuenta</button>
+				</div>
+			</section>
+		</div>
+
+	</div>
+</div>
+
+<!-- Modales -->
+
+@if (showChangePassword()) {
+	<app-change-password-modal 
+		(closed)="showChangePassword.set(false)"
+		(success)="onPasswordChanged()"
+	/>
+}
+
+@if (showSuccessDownload()) {
+	<app-success-modal 
+		titulo="¡Solicitud enviada!"
+		mensaje="Estamos procesando tu información. Recibirás un correo con el enlace de descarga en unos minutos."
+		botonTexto="Entendido"
+		(confirm)="showSuccessDownload.set(false)"
+		(closed)="showSuccessDownload.set(false)"
+	/>
+}
+
+@if (showSuccessPassword()) {
+	<app-success-modal 
+		titulo="¡Contraseña actualizada!"
+		mensaje="Tu contraseña ha sido cambiada exitosamente. Úsala la próxima vez que inicies sesión."
+		botonTexto="Aceptar"
+		(confirm)="showSuccessPassword.set(false)"
+		(closed)="showSuccessPassword.set(false)"
+	/>
+}
+
+@if (showConfirmDelete()) {
+	<app-confirm-modal 
+		titulo="¿Eliminar tu cuenta permanentemente?"
+		mensaje="Esta acción borrará todas tus publicaciones, comentarios y perfil. No podrás recuperar tu información."
+		botonConfirmar="Eliminar permanentemente"
+		botonCancelar="Cancelar"
+		[esPeligroso]="true"
+		(confirm)="eliminarCuenta()"
+		(closed)="showConfirmDelete.set(false)"
+	/>
+}
+
+@if (showSuccessDelete()) {
+	<app-success-modal 
+		titulo="¡Cuenta eliminada!"
+		mensaje="Tu cuenta ha sido eliminada correctamente. Lamentamos verte partir."
+		botonTexto="Regresar al inicio"
+		(confirm)="finalizarEliminacion()"
+		(closed)="finalizarEliminacion()"
+	/>
+}

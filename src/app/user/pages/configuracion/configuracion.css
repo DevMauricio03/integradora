@@ -1,0 +1,244 @@
+.contenedor-configuracion {
+	min-height: 100vh;
+	background: var(--panel-bg, #F8F9FC); /* Fondo principal alineado al resto del sistema */
+	padding: 40px 24px;
+	display: flex;
+	justify-content: center;
+}
+
+.contenido-configuracion {
+	width: 100%;
+	max-width: 900px; /* Igual que en perfil.css */
+	display: flex;
+	flex-direction: column;
+	gap: 48px; /* Espaciado generoso entre secciones */
+}
+
+/* ============ TÍTULOS DE SECCIÓN ============ */
+.config-seccion-wrapper {
+	display: flex;
+	flex-direction: column;
+}
+
+.config-titulo-seccion {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.config-titulo-seccion h2 {
+	margin: 0;
+	font-size: 22px;
+	font-weight: 800;
+	color: var(--text-main, #111318);
+	letter-spacing: -0.3px;
+}
+
+.texto-primario {
+	color: var(--primary, #135BEC);
+}
+
+.config-titulo-seccion.peligro h2,
+.texto-peligro {
+	color: #dc2626;
+}
+
+/* ============ CARDS (Reutilizando diseño de editPerfil/perfil) ============ */
+.card-seccion {
+	background: white;
+	border: 1px solid var(--border-light, #E5E7EB);
+	border-radius: 16px; /* Bordes generosos como el resto de cards */
+	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05); /* Sombra sutil y elegante */
+	overflow: hidden; /* Para las variaciones con bordes como danger zone */
+}
+
+/* ============ FILAS INTERNAS ============ */
+.config-fila {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 24px 32px;
+	gap: 24px;
+}
+
+.config-fila.con-borde {
+	border-bottom: 1px solid var(--border-light, #E5E7EB);
+}
+
+.config-info {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.config-info h3 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--text-main, #111318);
+}
+
+.config-info p {
+	margin: 0;
+	font-size: 14px;
+	color: var(--text-secondary, #6B7280);
+	line-height: 1.5;
+}
+
+.config-info-con-icono {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.icono-fondo {
+	width: 48px;
+	height: 48px;
+	background: #F3F4F6;
+	border: 1px solid var(--border-light, #E5E7EB);
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* ============ BOTONES (Construidos similar a btn-outline-sm y btn-primary) ============ */
+.btn-enlace-azul {
+	background: none;
+	border: none;
+	color: var(--primary, #135BEC);
+	font-size: 14px;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	padding: 10px 16px;
+	border-radius: 10px;
+	transition: background 0.2s;
+}
+
+.btn-enlace-azul:hover {
+	background: rgba(19, 91, 236, 0.06);
+}
+
+.btn-outline-sm {
+	border: 1px solid var(--border-light, #E5E7EB);
+	background: white;
+	border-radius: 10px;
+	min-height: 40px;
+	padding: 0 24px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	color: var(--text-secondary, #374151);
+	transition: all 0.2s;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.btn-outline-sm:hover {
+	background: #f9fafb;
+	border-color: #9CA3AF;
+}
+
+.btn-outline-danger {
+	border: 1px solid #fecaca;
+	background: white;
+	border-radius: 10px;
+	min-height: 40px;
+	padding: 0 24px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #dc2626;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+}
+
+.btn-outline-danger:hover {
+	background: #dc2626;
+	color: white;
+	border-color: #dc2626;
+	box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2);
+}
+
+.btn-solid-danger {
+	background: #dc2626;
+	border: 1px solid #dc2626;
+	color: white;
+	border-radius: 10px;
+	min-height: 40px;
+	padding: 0 24px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+	box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+.btn-solid-danger:hover {
+	background: #b91c1c;
+	border-color: #b91c1c;
+	box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+}
+
+/* ============ DANGER ZONE CARD ============ */
+.card-danger {
+	background: #FEF2F2;
+	border-color: #FEE2E2;
+}
+
+.card-danger .con-borde {
+	border-color: #FEE2E2;
+}
+
+.texto-peligro-info {
+	margin: 0;
+	font-size: 14px;
+	color: #991B1B;
+	font-weight: 500;
+	line-height: 1.5;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 1024px) {
+	.contenedor-configuracion {
+		padding: 32px 20px;
+	}
+}
+
+@media (max-width: 768px) {
+	.contenedor-configuracion {
+		padding: 24px 16px;
+	}
+	
+	.contenido-configuracion {
+		gap: 32px;
+	}
+
+	.config-fila {
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 20px;
+		gap: 20px;
+	}
+	
+	.btn-enlace-azul,
+	.btn-outline-sm,
+	.btn-outline-danger,
+	.btn-solid-danger {
+		width: 100%;
+		justify-content: center;
+	}
+}

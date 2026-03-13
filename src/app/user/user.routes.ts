@@ -59,6 +59,12 @@ export const USER_ROUTES: Routes = [
         data: { title: 'Publicado', hideSearch: true }
       },
       {
+        path: 'configuracion',
+        loadComponent: () =>
+          import('./pages/configuracion/configuracion').then(m => m.Configuracion),
+        data: { title: 'Configuración', hideSearch: true }
+      },
+      {
         path: '',
         redirectTo: 'feed',
         pathMatch: 'full'

@@ -126,6 +126,13 @@ export class InicioSesion implements OnInit {
         // Obtenemos el perfil para la navegación por roles
         const perfil = await this.supabaseService.getPerfilActual();
 
+        if (!perfil) {
+          // Si no existe el perfil, la cuenta fue eliminada o no se completó el registro
+          await this.supabaseService.signOut();
+          this.errorMensaje.set('El correo electrónico no está registrado.');
+          return;
+        }
+
         // Lógica de persistencia local
         if (recordarme) {
           localStorage.setItem('remember_email', email);
@@ -134,7 +141,7 @@ export class InicioSesion implements OnInit {
         }
 
         // Navegación basada en roles
-        const rol: any = perfil?.roles;
+        const rol: any = perfil.roles;
         const nombreRol = Array.isArray(rol) ? rol[0]?.nombre : rol?.nombre;
 
         if (nombreRol?.toLowerCase()?.includes('admin')) {
