@@ -131,7 +131,7 @@ export class ModalAgregarUsuario implements OnInit {
 
     async saveUser(event?: Event) {
         event?.preventDefault();
-        if (this.registroForm().pending()) return;
+        if (this.registroForm().pending() || this.isProcessing()) return;
 
         this.errorMessage.set('');
 

@@ -257,7 +257,7 @@ export class RegistroPage implements OnInit {
    */
   async onRegister(event?: Event) {
     event?.preventDefault();
-    if (this.registroForm().pending()) return;
+    if (this.registroForm().pending() || this.cargando()) return;
 
     this.errorRegistro.set('');
 

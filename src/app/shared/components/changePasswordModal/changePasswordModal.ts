@@ -416,7 +416,7 @@ export class ChangePasswordModal {
 
   async onSubmit(event: Event) {
     event.preventDefault();
-    if (this.passwordSignalForm().pending()) return;
+    if (this.passwordSignalForm().pending() || this.isLoading()) return;
 
     submit(this.passwordSignalForm, async () => {
       this.isLoading.set(true);

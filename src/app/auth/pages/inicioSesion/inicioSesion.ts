@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { form, required, email, submit, FormField, SchemaPathTree, maxLength, pattern } from '@angular/forms/signals';
@@ -53,6 +54,7 @@ export class InicioSesion implements OnInit {
   private readonly supabaseService = inject(SupabaseService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   /**
    * Al iniciar, verificamos si existe un correo guardado por la funcionalidad 'Recordarme'.
@@ -64,7 +66,7 @@ export class InicioSesion implements OnInit {
     }
 
     // Si venimos de un redireccionamiento por suspensión
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['error'] === 'cuenta_suspendida') {
         this.errorMensaje.set('Tu sesión ha finalizado porque tu cuenta se encuentra suspendida.');
       }
@@ -77,8 +79,8 @@ export class InicioSesion implements OnInit {
   async onSubmit(event: Event) {
     event.preventDefault();
 
-    // Evitamos múltiples clics si hay validaciones asíncronas pendientes
-    if (this.loginForm().pending()) return;
+    // Evitamos múltiples clics si hay validaciones asíncronas pendientes o ya está cargando
+    if (this.loginForm().pending() || this.loading()) return;
 
     this.errorMensaje.set('');
 

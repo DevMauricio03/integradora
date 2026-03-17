@@ -124,9 +124,9 @@
       <!-- BOTÓN -->
       <button type="submit" class="boton-inicio-sesion" [disabled]="loading() || loginForm().pending()">
         @if (loading()) {
-        Ingresando...
+        <span>Ingresando...</span>
         } @else {
-        Entrar
+        <span>Entrar</span>
         }
       </button>
 

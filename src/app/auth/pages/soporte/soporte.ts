@@ -14,14 +14,21 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
 })
 export class SoporteAuth {
   enviado = signal(false);
+  cargando = signal(false);
   ticketNumber = signal('TK-48291');
 
   constructor(private readonly router: Router) { }
 
   enviarMensaje(event: Event) {
     event.preventDefault();
+    if (this.cargando()) return;
+    this.cargando.set(true);
+
     // Simulamos envío
-    this.enviado.set(true);
+    setTimeout(() => {
+      this.enviado.set(true);
+      this.cargando.set(false);
+    }, 1000);
   }
 
   volver() {

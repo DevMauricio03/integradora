@@ -299,9 +299,9 @@
       <!-- BOTÓN -->
       <button type="submit" class="boton-crear" [disabled]="cargando() || registroForm().pending()">
         @if (cargando()) {
-        Creando cuenta...
+        <span>Creando cuenta...</span>
         } @else {
-        Crear
+        <span>Crear</span>
         }
       </button>
 

@@ -18,13 +18,14 @@ import {
 import { AuthStoreService } from '../../../core/services/auth-store.service';
 import { ReportService } from '../../../core/services/report.service';
 import { ReportModalComponent } from '../../../shared/components/report-modal/report-modal';
+import { ConfirmModal } from '../../../shared/components/confirmModal/confirmModal';
 
 const MAX_WORDS = 50;
 
 @Component({
   selector: 'app-comentarios',
   standalone: true,
-  imports: [CommonModule, ReportModalComponent],
+  imports: [CommonModule, ReportModalComponent, ConfirmModal],
   templateUrl: './comentarios.html',
   styleUrls: ['./comentarios.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,6 +62,11 @@ export class Comentarios implements OnInit {
   /** Control del modal de reporte de comentario */
   readonly showReportModal    = signal(false);
   readonly reportingComment   = signal<Comentario | null>(null);
+
+  /** Control del modal de confirmación de borrado */
+  readonly confirmModalOpen   = signal(false);
+  readonly commentToDelete    = signal<string | null>(null);
+  readonly isDeleting         = signal(false);
 
   private offset = 0;
 
@@ -124,7 +130,7 @@ export class Comentarios implements OnInit {
   // ── Publicar ──────────────────────────────────────────────────
 
   async submitComment() {
-    if (this.disabled) return;
+    if (this.disabled || this.isPublishing()) return;
 
     const text = this.commentText().trim();
     if (!text) return;
@@ -155,15 +161,34 @@ export class Comentarios implements OnInit {
 
   // ── Eliminar ──────────────────────────────────────────────────
 
-  async deleteComment(id: string) {
+  openDeleteConfirm(id: string) {
     this.closeMenu();
-    const { error } = await this.svc.deleteComentario(id);
-    if (!error) {
-      this.comentarios.update(prev => prev.filter(c => c.id !== id));
-      this.offset = Math.max(0, this.offset - 1);
+    this.commentToDelete.set(id);
+    this.confirmModalOpen.set(true);
+  }
+
+  closeDeleteConfirm() {
+    this.confirmModalOpen.set(false);
+    this.commentToDelete.set(null);
+  }
+
+  async confirmDeleteComment() {
+    const id = this.commentToDelete();
+    if (!id || this.isDeleting()) return;
+
+    this.isDeleting.set(true);
+    try {
+      const { error } = await this.svc.deleteComentario(id);
+      if (!error) {
+        this.comentarios.update(prev => prev.filter(c => c.id !== id));
+        this.offset = Math.max(0, this.offset - 1);
+      } else {
+        console.error('[Comentarios] Error al eliminar:', error);
+      }
+    } finally {
+      this.isDeleting.set(false);
+      this.closeDeleteConfirm();
       this.cdr.markForCheck();
-    } else {
-      console.error('[Comentarios] Error al eliminar:', error);
     }
   }
 

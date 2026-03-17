@@ -184,9 +184,9 @@
                         [disabled]="isProcessing()">Cancelar</button>
                     <button type="submit" class="boton-crear" [disabled]="isProcessing()">
                         @if (isProcessing()) {
-                        <app-icon name="refresh-cw" [size]="16" class="spin-icon"></app-icon> Registrando...
+                        <app-icon name="refresh-cw" [size]="16" class="spin-icon"></app-icon> <span>Registrando...</span>
                         } @else {
-                        Guardar Usuario
+                        <span>Guardar Usuario</span>
                         }
                     </button>
                 </div>

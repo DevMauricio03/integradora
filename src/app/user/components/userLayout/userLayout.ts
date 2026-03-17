@@ -11,6 +11,7 @@ import {
 } from '@angular/router';
 
 import { filter } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 @Component({
   selector: 'app-user-layout',
@@ -34,7 +35,10 @@ export class UserLayoutComponent {
 
   constructor() {
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntilDestroyed()
+      )
       .subscribe(() => {
         const route = this.getDeepestChild(this.route);
         const data = route.snapshot.data;

@@ -63,7 +63,7 @@
 							[image]="post.image" [images]="post.images" [avatar]="post.avatar"
 							[category]="post.category" [details]="post.details"
 							[expirationDate]="post.expirationDate" [showControls]="true"
-							[estado]="post.status" />
+							[estado]="post.status" (deleted)="openDeleteConfirm(post.id)" />
 					}
 				}
 			}
@@ -78,3 +78,15 @@
 	</div>
 
 </main>
+
+@if (confirmModalOpen()) {
+	<app-confirm-modal
+	  titulo="¿Eliminar publicación?"
+	  mensaje="Esta acción no se puede deshacer. La publicación será borrada permanentemente."
+	  botonConfirmar="Eliminar"
+	  botonCancelar="Cancelar"
+	  [esPeligroso]="true"
+	  (closed)="closeDeleteConfirm()"
+	  (confirm)="confirmDeletePost()"
+	></app-confirm-modal>
+}

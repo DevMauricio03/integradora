@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SupabaseService } from './core/services/supabase.service';
 import { filter } from 'rxjs';
 import { SuspensionModal } from './shared/components/suspensionModal/suspensionModal';
@@ -25,6 +26,7 @@ export class App implements OnInit {
   protected readonly title = signal('new_integradora');
   private readonly supabase = inject(SupabaseService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   mostrarModalSuspension = signal(false);
   tiempoRestante = signal('Indefinido');
@@ -32,13 +34,11 @@ export class App implements OnInit {
   ngOnInit() {
     // Verificamos el estado de la cuenta en cada cambio de ruta principal
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
+      filter(event => event instanceof NavigationEnd),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.checkUserStatus();
     });
-
-    // También verificamos al inicio
-    this.checkUserStatus();
   }
 
   private async checkUserStatus() {

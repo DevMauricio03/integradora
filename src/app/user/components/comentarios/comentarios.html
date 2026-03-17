@@ -35,9 +35,9 @@
       >
         @if (isPublishing()) {
         <span class="spinner"></span>
-        Publicando…
+        <span>Publicando…</span>
         } @else {
-        Publicar
+        <span>Publicar</span>
         }
       </button>
     </div>
@@ -104,7 +104,7 @@
             @if (openMenuId() === c.id) {
             <div class="menu-dropdown">
               @if (canDelete(c)) {
-              <button type="button" class="menu-item menu-item--danger" (click)="deleteComment(c.id)">
+              <button type="button" class="menu-item menu-item--danger" (click)="openDeleteConfirm(c.id)">
                 <span class="menu-icon"></span>
                 Eliminar comentario
               </button>
@@ -136,9 +136,9 @@
   >
     @if (isLoadingMore()) {
     <span class="spinner spinner-sm"></span>
-    Cargando…
+    <span>Cargando…</span>
     } @else {
-    Ver más comentarios
+    <span>Ver más comentarios</span>
     }
   </button>
   }
@@ -161,4 +161,17 @@
   (closed)="closeReportModal()"
   (reported)="handleCommentReport($event)"
 ></app-report-modal>
+}
+
+<!-- ── Modal de confirmación (Borrado de Comentario) ── -->
+@if (confirmModalOpen()) {
+  <app-confirm-modal
+    titulo="¿Eliminar comentario?"
+    mensaje="Esta acción no se puede deshacer. Tu comentario será borrado permanentemente."
+    botonConfirmar="Eliminar"
+    botonCancelar="Cancelar"
+    [esPeligroso]="true"
+    (closed)="closeDeleteConfirm()"
+    (confirm)="confirmDeleteComment()"
+  ></app-confirm-modal>
 }

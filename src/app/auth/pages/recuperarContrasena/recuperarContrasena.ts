@@ -46,7 +46,7 @@ export class RecuperarContrasena {
   async onEnviar(event: Event) {
     event.preventDefault();
 
-    if (this.recoverForm().pending()) return;
+    if (this.recoverForm().pending() || this.cargando()) return;
 
     this.errorEnvio.set('');
     this.emailEnviado.set(false);

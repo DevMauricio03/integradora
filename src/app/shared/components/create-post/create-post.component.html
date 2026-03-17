@@ -400,7 +400,7 @@
       <button type="button" class="btn-cancelar" (click)="backToForm()">Editar</button>
       <button type="button" class="btn-siguiente" (click)="publish()"
         [disabled]="postForm().pending() || isPublishing()">
-        {{ isPublishing() ? 'Publicando...' : 'Publicar Ahora' }}
+        <span>{{ isPublishing() ? 'Publicando...' : 'Publicar Ahora' }}</span>
       </button>
     </div>
   </div>

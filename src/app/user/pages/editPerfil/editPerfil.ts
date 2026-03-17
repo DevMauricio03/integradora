@@ -106,6 +106,7 @@ export class EditarPerfilPage implements OnInit {
   // ── Guardado ─────────────────────────────────────────────────────────────────
   guardarCambios(event: Event): void {
     event.preventDefault();
+    if (this.guardando()) return;
     this.errorGuardando.set(null);
 
     /**

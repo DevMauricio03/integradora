@@ -90,7 +90,7 @@ export class NuevaPassword implements OnInit {
   async actualizarPassword(event: Event) {
     event.preventDefault();
 
-    if (this.passwordForm().pending()) return;
+    if (this.passwordForm().pending() || this.cargando()) return;
 
     this.errorMensaje.set(null);
 

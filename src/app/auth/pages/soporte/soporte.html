@@ -72,13 +72,17 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-enviar">
+                <button type="submit" class="btn-enviar" [disabled]="cargando()">
+                    @if (cargando()) {
+                    <span>Enviando...</span>
+                    } @else {
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
                         fill="#ffffff">
                         <path
                             d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
                     </svg>
-                    Enviar mensaje
+                    <span>Enviar mensaje</span>
+                    }
                 </button>
             </form>
         </section>

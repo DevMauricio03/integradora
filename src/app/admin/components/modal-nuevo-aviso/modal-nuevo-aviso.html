@@ -164,9 +164,9 @@
                         [disabled]="isPublishing()">Editar</button>
                     <button type="button" class="btn-siguiente" (click)="publish()" [disabled]="isPublishing()">
                         @if (isPublishing()) {
-                        <app-icon name="refresh-cw" [size]="16" class="spin-icon"></app-icon> Publicando...
+                        <app-icon name="refresh-cw" [size]="16" class="spin-icon"></app-icon> <span>Publicando...</span>
                         } @else {
-                        Publicar Aviso
+                        <span>Publicar Aviso</span>
                         }
                     </button>
                 </div>
