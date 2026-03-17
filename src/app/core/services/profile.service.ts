@@ -235,13 +235,20 @@ export class ProfileService {
         const user = await this.auth.getCachedUser();
         if (!user) throw new Error('Usuario no autenticado');
 
-        // En Supabase, borrar el registro de auth.users borra en cascada si está configurado.
-        // Opcionalmente se puede llamar a un RPC especializado.
-        const { error } = await this.db.from('perfiles').delete().eq('id', user.id);
+        // Llamamos al RPC para asegurar que se elimina tanto en auth.users como en profiles,
+        // esto requiere privilegios elevados que el RPC maneja con SECURITY DEFINER.
+        const { data, error } = await this.db.rpc('delete_own_account');
         
         if (error) {
-            console.error('[ProfileService] solicitarEliminacionCuenta:', error);
+            console.error('[ProfileService] solicitarEliminacionCuenta (Error Supabase):', error);
             return { success: false, error: error.message };
+        }
+
+        // El RPC retorna un json_build_object con success y error
+        const rpcResult = data;
+        if (rpcResult && !rpcResult.success) {
+            console.error('[ProfileService] solicitarEliminacionCuenta (Error RPC):', rpcResult.error);
+            return { success: false, error: rpcResult.error };
         }
 
         // Importante: El usuario debe quedar deslogueado tras esto.
