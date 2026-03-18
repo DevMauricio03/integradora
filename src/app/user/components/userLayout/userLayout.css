@@ -147,6 +147,22 @@
   border: 1.5px solid white;
 }
 
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 1.5px solid white;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1;
+}
+
 .btn-nueva-pub {
   display: flex;
   align-items: center;
