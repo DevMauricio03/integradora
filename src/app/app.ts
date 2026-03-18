@@ -4,18 +4,21 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SupabaseService } from './core/services/supabase.service';
 import { filter } from 'rxjs';
 import { SuspensionModal } from './shared/components/suspensionModal/suspensionModal';
+import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SuspensionModal],
+  imports: [RouterOutlet, SuspensionModal, ToastContainerComponent],
   template: `
     <router-outlet></router-outlet>
-    
+
+    <app-toast-container></app-toast-container>
+
     @if (mostrarModalSuspension()) {
-      <app-suspension-modal 
-        [tiempoRestante]="tiempoRestante()" 
+      <app-suspension-modal
+        [tiempoRestante]="tiempoRestante()"
         (confirm)="finalizarSesionForzada()">
       </app-suspension-modal>
     }
