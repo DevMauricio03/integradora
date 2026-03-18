@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import {
   ActivatedRoute,
@@ -24,7 +24,7 @@ import { NotificationStoreService } from '../../../core/services/notification-st
   changeDetection: ChangeDetectionStrategy.OnPush,
 
 })
-export class UserLayoutComponent {
+export class UserLayoutComponent implements OnInit {
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -38,7 +38,6 @@ export class UserLayoutComponent {
 
   // ── Notificaciones ────────────────────────────────────────────
   readonly notificationCount = this.notificationStore.unreadCount;
-  readonly hasNotifications = this.notificationStore.hasNotifications;
 
   constructor() {
     this.router.events
@@ -54,10 +53,12 @@ export class UserLayoutComponent {
         this.showCreateButton.set(data['showCreateButton'] || false);
         this.showSearch.set(data['hideSearch'] !== true);
         this.centerTitle.set(data['centerTitle'] === true);
-        this.isMenuOpen.set(false); // Cierra el menú al navegar
+        this.isMenuOpen.set(false);
       });
+  }
 
-    // Cargar notificaciones al inicializar
+  ngOnInit() {
+    // ── Cargar notificaciones al inicializar el componente ────────
     this.notificationStore.loadNotificaciones().catch(err =>
       console.error('[UserLayout] Error cargando notificaciones:', err)
     );

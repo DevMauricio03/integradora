@@ -24,7 +24,7 @@
     <!-- Notificación -->
     <button class="icon-btn notification-btn" [routerLink]="['/user/notificaciones']">
       <app-icon name="bell" [size]="20"></app-icon>
-      @if (hasNotifications()) {
+      @if (notificationCount() > 0) {
       <span class="notification-badge">{{ notificationCount() }}</span>
       }
     </button>

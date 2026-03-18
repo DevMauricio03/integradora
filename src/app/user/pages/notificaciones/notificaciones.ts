@@ -18,6 +18,7 @@ export class Notificaciones implements OnInit {
   readonly notificaciones = this.notificationStore.notificaciones;
   readonly isLoading = this.notificationStore.isLoading;
   readonly hasNotifications = this.notificationStore.hasNotifications;
+  readonly hasAnyNotifications = this.notificationStore.hasAnyNotifications;  // NUEVO: Para mostrar panel aunque esté vacío
 
   ngOnInit() {
     // Cargar notificaciones si aún no estén cargadas

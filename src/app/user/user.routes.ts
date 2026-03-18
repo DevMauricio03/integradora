@@ -65,6 +65,12 @@ export const USER_ROUTES: Routes = [
         data: { title: 'Configuración', hideSearch: true }
       },
       {
+        path: 'notificaciones',
+        loadComponent: () =>
+          import('./pages/notificaciones/notificaciones').then(m => m.Notificaciones),
+        data: { title: 'Notificaciones', hideSearch: true, centerTitle: true }
+      },
+      {
         path: '',
         redirectTo: 'feed',
         pathMatch: 'full'

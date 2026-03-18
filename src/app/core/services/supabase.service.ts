@@ -9,6 +9,7 @@ import { ReportService } from './report.service';
 import { CatalogService } from './catalog.service';
 import { StorageService } from './storage.service';
 import { AuthStoreService } from './auth-store.service';
+import { NotificationStoreService } from './notification-store.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -25,11 +26,18 @@ export class SupabaseService {
   private readonly reportSvc = inject(ReportService);
   private readonly catalogSvc = inject(CatalogService);
   private readonly storageSvc = inject(StorageService);
+  private readonly notificationStoreSvc = inject(NotificationStoreService);
 
   // ── Auth ──────────────────────────────────────────────────────
   register(email: string, password: string) { return this.authSvc.signUp(email, password); }
   signIn(email: string, password: string) { return this.authSvc.signIn(email, password); }
-  signOut() { return this.authSvc.signOut(); }
+
+  async signOut() {
+    // Limpiar notificaciones antes de hacer logout
+    this.notificationStoreSvc.invalidate();
+    return this.authSvc.signOut();
+  }
+
   getSession() { return this.authSvc.getSession(); }
   onAuthStateChange(cb: (e: any, s: any) => void) { return this.authSvc.onAuthStateChange(cb); }
   resetPassword(email: string) { return this.authSvc.resetPassword(email); }
