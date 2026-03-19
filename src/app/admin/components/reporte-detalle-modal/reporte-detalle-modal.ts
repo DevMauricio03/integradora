@@ -3,6 +3,7 @@ import { SuccessModal } from '../../../shared/components/successModal/successMod
 import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 // Layer 3: Admin Services — nunca llamar al core directamente desde componentes admin
 import { AdminReportService } from '../../services/adminReport.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -10,7 +11,7 @@ import { NotificationService } from '../../../core/services/notification.service
 @Component({
   selector: 'app-reporte-detalle-modal',
   standalone: true,
-  imports: [ModalBase, IconComponent, CommonModule, SuccessModal],
+  imports: [ModalBase, IconComponent, CommonModule, SuccessModal, FormsModule],
   templateUrl: './reporte-detalle-modal.html',
   styleUrls: ['./reporte-detalle-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +27,11 @@ export class ReporteDetalleModal {
   isProcessing = signal<boolean>(false);
   showSuspensionOptions = signal<boolean>(false);
 
+  // ── Modales de eliminación ─────────────────────────────────────────
+  mostrarModalMotivo = signal<boolean>(false);
+  motivoEliminacion = signal<string>('');
+  tipoEliminacionEnCurso = signal<'publicacion' | 'comentario' | null>(null);
+
   mostrarConfirmacion = signal<boolean>(false);
   configConfirmacion = signal<{
     titulo: string;
@@ -33,6 +39,134 @@ export class ReporteDetalleModal {
     botonTexto: string;
     accion: () => Promise<void>;
   } | null>(null);
+
+  // ── Método para pedir motivo ANTES de eliminar ────────────────────────
+  /**
+   * Abre modal para que el admin escriba el motivo de eliminación.
+   * Después abre el modal de confirmación.
+   */
+  private askForDeletionReason(type: 'publicacion' | 'comentario') {
+    // Pre-llenar con motivo del reporte si existe
+    this.motivoEliminacion.set(this.reporte?.motivo || '');
+    this.tipoEliminacionEnCurso.set(type);
+    this.mostrarModalMotivo.set(true);
+  }
+
+  /**
+   * Confirma el motivo y abre modal de eliminación.
+   */
+  confirmarMotivo() {
+    if (!this.motivoEliminacion().trim()) {
+      alert('Por favor, escriba el motivo de eliminación');
+      return;
+    }
+
+    const type = this.tipoEliminacionEnCurso();
+    if (!type) return;
+
+    this.mostrarModalMotivo.set(false);
+
+    // Actualizar reporte con motivo personalizado
+    if (this.reporte) {
+      this.reporte.motivo = this.motivoEliminacion();
+    }
+
+    // Abrir modal de confirmación
+    this.openDeleteConfirm(type);
+  }
+
+  /**
+   * Cancela la entrada de motivo.
+   */
+  cancelarMotivo() {
+    this.mostrarModalMotivo.set(false);
+    this.motivoEliminacion.set('');
+    this.tipoEliminacionEnCurso.set(null);
+  }
+
+  // ── Método genérico para ambas eliminaciones ────────────────────────
+  /**
+   * Abre modal de confirmación para eliminar publicación o comentario.
+   * Maneja ambos casos de forma genérica para evitar duplicación.
+   */
+  private openDeleteConfirm(type: 'publicacion' | 'comentario') {
+    const config = type === 'publicacion' ? {
+      titulo: '¿Eliminar publicación?',
+      mensaje: 'La publicación quedará desactivada y no será visible. Todos los reportes pendientes de esta publicación se marcarán como resueltos. Esta acción no se puede deshacer.',
+      botonTexto: 'Sí, eliminar',
+    } : {
+      titulo: '¿Eliminar comentario?',
+      mensaje: 'El comentario será eliminado de la base de datos. No será visible para otros usuarios. Esta acción no se puede deshacer.',
+      botonTexto: 'Sí, eliminar',
+    };
+
+    this.configConfirmacion.set({
+      ...config,
+      accion: async () => {
+        if (this.isProcessing()) return;
+        this.isProcessing.set(true);
+        this.mostrarConfirmacion.set(false);
+
+        const autorId = this.reporte?.autor_id;
+        const informanteId = this.reporte?.reportado_por;
+
+        try {
+          const accionModeracion = type === 'publicacion' ? 'eliminar_publicacion' : 'eliminar_comentario';
+          const { error } = await this.reportService.moderarReporte(
+            this.reporte.id,
+            accionModeracion as 'eliminar_publicacion' | 'eliminar_comentario',
+          );
+          if (error) throw error;
+
+          // ── Notificar al autor ────────────────────────────────────
+          if (autorId) {
+            try {
+              const notificationType = type === 'publicacion' ? 'post_eliminado' : 'comentario_eliminado';
+              const notificationMsg = type === 'publicacion'
+                ? `Tu publicación fue eliminada por moderación. Motivo: ${this.reporte.motivo}`
+                : `Uno de tus comentarios fue eliminado por moderación. Motivo: ${this.reporte.motivo}`;
+
+              await this.notificationService.createNotificacion({
+                user_id: autorId,
+                tipo: notificationType as 'post_eliminado' | 'comentario_eliminado',
+                mensaje: notificationMsg,
+                leido: false
+              });
+            } catch (notifError) {
+              console.error('Error enviando notificación al autor:', notifError);
+            }
+          }
+
+          // ── Notificar al informante ────────────────────────────────
+          if (informanteId && informanteId !== autorId) {
+            try {
+              const accionTexto = type === 'publicacion' ? 'publicación eliminada' : 'comentario eliminado';
+              await this.notificationService.createNotificacion({
+                user_id: informanteId,
+                tipo: 'reporte_resuelto',
+                mensaje: `Tu reporte fue revisado por moderación. Acción tomada: ${accionTexto}. Motivo: ${this.reporte.motivo}`,
+                leido: false
+              });
+            } catch (notifError) {
+              console.error('Error enviando notificación al informante:', notifError);
+            }
+          }
+
+          this.actionExecuted.emit();
+          this.closed.emit();
+        } catch (err) {
+          console.error(`[ReporteModal] Error al eliminar ${type}:`, err);
+          alert(`Error al eliminar ${type === 'publicacion' ? 'publicación' : 'comentario'}`);
+        } finally {
+          this.isProcessing.set(false);
+        }
+      }
+    });
+
+    this.mostrarConfirmacion.set(true);
+  }
+
+  // ── Alias para compatibilidad backward ────────────────────────────────
 
   // ── Acciones de moderación ────────────────────────────────────────────────
 
@@ -75,139 +209,17 @@ export class ReporteDetalleModal {
   }
 
   /**
-   * Solicita confirmación y ejecuta el RPC moderar_reporte('eliminar_publicacion').
-   * El RPC en una sola transacción:
-   *   1. Soft-delete de la publicación (estado = 'eliminado').
-   *   2. Resuelve TODOS los reportes pendientes de esa publicación.
+   * Elimina una publicación (abre modal para escribir motivo primero).
    */
   async eliminarPublicacion() {
-    this.configConfirmacion.set({
-      titulo: '¿Eliminar publicación?',
-      mensaje: 'La publicación quedará desactivada y no será visible. Todos los reportes pendientes de esta publicación se marcarán como resueltos. Esta acción no se puede deshacer.',
-      botonTexto: 'Sí, eliminar',
-      accion: async () => {
-        if (this.isProcessing()) return;
-        this.isProcessing.set(true);
-        this.mostrarConfirmacion.set(false);
-
-        // Obtener IDs del autor e informante ANTES de ejecutar la acción
-        const autorId = this.reporte?.autor_id;
-        const informanteId = this.reporte?.reportado_por;
-
-        try {
-          const { error } = await this.reportService.moderarReporte(
-            this.reporte.id,
-            'eliminar_publicacion',
-          );
-          if (error) throw error;
-
-          // Enviar notificación al autor de la publicación
-          if (autorId) {
-            try {
-              await this.notificationService.createNotificacion({
-                user_id: autorId,
-                tipo: 'post_eliminado',
-                mensaje: `Tu publicación fue eliminada por moderación. Motivo: ${this.reporte.motivo}`,
-                leido: false
-              });
-            } catch (notifError) {
-              console.error('Error enviando notificación al autor:', notifError);
-            }
-          }
-
-          // Enviar notificación al informante (solo si es diferente usuario)
-          if (informanteId && informanteId !== autorId) {
-            try {
-              await this.notificationService.createNotificacion({
-                user_id: informanteId,
-                tipo: 'reporte_resuelto',
-                mensaje: 'Tu reporte fue revisado por moderación. Acción tomada: publicación eliminada.',
-                leido: false
-              });
-            } catch (notifError) {
-              console.error('Error enviando notificación al informante:', notifError);
-            }
-          }
-
-          this.actionExecuted.emit();
-          this.closed.emit();
-        } catch (err) {
-          console.error('[ReporteModal] eliminarPublicacion error:', err);
-          alert('Error al eliminar la publicación');
-        } finally {
-          this.isProcessing.set(false);
-        }
-      }
-    });
-    this.mostrarConfirmacion.set(true);
+    this.askForDeletionReason('publicacion');
   }
 
   /**
-   * Solicita confirmación y ejecuta el RPC moderar_reporte('eliminar_comentario').
-   * El RPC en una sola transacción:
-   *   1. Elimina el comentario de la base de datos.
-   *   2. Resuelve el reporte como procesado.
+   * Elimina un comentario (abre modal para escribir motivo primero).
    */
   async eliminarComentario() {
-    this.configConfirmacion.set({
-      titulo: '¿Eliminar comentario?',
-      mensaje: 'El comentario será eliminado de la base de datos. No será visible para otros usuarios. Esta acción no se puede deshacer.',
-      botonTexto: 'Sí, eliminar',
-      accion: async () => {
-        if (this.isProcessing()) return;
-        this.isProcessing.set(true);
-        this.mostrarConfirmacion.set(false);
-
-        // Obtener IDs del autor e informante ANTES de ejecutar la acción
-        const autorId = this.reporte?.autor_id;
-        const informanteId = this.reporte?.reportado_por;
-
-        try {
-          const { error } = await this.reportService.moderarReporte(
-            this.reporte.id,
-            'eliminar_comentario',
-          );
-          if (error) throw error;
-
-          // Enviar notificación al autor del comentario
-          if (autorId) {
-            try {
-              await this.notificationService.createNotificacion({
-                user_id: autorId,
-                tipo: 'comentario_eliminado',
-                mensaje: `Uno de tus comentarios fue eliminado por moderación. Motivo: ${this.reporte.motivo}`,
-                leido: false
-              });
-            } catch (notifError) {
-              console.error('Error enviando notificación al autor:', notifError);
-            }
-          }
-
-          // Enviar notificación al informante (solo si es diferente usuario)
-          if (informanteId && informanteId !== autorId) {
-            try {
-              await this.notificationService.createNotificacion({
-                user_id: informanteId,
-                tipo: 'reporte_resuelto',
-                mensaje: 'Tu reporte fue revisado por moderación. Acción tomada: comentario eliminado.',
-                leido: false
-              });
-            } catch (notifError) {
-              console.error('Error enviando notificación al informante:', notifError);
-            }
-          }
-
-          this.actionExecuted.emit();
-          this.closed.emit();
-        } catch (err) {
-          console.error('[ReporteModal] eliminarComentario error:', err);
-          alert('Error al eliminar el comentario');
-        } finally {
-          this.isProcessing.set(false);
-        }
-      }
-    });
-    this.mostrarConfirmacion.set(true);
+    this.askForDeletionReason('comentario');
   }
 
   toggleSuspension() {

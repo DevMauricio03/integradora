@@ -6,7 +6,14 @@
 
 /* ── Header ────────────────────────────────────────────────────── */
 .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 32px;
+}
+
+.header-title {
+  flex: 1;
 }
 
 .header h1 {
@@ -20,6 +27,28 @@
   font-size: 14px;
   color: #6b7280;
   margin: 0;
+}
+
+.btn-clear-all {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-clear-all:hover {
+  background: #dc2626;
+  box-shadow: 0px 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.btn-clear-all:active {
+  transform: scale(0.98);
 }
 
 /* ── Loading State ────────────────────────────────────────────── */
@@ -112,6 +141,16 @@
   border-color: #bfdbfe;
 }
 
+.notification-item.clickable {
+  cursor: pointer;
+}
+
+.notification-item.clickable:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.15);
+}
+
 /* ── Badge ────────────────────────────────────────────────────── */
 .notification-badge {
   flex-shrink: 0;
@@ -162,14 +201,56 @@
   margin-top: 6px;
 }
 
+/* ── Delete Button ────────────────────────────────────────────────── */
+.btn-delete-notif {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0;
+  margin-top: 6px;
+}
+
+.notification-item:hover .btn-delete-notif {
+  opacity: 1;
+}
+
+.btn-delete-notif:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.btn-delete-notif:active {
+  transform: scale(0.95);
+}
+
 /* ── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .notificaciones-container {
     padding: 16px;
   }
 
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
   .header h1 {
     font-size: 24px;
+  }
+
+  .btn-clear-all {
+    width: 100%;
   }
 
   .notification-item {
@@ -184,4 +265,12 @@
   .notification-message {
     font-size: 13px;
   }
+
+  .btn-delete-notif {
+    opacity: 1;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
 }
+

@@ -70,4 +70,28 @@ export class NotificationService {
 
     return { data: result as Notificacion | null, error };
   }
+
+  /**
+   * Eliminar una notificación por id.
+   */
+  async deleteNotification(notificationId: string): Promise<{ error: any }> {
+    const { error } = await this.db
+      .from('notificaciones')
+      .delete()
+      .eq('id', notificationId);
+
+    return { error };
+  }
+
+  /**
+   * Eliminar todas las notificaciones del usuario actual.
+   */
+  async deleteAllNotifications(userId: string): Promise<{ error: any }> {
+    const { error } = await this.db
+      .from('notificaciones')
+      .delete()
+      .eq('user_id', userId);
+
+    return { error };
+  }
 }

@@ -264,6 +264,53 @@ export class NotificationStoreService {
   }
 
   /**
+   * Eliminar una notificación individual.
+   * Actualiza el estado local inmediatamente (optimistic).
+   */
+  async deleteNotification(notificationId: string): Promise<void> {
+    // Single-pass update: find and remove in one iteration
+    let notif: Notificacion | undefined;
+    this._notificaciones.update(prev => {
+      notif = prev.find(n => n.id === notificationId);
+      return prev.filter(n => n.id !== notificationId);
+    });
+
+    // Decrementar contador si estaba sin leer
+    if (notif && !notif.leido && this._unreadCount() > 0) {
+      this._unreadCount.update(count => count - 1);
+    }
+
+    // Eliminar en BD
+    const { error } = await this.notificationService.deleteNotification(notificationId);
+    if (error) {
+      console.error('[NotificationStore] Error al eliminar notificación:', error);
+      // Si falla, recargar desde BD
+      await this.loadNotificaciones();
+    }
+  }
+
+  /**
+   * Eliminar todas las notificaciones del usuario actual.
+   * Actualiza el estado local inmediatamente (optimistic).
+   */
+  async clearAll(): Promise<void> {
+    const perfil = await this.authStore.getPerfilActual();
+    if (!perfil) return;
+
+    // Optimistic update: limpiar lista
+    this._notificaciones.set([]);
+    this._unreadCount.set(0);
+
+    // Eliminar en BD
+    const { error } = await this.notificationService.deleteAllNotifications(perfil.id);
+    if (error) {
+      console.error('[NotificationStore] Error al limpiar todas las notificaciones:', error);
+      // Si falla, recargar desde BD
+      await this.loadNotificaciones();
+    }
+  }
+
+  /**
    * Invalidar caché (llamar cuando cambia el usuario o después de logout).
    * También desuscribe del canal Realtime.
    */
