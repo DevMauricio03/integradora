@@ -3,6 +3,7 @@ import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { StatusBadge } from '../../../shared/components/statusBadge/statusBadge';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 // Layer 3: Admin Services — nunca llamar al core directamente desde componentes admin
 import { AdminUserService } from '../../services/adminUser.service';
 import { PublicationService } from '../../../core/services/publication.service';
@@ -21,7 +22,7 @@ const DURATION_OPTIONS: { value: SuspensionDuration; label: string }[] = [
 @Component({
     selector: 'app-usuario-detalle-modal',
     standalone: true,
-    imports: [ModalBase, StatusBadge, IconComponent, CommonModule],
+    imports: [ModalBase, StatusBadge, IconComponent, CommonModule, FormsModule],
     templateUrl: './usuario-detalle-modal.html',
     styleUrls: ['./usuario-detalle-modal.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,

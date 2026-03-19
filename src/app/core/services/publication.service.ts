@@ -193,7 +193,8 @@ export class PublicationService {
           universidades ( acronimo )
         )
       `, { count: 'exact' })
-            .order('creado', { ascending: false });
+            .order('creado', { ascending: false })
+            .neq('estado', 'eliminado');
 
         if (params?.type && params.type !== 'todos') {
             query = query.eq('tipo', params.type);

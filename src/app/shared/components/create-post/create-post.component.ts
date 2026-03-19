@@ -257,4 +257,9 @@ export class CreatePostComponent {
     }));
     this.imageFiles.update(prev => prev.filter((_, i) => i !== index));
   }
+
+  onNumericInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, '');
+  }
 }

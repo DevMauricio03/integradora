@@ -112,7 +112,7 @@
           <label for="postContactAviso">Número de contacto (opcional)</label>
           <div class="input-with-icon">
             <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
-            <input id="postContactAviso" type="text" [formField]="postForm.phoneNumber" placeholder="Ej: 9511234567">
+            <input id="postContactAviso" type="tel" inputmode="numeric" [formField]="postForm.phoneNumber" (input)="onNumericInput($event)" placeholder="Ej: 9511234567">
           </div>
         </div>
         }
@@ -228,8 +228,7 @@
           <label for="postPhoneNumberProduct">Número</label>
           <div class="input-with-icon">
             <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
-            <input id="postPhoneNumberProduct" type="text" [formField]="postForm.phoneNumber"
-              placeholder="951 123 4455">
+            <input id="postPhoneNumberProduct" type="tel" inputmode="numeric" [formField]="postForm.phoneNumber" (input)="onNumericInput($event)" placeholder="951 123 4455">
           </div>
         </div>
         }
@@ -291,8 +290,7 @@
           <label for="postPhoneNumberService">Número</label>
           <div class="input-with-icon">
             <app-icon name="phone" [size]="18" class="field-icon"></app-icon>
-            <input id="postPhoneNumberService" type="text" [formField]="postForm.phoneNumber"
-              placeholder="951 123 4455">
+            <input id="postPhoneNumberService" type="tel" inputmode="numeric" [formField]="postForm.phoneNumber" (input)="onNumericInput($event)" placeholder="951 123 4455">
           </div>
         </div>
         }
