@@ -1,8 +1,17 @@
 <div class="notificaciones-container">
   <!-- Header -->
   <div class="header">
-    <h1>Notificaciones</h1>
-    <p class="subtitle">Mantente al tanto de lo que sucede en tu cuenta</p>
+    <div class="header-title">
+      <h1>Notificaciones</h1>
+      <p class="subtitle">Mantente al tanto de lo que sucede en tu cuenta</p>
+    </div>
+
+    <!-- Botón limpiar todas (visible solo si hay notificaciones) -->
+    @if (!isLoading() && hasAnyNotifications()) {
+    <button class="btn-clear-all" (click)="openDeleteAllConfirm()" title="Eliminar todas las notificaciones">
+      Limpiar todas
+    </button>
+    }
   </div>
 
   <!-- Loading State -->
@@ -29,7 +38,10 @@
   @if (!isLoading() && hasAnyNotifications()) {
   <div class="notifications-list">
     @for (notif of notificaciones(); track notif.id) {
-    <div class="notification-item" [class.unread]="!notif.leido" (click)="markAsRead(notif)">
+    <div class="notification-item"
+         [class.unread]="!notif.leido"
+         [class.clickable]="puedeVerDetalles(notif.tipo)"
+         (click)="puedeVerDetalles(notif.tipo) ? abrirDetalleNotificacion(notif) : markAsRead(notif)">
       <!-- Badge de tipo -->
       <div class="notification-badge" [style.backgroundColor]="getColorForType(notif.tipo)">
         <span class="badge-icon">●</span>
@@ -42,6 +54,14 @@
         <span class="notification-time">{{ formatDate(notif.creado) }}</span>
       </div>
 
+      <!-- Botón eliminar -->
+      <button class="btn-delete-notif"
+              (click)="openDeleteConfirm(notif.id, $event)"
+              title="Eliminar notificación"
+              aria-label="Eliminar notificación">
+        ✕
+      </button>
+
       <!-- Estado leído/no leído -->
       @if (!notif.leido) {
       <div class="unread-indicator"></div>
@@ -51,3 +71,26 @@
   </div>
   }
 </div>
+
+<!-- Modal para ver motivo de eliminación -->
+@if (mostrarModalMotivo()) {
+  <app-modal-ver-motivo
+    [titulo]="'Motivo de eliminación'"
+    [motivo]="motivoMostrado()"
+    [tipo]="tipoEliminacion()"
+    (closed)="cerrarModalMotivo()">
+  </app-modal-ver-motivo>
+}
+
+<!-- Modal de confirmación para eliminar notificación(es) -->
+@if (confirmDeleteOpen()) {
+  <app-confirm-delete-modal
+    [title]="isDeleteAll() ? 'Eliminar todas las notificaciones' : 'Eliminar notificación'"
+    [message]="isDeleteAll()
+      ? '¿Estás seguro de eliminar todas las notificaciones? Esta acción no se puede deshacer.'
+      : '¿Estás seguro de eliminar esta notificación?'"
+    (confirm)="confirmDelete()"
+    (close)="closeDeleteConfirm()">
+  </app-confirm-delete-modal>
+}
+

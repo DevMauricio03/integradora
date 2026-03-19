@@ -35,17 +35,31 @@
     gap: 16px;
 }
 
+.custom-select-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
 .custom-select {
     background: white;
     border: 1px solid var(--border-light);
     border-radius: 12px;
     padding: 10px 16px;
+    padding-right: 40px;
     display: flex;
     align-items: center;
     gap: 24px;
     cursor: pointer;
     font-size: 14px;
     color: var(--text-secondary);
+    appearance: none;
+}
+
+.custom-select-wrapper app-icon {
+    position: absolute;
+    right: 12px;
+    pointer-events: none;
 }
 
 .custom-select strong {
