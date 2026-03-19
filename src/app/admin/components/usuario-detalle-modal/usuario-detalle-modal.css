@@ -397,6 +397,45 @@
     cursor: not-allowed;
 }
 
+.motivo-input-group {
+    margin-top: 16px;
+    text-align: left;
+}
+
+.motivo-input-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.motivo-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-main);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.motivo-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.motivo-textarea:disabled {
+    background: #F9FAFB;
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
 /* Responsividad para móviles */
 @media (max-width: 768px) {
     .modal-overlay {

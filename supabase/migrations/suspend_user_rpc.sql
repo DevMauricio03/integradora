@@ -152,9 +152,11 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  v_pub_id   uuid;
-  v_autor_id uuid;
-  v_duration text;
+  v_pub_id      uuid;
+  v_autor_id    uuid;
+  v_comentario_id uuid;
+  v_comentario_autor_id uuid;
+  v_duration    text;
 BEGIN
   IF NOT es_admin() THEN
     RETURN json_build_object('success', false, 'error', 'No autorizado');
@@ -162,8 +164,8 @@ BEGIN
 
   -- Resolve post and its author from the pending report.
   -- Reports are linked to posts, not directly to users.
-  SELECT rep.publicacion_id, pub.autor_id
-  INTO   v_pub_id, v_autor_id
+  SELECT rep.publicacion_id, pub.autor_id, rep.comentario_id
+  INTO   v_pub_id, v_autor_id, v_comentario_id
   FROM   public.reportes      rep
   JOIN   public.publicaciones pub ON pub.id = rep.publicacion_id
   WHERE  rep.id     = p_reporte_id
@@ -186,9 +188,15 @@ BEGIN
       WHERE id = v_pub_id;
 
     WHEN 'eliminar_comentario' THEN
-      -- Delete the comment (reported comment case only)
-      DELETE FROM public.comentarios
-      WHERE id = (SELECT comentario_id FROM public.reportes WHERE id = p_reporte_id);
+      -- Get the comment author before deleting
+      IF v_comentario_id IS NOT NULL THEN
+        SELECT autor_id INTO v_comentario_autor_id
+        FROM public.comentarios
+        WHERE id = v_comentario_id;
+
+        DELETE FROM public.comentarios
+        WHERE id = v_comentario_id;
+      END IF;
 
     WHEN 'suspender_usuario' THEN
       v_duration := CASE
@@ -212,7 +220,15 @@ BEGIN
        resuelto_en  = now()
   WHERE id = p_reporte_id;
 
-  RETURN json_build_object('success', true);
+  -- Return success with the user_id to notify (for frontend notifications)
+  -- For comment deletion, use the comment author; otherwise use the post author
+  RETURN json_build_object(
+    'success', true,
+    'user_id', CASE
+      WHEN p_accion = 'eliminar_comentario' THEN COALESCE(v_comentario_autor_id, v_autor_id)
+      ELSE v_autor_id
+    END
+  );
 
 EXCEPTION WHEN OTHERS THEN
   RETURN json_build_object('success', false, 'error', SQLERRM);

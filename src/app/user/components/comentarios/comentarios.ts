@@ -17,6 +17,8 @@ import {
 } from '../../../core/services/comentario.service';
 import { AuthStoreService } from '../../../core/services/auth-store.service';
 import { ReportService } from '../../../core/services/report.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { Post } from '../../../core/services/post-store.service';
 import { ReportModalComponent } from '../../../shared/components/report-modal/report-modal';
 import { ConfirmModal } from '../../../shared/components/confirmModal/confirmModal';
 
@@ -35,10 +37,13 @@ export class Comentarios implements OnInit {
   @Input() disabled = false;
   /** ID del post — requerido para cargar y publicar comentarios */
   @Input() postId = '';
+  /** Publicación completa — requerida para obtener autor_id y enviar notificaciones */
+  @Input() publicacion: Post | null = null;
 
   private readonly svc       = inject(ComentarioService);
   private readonly authStore = inject(AuthStoreService);
   private readonly reportSvc = inject(ReportService);
+  private readonly notificationService = inject(NotificationService);
   private readonly cdr       = inject(ChangeDetectorRef);
 
   readonly MAX_WORDS = MAX_WORDS;
@@ -161,6 +166,21 @@ export class Comentarios implements OnInit {
         this.comentarios.update(prev => [data, ...prev]);
         this.offset += 1;
         this.commentText.set('');
+
+        // Notificar al autor de la publicación (solo si es diferente usuario)
+        if (this.publicacion?.authorId && this.publicacion.authorId !== this.currentUserId()) {
+          try {
+            const comentaristaName = data.perfiles?.nombre || 'Un usuario';
+            await this.notificationService.createNotificacion({
+              user_id: this.publicacion.authorId,
+              tipo: 'post_comentado',
+              mensaje: `${comentaristaName} comentó en tu publicación.`,
+              leido: false
+            });
+          } catch (notifError) {
+            console.error('Error enviando notificación de comentario:', notifError);
+          }
+        }
       } finally {
         this.isPublishing.set(false);
         this.cdr.markForCheck();

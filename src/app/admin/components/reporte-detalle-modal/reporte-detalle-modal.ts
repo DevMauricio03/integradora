@@ -5,6 +5,7 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { CommonModule } from '@angular/common';
 // Layer 3: Admin Services — nunca llamar al core directamente desde componentes admin
 import { AdminReportService } from '../../services/adminReport.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-reporte-detalle-modal',
@@ -20,6 +21,7 @@ export class ReporteDetalleModal {
   @Output() actionExecuted = new EventEmitter<void>();
 
   private readonly reportService = inject(AdminReportService);
+  private readonly notificationService = inject(NotificationService);
 
   isProcessing = signal<boolean>(false);
   showSuspensionOptions = signal<boolean>(false);
@@ -42,8 +44,26 @@ export class ReporteDetalleModal {
     if (this.isProcessing()) return;
     this.isProcessing.set(true);
     try {
+      // Obtener el ID del informante ANTES de ejecutar la acción
+      const informanteId = this.reporte?.reportado_por;
+
       const { error } = await this.reportService.moderarReporte(this.reporte.id, 'descartar');
       if (error) throw error;
+
+      // Notificar al informante que su reporte fue revisado
+      if (informanteId) {
+        try {
+          await this.notificationService.createNotificacion({
+            user_id: informanteId,
+            tipo: 'reporte_revision',
+            mensaje: 'Tu reporte fue revisado. No se detectó una infracción.',
+            leido: false
+          });
+        } catch (notifError) {
+          console.error('Error enviando notificación de reporte revisado:', notifError);
+        }
+      }
+
       this.actionExecuted.emit();
       this.closed.emit();
     } catch (err) {
@@ -69,12 +89,46 @@ export class ReporteDetalleModal {
         if (this.isProcessing()) return;
         this.isProcessing.set(true);
         this.mostrarConfirmacion.set(false);
+
+        // Obtener IDs del autor e informante ANTES de ejecutar la acción
+        const autorId = this.reporte?.autor_id;
+        const informanteId = this.reporte?.reportado_por;
+
         try {
           const { error } = await this.reportService.moderarReporte(
             this.reporte.id,
             'eliminar_publicacion',
           );
           if (error) throw error;
+
+          // Enviar notificación al autor de la publicación
+          if (autorId) {
+            try {
+              await this.notificationService.createNotificacion({
+                user_id: autorId,
+                tipo: 'post_eliminado',
+                mensaje: `Tu publicación fue eliminada por moderación. Motivo: ${this.reporte.motivo}`,
+                leido: false
+              });
+            } catch (notifError) {
+              console.error('Error enviando notificación al autor:', notifError);
+            }
+          }
+
+          // Enviar notificación al informante (solo si es diferente usuario)
+          if (informanteId && informanteId !== autorId) {
+            try {
+              await this.notificationService.createNotificacion({
+                user_id: informanteId,
+                tipo: 'reporte_resuelto',
+                mensaje: 'Tu reporte fue revisado por moderación. Acción tomada: publicación eliminada.',
+                leido: false
+              });
+            } catch (notifError) {
+              console.error('Error enviando notificación al informante:', notifError);
+            }
+          }
+
           this.actionExecuted.emit();
           this.closed.emit();
         } catch (err) {
@@ -103,12 +157,46 @@ export class ReporteDetalleModal {
         if (this.isProcessing()) return;
         this.isProcessing.set(true);
         this.mostrarConfirmacion.set(false);
+
+        // Obtener IDs del autor e informante ANTES de ejecutar la acción
+        const autorId = this.reporte?.autor_id;
+        const informanteId = this.reporte?.reportado_por;
+
         try {
           const { error } = await this.reportService.moderarReporte(
             this.reporte.id,
             'eliminar_comentario',
           );
           if (error) throw error;
+
+          // Enviar notificación al autor del comentario
+          if (autorId) {
+            try {
+              await this.notificationService.createNotificacion({
+                user_id: autorId,
+                tipo: 'comentario_eliminado',
+                mensaje: `Uno de tus comentarios fue eliminado por moderación. Motivo: ${this.reporte.motivo}`,
+                leido: false
+              });
+            } catch (notifError) {
+              console.error('Error enviando notificación al autor:', notifError);
+            }
+          }
+
+          // Enviar notificación al informante (solo si es diferente usuario)
+          if (informanteId && informanteId !== autorId) {
+            try {
+              await this.notificationService.createNotificacion({
+                user_id: informanteId,
+                tipo: 'reporte_resuelto',
+                mensaje: 'Tu reporte fue revisado por moderación. Acción tomada: comentario eliminado.',
+                leido: false
+              });
+            } catch (notifError) {
+              console.error('Error enviando notificación al informante:', notifError);
+            }
+          }
+
           this.actionExecuted.emit();
           this.closed.emit();
         } catch (err) {
@@ -150,7 +238,7 @@ export class ReporteDetalleModal {
         this.isProcessing.set(true);
         this.mostrarConfirmacion.set(false);
         try {
-          const { error } = await this.reportService.moderarReporte(
+          const { data, error } = await this.reportService.moderarReporte(
             this.reporte.id,
             'suspender_usuario',
             hours,
