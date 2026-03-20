@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal, effect, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthStoreService } from '../../../core/services/auth-store.service';
 import { PostStoreService, Post } from '../../../core/services/post-store.service';
@@ -22,8 +22,20 @@ export class PerfilPublicoPage implements OnInit {
   private readonly pubService = inject(PublicationService);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  public perfil: any;
+  // ✅ REACTIVE: Usar signal del store directamente
+  readonly perfil = this.authStore.perfil;
   readonly defaultAvatarUrl = 'https://i.pinimg.com/236x/6c/55/d4/6c55d49dd6839b5b79e84a1aa6d2260d.jpg';
+
+  // Helper computed para normalizar el acceso a propiedades que pueden ser array u objeto
+  readonly perfilNormalizado = computed(() => {
+    const p = this.perfil();
+    if (!p) return null;
+    return {
+      ...p,
+      roles: Array.isArray(p.roles) ? p.roles[0] : p.roles,
+      universidades: Array.isArray(p.universidades) ? p.universidades[0] : p.universidades
+    };
+  });
 
   readonly isLoading = signal<boolean>(true);
   readonly misPosts = signal<Post[]>([]);
@@ -33,21 +45,42 @@ export class PerfilPublicoPage implements OnInit {
   readonly postToDelete = signal<string | null>(null);
   readonly isDeleting = signal(false);
 
+  constructor() {
+    // ✅ REACTIVE: Reaccionar automáticamente a cambios del perfil
+    // Cuando el perfil se actualiza (ej: después de editar), recarga los posts
+    effect(() => {
+      const perfilActual = this.perfil();
+      if (perfilActual?.id) {
+        this.loadPosts(perfilActual.id);
+      }
+    });
+  }
+
   ngOnInit() {
     this.loadPerfil();
   }
 
   private async loadPerfil() {
     try {
-      this.perfil = await this.authStore.getPerfilActual();
-      this.cdr.markForCheck();
-
-      if (!this.perfil?.id) return;
-
-      const posts = await this.postStore.getPostsForPerfil(this.perfil.id);
-      this.misPosts.set(posts);
+      // Obtener perfil del store (si no está cargado, lo trae del servidor)
+      await this.authStore.getPerfilActual();
+      // El effect se disparará automáticamente cuando el perfil esté disponible
     } catch (e) {
       console.error('Error en loadPerfil:', e);
+      this.isLoading.set(false);
+      this.cdr.markForCheck();
+    }
+  }
+
+  private async loadPosts(userId: string) {
+    try {
+      this.isLoading.set(true);
+      this.cdr.markForCheck();
+
+      const posts = await this.postStore.getPostsForPerfil(userId);
+      this.misPosts.set(posts);
+    } catch (e) {
+      console.error('Error en loadPosts:', e);
     } finally {
       this.isLoading.set(false);
       this.cdr.markForCheck();

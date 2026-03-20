@@ -118,7 +118,9 @@ export class EditarPerfilPage implements OnInit {
       this.guardando.set(true);
       try {
         await this.supabaseService.updatePerfil(this.editModel());
+        // Invalidar y recargar el perfil para que los componentes reactivos se actualicen
         this.authStore.invalidatePerfil();
+        await this.authStore.getPerfilActual(true);
         this.mostrarExito.set(true);
       } catch (err) {
         console.error('[EditarPerfil] Error al guardar:', err);
@@ -175,7 +177,9 @@ export class EditarPerfilPage implements OnInit {
       const url = await this.supabaseService.subirAvatar(file);
       // Replace the local blob preview with the persisted remote URL
       this.perfil.update(p => ({ ...p, foto_url: url }));
+      // Invalidar y recargar para actualizar otros componentes
       this.authStore.invalidatePerfil();
+      await this.authStore.getPerfilActual(true);
     } catch (err) {
       console.error('[EditarPerfil] Error subiendo avatar:', err);
       this.errorFoto.set('No se pudo subir la foto. Inténtalo de nuevo.');
@@ -188,7 +192,9 @@ export class EditarPerfilPage implements OnInit {
     try {
       await this.supabaseService.eliminarAvatar();
       this.perfil.update(p => ({ ...p, foto_url: null }));
+      // Invalidar y recargar para actualizar otros componentes
       this.authStore.invalidatePerfil();
+      await this.authStore.getPerfilActual(true);
     } catch (err) {
       console.error('[EditarPerfil] Error eliminando avatar:', err);
     }
