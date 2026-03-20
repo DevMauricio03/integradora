@@ -20,7 +20,7 @@ export class NotificationService {
   async getNotificaciones(userId: string): Promise<{ data: Notificacion[] | null; error: any }> {
     const { data, error } = await this.db
       .from('notificaciones')
-      .select('id, user_id, tipo, mensaje, leido, creado')
+      .select('id, user_id, tipo, mensaje, leido, creado, post_id, comentario_id')
       .eq('user_id', userId)
       .order('creado', { ascending: false });
 
@@ -64,8 +64,10 @@ export class NotificationService {
         tipo: data.tipo,
         mensaje: data.mensaje,
         leido: data.leido ?? false,
+        post_id: data.post_id,
+        comentario_id: data.comentario_id,
       })
-      .select('id, user_id, tipo, mensaje, leido, creado')
+      .select('id, user_id, tipo, mensaje, leido, creado, post_id, comentario_id')
       .single();
 
     return { data: result as Notificacion | null, error };

@@ -45,7 +45,8 @@ export class AdminPublications implements OnInit {
                         user_id: publication.autor_id,
                         tipo: 'post_aprobado',
                         mensaje: 'Tu publicación ha sido aprobada y ahora es visible para otros usuarios.',
-                        leido: false
+                        leido: false,
+                        post_id: publication.id  // Contexto: ID de la publicación
                     });
                 } catch (notifError) {
                     console.error('Error enviando notificación de aprobación:', notifError);
@@ -88,7 +89,8 @@ export class AdminPublications implements OnInit {
                         user_id: autorId,
                         tipo: 'post_rechazado',
                         mensaje: `Tu publicación fue rechazada por el equipo de moderación. Motivo: ${motivo}`,
-                        leido: false
+                        leido: false,
+                        post_id: publication.id  // Contexto: ID de la publicación
                     });
                 } catch (notifError) {
                     console.error('Error enviando notificación de rechazo:', notifError);

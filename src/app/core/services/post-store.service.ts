@@ -3,6 +3,7 @@ import { FeedViewService, FeedPost, FEED_PAGE_SIZE } from './feed-view.service';
 import { StorageService } from './storage.service';
 import { PublicationService } from './publication.service';
 import { AnuncioService } from './anuncio.service';
+import { formatTimeAgo } from '../../shared/utils/date.util';
 
 export interface Post {
   id: string;
@@ -464,17 +465,7 @@ export class PostStoreService {
   }
 
   private formatTime(dateStr: string): string {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffMins < 1) return 'Ahora';
-    if (diffMins < 60) return `${diffMins} min`;
-    if (diffHours < 24) return `${diffHours} h`;
-    return date.toLocaleDateString('es-MX', {
-      day: 'numeric', month: 'short',
-      year: date.getFullYear() === now.getFullYear() ? undefined : 'numeric'
-    });
+    // Reutilizar la lógica centralizada de date.util.ts para consistencia global
+    return formatTimeAgo(dateStr);
   }
 }
