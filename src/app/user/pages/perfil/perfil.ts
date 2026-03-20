@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal, effect, computed } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal, effect, computed, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthStoreService } from '../../../core/services/auth-store.service';
 import { PostStoreService, Post } from '../../../core/services/post-store.service';
@@ -51,7 +51,8 @@ export class PerfilPublicoPage implements OnInit {
     effect(() => {
       const perfilActual = this.perfil();
       if (perfilActual?.id) {
-        this.loadPosts(perfilActual.id);
+        // Usar untracked para llamadas async que modifican signals
+        untracked(() => this.loadPosts(perfilActual.id));
       }
     });
   }

@@ -19,10 +19,11 @@ export class Notificaciones implements OnInit {
   private readonly notificationStore = inject(NotificationStoreService);
 
   // ── Signals expuestas ─────────────────────────────────────────
+  // ✅ Signals reactivos - OnPush detecta cambios automáticamente
   readonly notificaciones = this.notificationStore.notificaciones;
   readonly isLoading = this.notificationStore.isLoading;
   readonly hasNotifications = this.notificationStore.hasNotifications;
-  readonly hasAnyNotifications = this.notificationStore.hasAnyNotifications;  // NUEVO: Para mostrar panel aunque esté vacío
+  readonly hasAnyNotifications = this.notificationStore.hasAnyNotifications;
 
   // ── Modal para ver motivo de eliminación ────────────────────────
   mostrarModalMotivo = signal<boolean>(false);
@@ -61,6 +62,8 @@ export class Notificaciones implements OnInit {
       'post_eliminado': 'alert-circle',
       'usuario_suspendido': 'lock',
       'admin_action': 'shield',
+      'reporte_resuelto': 'check-circle',
+      'reporte_revision': 'info',
     };
     return iconMap[tipo] || 'bell';
   }
@@ -70,13 +73,15 @@ export class Notificaciones implements OnInit {
    */
   getColorForType(tipo: string): string {
     const colorMap: Record<string, string> = {
-      'post_aceptado': APP_COLORS.PRIMARY,      // Azul predeterminado del proyecto
-      'post_aprobado': APP_COLORS.PRIMARY,      // Azul predeterminado del proyecto - alias
-      'post_rechazado': APP_COLORS.ERROR_RED,   // Rojo
+      'post_aceptado': APP_COLORS.PRIMARY,          // Azul predeterminado del proyecto
+      'post_aprobado': APP_COLORS.PRIMARY,          // Azul predeterminado del proyecto - alias
+      'post_rechazado': APP_COLORS.ERROR_RED,       // Rojo
       'comentario_eliminado': APP_COLORS.WARNING_ORANGE,  // Naranja
-      'post_eliminado': APP_COLORS.ERROR_RED,   // Rojo
-      'usuario_suspendido': APP_COLORS.ALERT_AMBER,  // Ámbar
-      'admin_action': APP_COLORS.PRIMARY,       // Azul predeterminado del proyecto
+      'post_eliminado': APP_COLORS.ERROR_RED,       // Rojo
+      'usuario_suspendido': APP_COLORS.ALERT_AMBER, // Ámbar
+      'admin_action': APP_COLORS.PRIMARY,           // Azul predeterminado del proyecto
+      'reporte_resuelto': APP_COLORS.SUCCESS_GREEN, // Verde - reporte resuelto con acción
+      'reporte_revision': APP_COLORS.PRIMARY,       // Azul - reporte revisado sin acción
     };
     return colorMap[tipo] || '#6b7280';
   }
@@ -93,6 +98,8 @@ export class Notificaciones implements OnInit {
       'post_eliminado': 'Publicación Eliminada',
       'usuario_suspendido': 'Cuenta Suspendida',
       'admin_action': 'Acción Administrativa',
+      'reporte_resuelto': 'Reporte Resuelto',
+      'reporte_revision': 'Reporte Revisado',
     };
     return typeMap[tipo] || tipo.replace(/_/g, ' ');
   }
@@ -112,38 +119,25 @@ export class Notificaciones implements OnInit {
    * - "Acción tomada: ${accion}"
    * - "Razón: ${razon}"
    *
-   * IMPORTANTE: Busca PRIMERO "Motivo:" porque es la razón del admin,
-   * y luego "Acción tomada:" como fallback.
+   * Si no encuentra ningún patrón, devuelve el mensaje completo.
    */
   private extractMotivo(mensaje: string): string {
-    // DEBUG: Log el mensaje completo
-    console.log('[Notificaciones] Mensaje completo:', mensaje);
-
     // Patrones a buscar en orden de preferencia
-    // "Motivo:" es lo que escribió el admin, es más importante
     const patrones = ['Motivo:', 'Acción tomada:', 'Razón:'];
 
     for (const patron of patrones) {
       const index = mensaje.indexOf(patron);
       if (index !== -1) {
         const valor = mensaje.substring(index + patron.length).trim();
-        console.log(`[Notificaciones] Patrón encontrado "${patron}":`, valor);
-
         if (valor) {
           return valor;
-        } else {
-          console.warn(
-            `[Notificaciones] Patrón "${patron}" encontrado pero valor está vacío`,
-            mensaje
-          );
-          return 'Motivo no disponible';
         }
       }
     }
 
-    // Si ningún patrón fue encontrado
-    console.warn('[Notificaciones] Ningún patrón encontrado en mensaje:', mensaje);
-    return 'Motivo no disponible';
+    // Si no encuentra patrones, devolver el mensaje completo
+    // (útil para notificaciones simples como "Tu reporte fue revisado. No se detectó una infracción.")
+    return mensaje;
   }
 
   /**

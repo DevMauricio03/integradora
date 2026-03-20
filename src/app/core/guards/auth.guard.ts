@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase.service';
+import { NotificationStoreService } from '../services/notification-store.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
 
-  constructor(
-    private readonly supabaseService: SupabaseService,
-    private readonly router: Router
-  ) { }
+  private readonly supabaseService = inject(SupabaseService);
+  private readonly router = inject(Router);
+  private readonly notificationStore = inject(NotificationStoreService);
 
   async canActivate(): Promise<boolean> {
     const { data } = await this.supabaseService.getSession();
@@ -16,6 +16,13 @@ export class AuthGuard implements CanActivate {
     if (!data.session) {
       this.router.navigate(['/auth/inicio-sesion']);
       return false;
+    }
+
+    // ✅ FASE 6: Inicializar Realtime para sesión activa
+    // Cubre el caso cuando el usuario recarga la página o navega sin logout
+    if (data.session.user?.id) {
+      console.log('[AuthGuard] 🔐 Sesión activa detectada, inicializando Realtime para userId:', data.session.user.id);
+      this.notificationStore.initRealtime(data.session.user.id);
     }
 
     // Verificamos si la cuenta ha sido suspendida

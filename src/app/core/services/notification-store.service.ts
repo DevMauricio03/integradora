@@ -62,13 +62,38 @@ export class NotificationStoreService {
   }
 
   /**
+   * ✅ FASE 3: Inicializar Realtime de forma EXPLÍCITA e INDEPENDIENTE
+   *
+   * Este método debe llamarse automáticamente cuando el usuario se autentica.
+   * NO depender de loadNotificaciones() para evitar circular dependencies.
+   *
+   * Llamar desde: AuthService.signIn() o un guard
+   */
+  public initRealtime(userId: string): void {
+    console.log('[NotificationStore] 🔐 initRealtime() - iniciando para userId:', userId);
+
+    // Si ya hay un canal activo, no reinicializar
+    if (this._realtimeInitialized && this._realtimeChannel) {
+      console.log('[NotificationStore] ℹ️ Realtime ya activo, saltando init');
+      return;
+    }
+
+    // Limpiar cualquier suscripción anterior
+    this._unsubscribeFromRealtime();
+
+    // Crear nueva suscripción
+    this._subscribeToRealtime(userId);
+  }
+
+  /**
    * Cargar notificaciones del usuario actual con deduplicación.
    * Si ya hay una carga en vuelo, reutiliza esa Promise.
    *
    * También solicita permiso de notificaciones del navegador (una sola vez).
    * Muestra notificaciones push del navegador para nuevas notificaciones.
    *
-   * NUEVO: Inicia suscripción Realtime para actualizaciones en tiempo real.
+   * ⚠️ IMPORTANTE: Realtime se inicializa de forma INDEPENDIENTE en initRealtime()
+   * Este método NO inicia Realtime para evitar dependencias circulares.
    */
   async loadNotificaciones(): Promise<void> {
     if (this._isLoading()) return;
@@ -119,10 +144,8 @@ export class NotificationStoreService {
           this._unreadCount.set(countResult.count);
         }
 
-        // ── NUEVO: Iniciar suscripción Realtime ───────────────
-        if (!this._realtimeInitialized) {
-          this._subscribeToRealtime(perfil.id);
-        }
+        // ✅ Realtime se inicializa de forma INDEPENDIENTE en initRealtime()
+        // NO se inicializa aquí para evitar duplicaciones y permitir proper cleanup en logout
       } catch (err) {
         console.error('[NotificationStore] Error al cargar notificaciones:', err);
       }
@@ -154,6 +177,8 @@ export class NotificationStoreService {
    */
   private _subscribeToRealtime(userId: string): void {
     try {
+      console.log('[NotificationStore] 🔌 Intentando conectar a Realtime para user:', userId);
+
       this._realtimeChannel = this.supabaseClient
         .channel(`notificaciones:${userId}`)
         .on(
@@ -165,14 +190,16 @@ export class NotificationStoreService {
             filter: `user_id=eq.${userId}`,
           },
           (payload) => {
+            console.log('[NotificationStore] 📨 EVENTO REALTIME RECIBIDO:', payload);
             const newNotificacion = payload.new as Notificacion;
 
-            // ── FASE 5: DEDUPLICACIÓN ────────────────────────────
-            // Verificar que no exista already en la lista
+            // ── DEDUPLICACIÓN ─────────────────────────────────────
             if (this._notificaciones().some(n => n.id === newNotificacion.id)) {
-              console.log('[NotificationStore] Notificación duplicada ignorada:', newNotificacion.id);
+              console.log('[NotificationStore] ⚠️ Notificación duplicada ignorada');
               return;
             }
+
+            console.log('[NotificationStore] ✨ Agregando notificación:', newNotificacion);
 
             // Agregar notificación al inicio de la lista
             this._notificaciones.update(prev => [newNotificacion, ...prev]);
@@ -186,9 +213,6 @@ export class NotificationStoreService {
             const title = this.getTitleForType(newNotificacion.tipo);
 
             // ── DOCUMENT VISIBILITY CHECK (PATRÓN ESTÁNDAR) ────────
-            // Si usuario está en la app → toast (ya lo ve)
-            // Si usuario está fuera → push (necesita notificación)
-            // NUNCA ambas simultáneamente para evitar duplicación
             if (document.visibilityState === 'visible') {
               // ✅ Usuario DENTRO de la app → SOLO toast
               this.toastService.show(
@@ -204,24 +228,29 @@ export class NotificationStoreService {
                   title: title,
                   body: newNotificacion.mensaje,
                   icon: 'icons/tuunka_logo.png',
-                  tag: this.buildNotificationTag(newNotificacion),  // 🔥 Agrupación inteligente
+                  tag: this.buildNotificationTag(newNotificacion),
                   requireInteraction: true
                 });
               }
             }
-
-            console.log('[NotificationStore] Nueva notificación recibida (Realtime):', newNotificacion);
           }
         )
         .subscribe((status) => {
-          console.log('[NotificationStore] Realtime channel status:', status);
+          console.log('[NotificationStore] 🔔 Estado Realtime:', status);
+
           if (status === 'SUBSCRIBED') {
-            console.log('[NotificationStore] Conectado a actualizaciones en tiempo real');
             this._realtimeInitialized = true;
+            console.log('[NotificationStore] ✅ CONECTADO a Realtime exitosamente');
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('[NotificationStore] ❌ ERROR - Verifica que Realtime esté HABILITADO en Supabase para tabla "notificaciones"');
+          } else if (status === 'TIMED_OUT') {
+            console.error('[NotificationStore] ⏱️ TIMEOUT en conexión');
+          } else if (status === 'CLOSED') {
+            console.warn('[NotificationStore] 🔌 Canal cerrado');
           }
         });
     } catch (err) {
-      console.error('[NotificationStore] Error al suscribirse a Realtime:', err);
+      console.error('[NotificationStore] 💥 Error al suscribirse a Realtime:', err);
     }
   }
 
@@ -283,6 +312,8 @@ export class NotificationStoreService {
       'post_eliminado': '🗑️ Publicación Eliminada',
       'usuario_suspendido': '🔒 Cuenta Suspendida',
       'admin_action': '⚙️ Acción Administrativa',
+      'reporte_resuelto': '✅ Reporte Resuelto',
+      'reporte_revision': 'ℹ️ Reporte Revisado',
     };
     return titleMap[tipo] || 'Nueva Notificación';
   }

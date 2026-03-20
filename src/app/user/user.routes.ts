@@ -7,6 +7,7 @@ export const USER_ROUTES: Routes = [
   {
     path: '',
     component: UserLayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'feed',

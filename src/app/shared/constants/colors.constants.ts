@@ -12,6 +12,7 @@ export const APP_COLORS = {
 
   // Colores semánticos para notificaciones
   SUCCESS_BLUE: '#135BEC',   // Para aprobaciones
+  SUCCESS_GREEN: '#10b981',  // Para reportes resueltos
   ERROR_RED: '#ef4444',      // Para rechazos y eliminaciones
   WARNING_ORANGE: '#f97316', // Para eliminaciones de comentarios
   ALERT_AMBER: '#f59e0b',    // Para suspensiones

@@ -37,6 +37,7 @@ export class UserLayoutComponent implements OnInit {
   isMenuOpen = signal(false);
 
   // ── Notificaciones ────────────────────────────────────────────
+  // ✅ Signal reactivo - OnPush detecta cambios automáticamente
   readonly notificationCount = this.notificationStore.unreadCount;
 
   constructor() {
