@@ -3,22 +3,22 @@
 	<!-- Header del perfil -->
 	<section class="perfil-header">
 		<div class="avatar">
-			<img [src]="perfil?.foto_url || defaultAvatarUrl"
+			<img [src]="perfilNormalizado()?.foto_url || defaultAvatarUrl"
 				(error)="onAvatarError($event)" alt="avatar">
 		</div>
 
 		<div class="datos">
-			<h1>{{ (perfil?.nombre || 'Usuario') + ' ' + (perfil?.apellidos || '') }}</h1>
+			<h1>{{ (perfilNormalizado()?.nombre || 'Usuario') + ' ' + (perfilNormalizado()?.apellidos || '') }}</h1>
 
 			<p class="rol-universidad">
-				<span>{{ perfil?.roles?.nombre || 'Sin rol' }}</span>
+				<span>{{ perfilNormalizado()?.roles?.nombre || 'Sin rol' }}</span>
 				<span class="meta-separador">•</span>
-				<span>{{ perfil?.universidades?.acronimo || 'UTVCO' }}</span>
+				<span>{{ perfilNormalizado()?.universidades?.acronimo || 'UTVCO' }}</span>
 			</p>
 
-			<p class="dato-linea">{{ perfil?.correoInstitucional || '—' }}</p>
-			<p class="dato-linea">{{ perfil?.carrera?.nombre || '—' }}</p>
-			<p class="dato-linea dato-linea-graduacion">Graduación {{ perfil?.anio_graduacion || '—' }}</p>
+			<p class="dato-linea">{{ perfilNormalizado()?.correoInstitucional || '—' }}</p>
+			<p class="dato-linea">{{ perfilNormalizado()?.carrera?.nombre || '—' }}</p>
+			<p class="dato-linea dato-linea-graduacion">Graduación {{ perfilNormalizado()?.anio_graduacion || '—' }}</p>
 		</div>
 
 		<button class="btn-secundario" routerLink="/user/perfil/editar">
