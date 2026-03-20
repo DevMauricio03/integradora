@@ -78,4 +78,13 @@ export class AdminReportsStoreService {
     refresh() {
         this.loadReports();
     }
+
+    invalidate() {
+        this._items.set([]);
+        this._totalCount.set(0);
+        this._isLoading.set(false);
+        this._currentPage.set(0);
+        this._filter.set('todas');
+        this._searchTerm.set('');
+    }
 }

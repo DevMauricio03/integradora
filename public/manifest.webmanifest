@@ -6,10 +6,16 @@
   "start_url": "./",
   "icons": [
     {
-      "src": "icons/tuunka_logo.svg",
-      "size": "24x24",
-      "type": "image/svg+xml",
-      "purpose": "maskable any"
+      "src": "icons/tuunka_logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/tuunka_logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }

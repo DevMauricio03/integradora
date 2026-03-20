@@ -10,6 +10,11 @@ import { CatalogService } from './catalog.service';
 import { StorageService } from './storage.service';
 import { AuthStoreService } from './auth-store.service';
 import { NotificationStoreService } from './notification-store.service';
+import { PostStoreService } from './post-store.service';
+import { AdminStatsStoreService } from './admin-stats-store.service';
+import { AdminUsersStoreService } from './admin-users-store.service';
+import { AdminReportsStoreService } from './admin-reports-store.service';
+import { AdminPublicationsStoreService } from './admin-publications-store.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -27,14 +32,28 @@ export class SupabaseService {
   private readonly catalogSvc = inject(CatalogService);
   private readonly storageSvc = inject(StorageService);
   private readonly notificationStoreSvc = inject(NotificationStoreService);
+  private readonly postStoreSvc = inject(PostStoreService);
+  private readonly adminStatsStoreSvc = inject(AdminStatsStoreService);
+  private readonly adminUsersStoreSvc = inject(AdminUsersStoreService);
+  private readonly adminReportsStoreSvc = inject(AdminReportsStoreService);
+  private readonly adminPublicationsStoreSvc = inject(AdminPublicationsStoreService);
 
   // ── Auth ──────────────────────────────────────────────────────
   register(email: string, password: string) { return this.authSvc.signUp(email, password); }
   signIn(email: string, password: string) { return this.authSvc.signIn(email, password); }
 
   async signOut() {
-    // Limpiar notificaciones antes de hacer logout
+    // Invalidate ALL stores - complete cleanup for session switch
     this.notificationStoreSvc.invalidate();
+    this.authStoreSvc.invalidatePerfil();
+    this.postStoreSvc.invalidateCache();
+    this.adminStatsStoreSvc.invalidateCache();
+    this.adminUsersStoreSvc.invalidate();
+    this.adminReportsStoreSvc.invalidate();
+    this.adminPublicationsStoreSvc.invalidate();
+    this.catalogSvc.clearCache();
+
+    // Clear auth token
     return this.authSvc.signOut();
   }
 

@@ -7,7 +7,8 @@ import {
   ViewChild,
   inject,
   signal,
-  computed
+  computed,
+  effect
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { PostStoreService, Post } from '../../../core/services/post-store.service';
@@ -116,6 +117,15 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   });
 
   // ── Lifecycle ─────────────────────────────────────────────────
+
+  constructor() {
+    // ✅ REACTIVE: Reaccionar a cambios del perfil en AuthStoreService
+    // Cuando el usuario cambia (logout/login), actualiza automáticamente el currentUserId
+    effect(() => {
+      const perfil = this.authStore.perfil();
+      this.currentUserId.set(perfil?.id ?? null);
+    });
+  }
 
   ngOnInit() {
     this.initialLoad();

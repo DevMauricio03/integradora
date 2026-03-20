@@ -35,6 +35,22 @@ export class App implements OnInit {
   tiempoRestante = signal('Indefinido');
 
   ngOnInit() {
+    // === LISTENER GLOBAL DE AUTH STATE ===
+    // Detecta cambios de autenticación inmediatamente (logout, suspension, etc)
+    this.supabase.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        // Logout detectado: resetear estado y redirigir
+        // (SupabaseService.signOut() ya limpió todos los stores)
+        this.mostrarModalSuspension.set(false);
+        this.router.navigate(['/auth/bienvenida']);
+      } else if (event === 'SIGNED_IN' && session) {
+        // LOGIN detectado: verificar que se usan datos frescos del nuevo usuario
+        // El siguiente acceso a getPerfilActual() DEBE ir a la BD (no caché)
+        console.log('[App] Login detectado - nuevo usuario activo');
+      }
+    });
+
+    // === VERIFICAR SUSPENSIÓN EN CADA NAVEGACIÓN ===
     // Verificamos el estado de la cuenta en cada cambio de ruta principal
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),

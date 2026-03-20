@@ -80,4 +80,13 @@ export class AdminUsersStoreService {
     refresh() {
         this.loadUsers();
     }
+
+    invalidate() {
+        this._users.set([]);
+        this._totalCount.set(0);
+        this._isLoading.set(false);
+        this._currentPage.set(0);
+        this._filter.set('todos');
+        this._searchTerm.set('');
+    }
 }
