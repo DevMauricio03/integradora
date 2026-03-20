@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { SupabaseService } from '../../../core/services/supabase.service';
+import { AdminReportsStoreService } from '../../../core/services/admin-reports-store.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -11,9 +12,15 @@ import { SupabaseService } from '../../../core/services/supabase.service';
   styleUrls: ['./adminLayout.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminLayout {
+export class AdminLayout implements OnInit {
   private readonly router = inject(Router);
   private readonly supabaseService = inject(SupabaseService);
+  private readonly adminReportsStore = inject(AdminReportsStoreService);
+
+  ngOnInit() {
+    // ✅ Inicializar Realtime para el módulo de admin
+    this.adminReportsStore.initRealtime();
+  }
 
   async logout() {
     await this.supabaseService.signOut();
