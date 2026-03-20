@@ -175,7 +175,8 @@ export class Comentarios implements OnInit {
               user_id: this.publicacion.authorId,
               tipo: 'post_comentado',
               mensaje: `${comentaristaName} comentó en tu publicación.`,
-              leido: false
+              leido: false,
+              post_id: this.publicacion.id  // Contexto: ID del post comentado
             });
           } catch (notifError) {
             console.error('Error enviando notificación de comentario:', notifError);

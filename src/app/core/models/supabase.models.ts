@@ -104,4 +104,6 @@ export interface Notificacion {
     mensaje: string;
     leido: boolean;
     creado: string;
+    post_id?: string | null;           // Contexto: post relacionado
+    comentario_id?: string | null;     // Contexto: comentario relacionado
 }

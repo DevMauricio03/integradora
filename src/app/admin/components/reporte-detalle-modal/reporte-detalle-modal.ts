@@ -4,6 +4,7 @@ import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { formatFullDate } from '../../../shared/utils/date.util';
 // Layer 3: Admin Services — nunca llamar al core directamente desde componentes admin
 import { AdminReportService } from '../../services/adminReport.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -126,12 +127,20 @@ export class ReporteDetalleModal {
                 ? `Tu publicación fue eliminada por moderación. Motivo: ${this.reporte.motivo}`
                 : `Uno de tus comentarios fue eliminado por moderación. Motivo: ${this.reporte.motivo}`;
 
-              await this.notificationService.createNotificacion({
+              // Incluir contexto de la entidad en la notificación
+              const notificationData: any = {
                 user_id: autorId,
                 tipo: notificationType as 'post_eliminado' | 'comentario_eliminado',
                 mensaje: notificationMsg,
                 leido: false
-              });
+              };
+
+              // Agregar post_id si es publicación eliminada
+              if (type === 'publicacion' && this.reporte.publicacion_id) {
+                notificationData.post_id = this.reporte.publicacion_id;
+              }
+
+              await this.notificationService.createNotificacion(notificationData);
             } catch (notifError) {
               console.error('Error enviando notificación al autor:', notifError);
             }
@@ -267,5 +276,13 @@ export class ReporteDetalleModal {
       }
     });
     this.mostrarConfirmacion.set(true);
+  }
+
+  /**
+   * Formatea una fecha usando la función centralizada.
+   * Reutiliza date.util.ts para consistencia en toda la aplicación.
+   */
+  formatDate(dateStr: string): string {
+    return formatFullDate(dateStr);
   }
 }

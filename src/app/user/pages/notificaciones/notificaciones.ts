@@ -4,6 +4,8 @@ import { NotificationStoreService } from '../../../core/services/notification-st
 import { Notificacion } from '../../../core/models/supabase.models';
 import { ModalVerMotivo } from './modal-ver-motivo';
 import { ConfirmDeleteModal } from './confirm-delete-modal';
+import { formatTimeAgo } from '../../../shared/utils/date.util';
+import { APP_COLORS } from '../../../shared/constants/colors.constants';
 
 @Component({
   selector: 'app-notificaciones',
@@ -68,12 +70,13 @@ export class Notificaciones implements OnInit {
    */
   getColorForType(tipo: string): string {
     const colorMap: Record<string, string> = {
-      'post_aceptado': '#10b981',     // Verde
-      'post_rechazado': '#ef4444',    // Rojo
-      'comentario_eliminado': '#f97316',  // Naranja
-      'post_eliminado': '#ef4444',    // Rojo
-      'usuario_suspendido': '#f59e0b', // Ámbar
-      'admin_action': '#3b82f6',      // Azul
+      'post_aceptado': APP_COLORS.PRIMARY,      // Azul predeterminado del proyecto
+      'post_aprobado': APP_COLORS.PRIMARY,      // Azul predeterminado del proyecto - alias
+      'post_rechazado': APP_COLORS.ERROR_RED,   // Rojo
+      'comentario_eliminado': APP_COLORS.WARNING_ORANGE,  // Naranja
+      'post_eliminado': APP_COLORS.ERROR_RED,   // Rojo
+      'usuario_suspendido': APP_COLORS.ALERT_AMBER,  // Ámbar
+      'admin_action': APP_COLORS.PRIMARY,       // Azul predeterminado del proyecto
     };
     return colorMap[tipo] || '#6b7280';
   }
@@ -84,6 +87,7 @@ export class Notificaciones implements OnInit {
   getTypeLabel(tipo: string): string {
     const typeMap: Record<string, string> = {
       'post_aceptado': 'Publicación Aceptada',
+      'post_aprobado': 'Publicación Aprobada',
       'post_rechazado': 'Publicación Rechazada',
       'comentario_eliminado': 'Comentario Eliminado',
       'post_eliminado': 'Publicación Eliminada',
@@ -95,20 +99,10 @@ export class Notificaciones implements OnInit {
 
   /**
    * Formatear fecha relativa.
+   * Reutiliza la lógica centralizada de date.util.ts para consistencia en toda la app.
    */
   formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffMins < 1) return 'Ahora';
-    if (diffMins < 60) return `${diffMins}m`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays < 7) return `${diffDays}d`;
-    return date.toLocaleDateString('es-MX');
+    return formatTimeAgo(dateStr);
   }
 
   /**

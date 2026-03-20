@@ -9,7 +9,7 @@
             <app-icon name="info" [size]="20"></app-icon>
             <div class="alert-texts">
                 <strong>Estado: {{ reporte.estado | uppercase }}</strong>
-                <span>Reportado el {{ reporte.creado | date:'medium' }}</span>
+                <span>Reportado el {{ formatDate(reporte.creado) }}</span>
             </div>
         </div>
 
@@ -44,7 +44,7 @@
                             class="mini-avatar" alt="Avatar autor">
                         <div class="author-meta">
                             <span class="user-handle">{{ reporte.autor?.nombre }} {{ reporte.autor?.apellidos }}</span>
-                            <span class="post-time">{{ reporte.comentario.creado | date:'medium' }}</span>
+                            <span class="post-time">{{ formatDate(reporte.comentario.creado) }}</span>
                         </div>
                     </div>
                     <div class="post-body">

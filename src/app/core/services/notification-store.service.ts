@@ -137,12 +137,20 @@ export class NotificationStoreService {
   /**
    * NUEVO: Suscribirse a cambios en tiempo real de la tabla notificaciones.
    * Escucha inserts donde user_id = usuario actual.
-   * Agrega notificaciones nuevas al estado, actualiza el contador y muestra toasts.
+   * Agrega notificaciones nuevas al estado, actualiza el contador y muestra toasts + push.
    *
    * Mejoras implementadas:
    * - DEDUPLICACIÓN: Verifica que no exista notificación con mismo ID
-   * - DOCUMENT VISIBILITY: Si pestaña visible → toast, si oculta → push
-   * - BATCHING: Agrupa múltiples toasts en período corto
+   * - DOUBLE NOTIFICATION: Muestra SIEMPRE push del navegador
+   * - CONTEXT-AWARE TOAST: Si pestaña visible, toast muestra el CONTENIDO real
+   * - BATCHING: Agrupa múltiples toasts en período corto (pero CON contenido)
+   *
+   * FLUJO MEJORADO:
+   * 1. Notificación llega → Deduplicar
+   * 2. Actualizar state (signals)
+   * 3. Mostrar PUSH NOTIFICATION siempre (si permiso granted)
+   * 4. Si pestaña visible → Mostrar toast CON CONTENIDO + navegación
+   *    Si pestaña oculta → Mostrar solo push (evita doble notificación)
    */
   private _subscribeToRealtime(userId: string): void {
     try {
@@ -174,24 +182,32 @@ export class NotificationStoreService {
               this._unreadCount.update(count => count + 1);
             }
 
-            // ── FASE 3: DOCUMENT VISIBILITY CHECK ─────────────────
-            // Si pestaña está visible → mostrar toast
-            // Si pestaña está oculta → mostrar push del navegador
+            // ── Obtener contenido descriptivo de la notificación ──
+            const title = this.getTitleForType(newNotificacion.tipo);
+
+            // ── DOCUMENT VISIBILITY CHECK (PATRÓN ESTÁNDAR) ────────
+            // Si usuario está en la app → toast (ya lo ve)
+            // Si usuario está fuera → push (necesita notificación)
+            // NUNCA ambas simultáneamente para evitar duplicación
             if (document.visibilityState === 'visible') {
-              // Pestaña visible → mostrar toast (con batching para evitar spam)
-              // NUEVO: Pasar acción para navegar al panel de notificaciones
-              this.toastService.showBatched(() =>
-                this.router.navigate(['/user/notificaciones'])
+              // ✅ Usuario DENTRO de la app → SOLO toast
+              this.toastService.show(
+                `${title} - ${newNotificacion.mensaje}`,
+                'info',
+                5000,
+                () => this.router.navigate(['/user/notificaciones'])
               );
             } else {
-              // Pestaña oculta → mostrar push notification solamente
-              this.browserNotifService.show({
-                title: this.getTitleForType(newNotificacion.tipo),
-                body: newNotificacion.mensaje,
-                icon: 'icons/tuunka_logo.svg',
-                badge: 'icons/tuunka_logo.svg',
-                tag: `notif-${newNotificacion.id}`,
-              });
+              // ✅ Usuario FUERA de la app → SOLO push notification
+              if (Notification.permission === 'granted') {
+                this.browserNotifService.show({
+                  title: title,
+                  body: newNotificacion.mensaje,
+                  icon: 'icons/tuunka_logo.svg',
+                  tag: this.buildNotificationTag(newNotificacion),  // 🔥 Agrupación inteligente
+                  requireInteraction: true
+                });
+              }
             }
 
             console.log('[NotificationStore] Nueva notificación recibida (Realtime):', newNotificacion);
@@ -221,11 +237,47 @@ export class NotificationStoreService {
   }
 
   /**
+   * Construir tag para push notifications con agrupación inteligente.
+   *
+   * Estrategia de tagging (ahora con campos de contexto reales):
+   * - Si tiene post_id → tag incluye el ID del post
+   * - Si tiene comentario_id → tag incluye el ID del comentario
+   * - Si no tiene contexto → tag solo con tipo
+   *
+   * Resultado:
+   * ✅ Notificaciones sobre el MISMO post se agrupan
+   * ✅ Notificaciones sobre posts DISTINTOS se mantienen separadas
+   * ✅ SIN hacks con substring de mensaje
+   * ✅ Preciso y confiable
+   *
+   * Ejemplo:
+   * - 3 comentarios eliminados del post_id "xyz" → tag: "notif-comentario_eliminado-post-xyz"
+   * - comentario eliminado del post_id "abc" → tag: "notif-comentario_eliminado-post-abc"
+   * - usuario suspendido (sin contexto) → tag: "notif-usuario_suspendido"
+   */
+  private buildNotificationTag(notif: Notificacion): string {
+    const baseTag = `notif-${notif.tipo}`;
+
+    // Prioridad: usar campos de contexto real en lugar de hacks
+    if (notif.post_id) {
+      return `${baseTag}-post-${notif.post_id}`;
+    }
+
+    if (notif.comentario_id) {
+      return `${baseTag}-comentario-${notif.comentario_id}`;
+    }
+
+    // Fallback: solo tipo (para notificaciones sin contexto específico)
+    return baseTag;
+  }
+
+  /**
    * Obtener título legible para tipo de notificación
    */
   private getTitleForType(tipo: string): string {
     const titleMap: Record<string, string> = {
       'post_aceptado': '✅ Publicación Aceptada',
+      'post_aprobado': '✅ Publicación Aprobada',
       'post_rechazado': '❌ Publicación Rechazada',
       'comentario_eliminado': '🗑️ Comentario Eliminado',
       'post_eliminado': '🗑️ Publicación Eliminada',

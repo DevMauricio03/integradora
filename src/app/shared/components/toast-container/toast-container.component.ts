@@ -86,7 +86,7 @@ import { ToastService, Toast } from '../../../core/services/toast.service';
     .toast.toast-info {
       background-color: #dbeafe;
       color: #0c2d6b;
-      border-left: 4px solid #3b82f6;
+      border-left: 4px solid var(--primary);
     }
 
     .toast-message {
