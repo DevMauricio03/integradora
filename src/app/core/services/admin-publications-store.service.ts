@@ -88,4 +88,14 @@ export class AdminPublicationsStoreService {
     refresh() {
         this.loadPublications();
     }
+
+    invalidate() {
+        this._items.set([]);
+        this._totalCount.set(0);
+        this._isLoading.set(false);
+        this._currentPage.set(0);
+        this._typeFilter.set('todos');
+        this._statusFilter.set('todos');
+        this._searchTerm.set('');
+    }
 }

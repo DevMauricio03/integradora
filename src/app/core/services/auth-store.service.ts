@@ -24,13 +24,14 @@ export class AuthStoreService {
      * Obtener el perfil actual con deduplicación.
      * Si ya hay un perfil en caché lo devuelve inmediatamente.
      * Si ya hay una petición en vuelo, espera la misma (no lanza una segunda).
+     * @param force - Si true, ignora cache y siempre fetcha del servidor
      */
-    async getPerfilActual(): Promise<Perfil | null> {
-        // Cache hit
-        if (this._perfil()) return this._perfil();
+    async getPerfilActual(force = false): Promise<Perfil | null> {
+        // Cache hit (solo si no es force)
+        if (this._perfil() && !force) return this._perfil();
 
         // Deduplicación: si ya hay una petición en vuelo, la reutilizamos
-        if (this._loadingPromise) return this._loadingPromise;
+        if (this._loadingPromise && !force) return this._loadingPromise;
 
         this._isLoading.set(true);
         this._loadingPromise = this.profileService.getPerfilActual().then(perfil => {

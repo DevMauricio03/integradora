@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
-import { AuthService } from '../../../core/services/auth.service';
+import { SupabaseService } from '../../../core/services/supabase.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -13,10 +13,10 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class AdminLayout {
   private readonly router = inject(Router);
-  private readonly auth = inject(AuthService);
+  private readonly supabaseService = inject(SupabaseService);
 
   async logout() {
-    await this.auth.signOut();
+    await this.supabaseService.signOut();
     this.router.navigate(['/auth/bienvenida']);
   }
 

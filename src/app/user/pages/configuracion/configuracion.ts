@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { SupabaseService } from '../../../core/services/supabase.service';
 import { ProfileService } from '../../../core/services/profile.service';
 import { ChangePasswordModal } from '../../../shared/components/changePasswordModal/changePasswordModal';
 import { SuccessModal } from '../../../shared/components/successModal/successModal';
@@ -15,7 +15,7 @@ import { ConfirmModal } from '../../../shared/components/confirmModal/confirmMod
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Configuracion {
-  private readonly authService = inject(AuthService);
+  private readonly supabaseService = inject(SupabaseService);
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
 
@@ -58,7 +58,7 @@ export class Configuracion {
 
   // 3. Cerrar sesión
   async cerrarSesion() {
-    await this.authService.signOut();
+    await this.supabaseService.signOut();
     this.router.navigate(['/auth/inicio-sesion']);
   }
 
@@ -80,7 +80,7 @@ export class Configuracion {
   }
 
   async finalizarEliminacion() {
-    await this.authService.signOut();
+    await this.supabaseService.signOut();
     this.router.navigate(['/auth/inicio-sesion']);
   }
 }

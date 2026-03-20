@@ -108,8 +108,8 @@ export class NotificationStoreService {
             this.browserNotifService.show({
               title: this.getTitleForType(notif.tipo),
               body: notif.mensaje,
-              icon: 'icons/tuunka_logo.svg',
-              badge: 'icons/tuunka_logo.svg',
+              icon: 'icons/tuunka_logo.png',
+              badge: 'icons/tuunka_logo.png',
               tag: `notif-${notif.id}`, // Evita duplicados
             });
           });
@@ -203,7 +203,7 @@ export class NotificationStoreService {
                 this.browserNotifService.show({
                   title: title,
                   body: newNotificacion.mensaje,
-                  icon: 'icons/tuunka_logo.svg',
+                  icon: 'icons/tuunka_logo.png',
                   tag: this.buildNotificationTag(newNotificacion),  // 🔥 Agrupación inteligente
                   requireInteraction: true
                 });

@@ -86,7 +86,7 @@ export class BrowserNotificationService {
     try {
       const notification = new Notification(options.title, {
         body: options.body,
-        icon: options.icon || 'icons/tuunka_logo.svg',
+        icon: options.icon || 'icons/tuunka_logo.png',
         badge: options.badge,
         tag: options.tag,
         requireInteraction: options.requireInteraction ?? false,
