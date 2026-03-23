@@ -23,11 +23,12 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { PostSkeletonComponent } from '../../../shared/components/post-skeleton/post-skeleton.component';
 import { ReportModalComponent } from '../../../shared/components/report-modal/report-modal';
 import { SuccessModal } from '../../../shared/components/successModal/successModal';
+import { ConfirmModal } from '../../../shared/components/confirmModal/confirmModal';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [PostCardComponent, CommonModule, IconComponent, PostSkeletonComponent, ReportModalComponent, SuccessModal],
+  imports: [PostCardComponent, CommonModule, IconComponent, PostSkeletonComponent, ReportModalComponent, SuccessModal, ConfirmModal],
   templateUrl: './feed.html',
   styleUrls: ['./feed.css'],
 })
@@ -63,6 +64,11 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   showSuccessReport = signal<boolean>(false);
   selectedPostForReport = signal<any>(null);
   isReporting = signal<boolean>(false);
+
+  // ── Modal de confirmación para eliminar ───────────────────────
+  confirmDeleteOpen = signal(false);
+  postToDelete = signal<string | null>(null);
+  isDeleting = signal(false);
 
   // ── Sentinel para IntersectionObserver ────────────────────────
   /** Elemento al final del feed que activa la carga automática. */
@@ -278,14 +284,31 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
 
   // ── Reporte ───────────────────────────────────────────────────
 
-  // ── Eliminar publicación propia ───────────────────────────
+  // ── Eliminar publicación propia con modal de confirmación ───────
 
-  async handleDeletePost(postId: string) {
+  openDeleteConfirm(postId: string) {
+    this.postToDelete.set(postId);
+    this.confirmDeleteOpen.set(true);
+  }
+
+  closeDeleteConfirm() {
+    this.confirmDeleteOpen.set(false);
+    this.postToDelete.set(null);
+  }
+
+  async confirmDeletePost() {
+    const id = this.postToDelete();
+    if (!id || this.isDeleting()) return;
+
+    this.isDeleting.set(true);
     try {
-      await this.publicationSvc.softDeletePost(postId);
-      this.postStore.removePost(postId);
+      await this.publicationSvc.softDeletePost(id);
+      this.postStore.removePost(id);
     } catch (err) {
       console.error('[Feed] Error al eliminar publicación:', err);
+    } finally {
+      this.isDeleting.set(false);
+      this.closeDeleteConfirm();
     }
   }
 
