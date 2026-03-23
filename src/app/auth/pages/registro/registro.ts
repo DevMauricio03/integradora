@@ -83,6 +83,8 @@ export class RegistroPage implements OnInit {
 
     // Confirmación: Debe coincidir con el campo de contraseña
     required(schema.confirmarPassword);
+    required(schema.confirmarPassword, { message: 'confirmar contraseña es obligatorio' });
+
     validate(schema.confirmarPassword, (ctx) => {
       const pass = ctx.valueOf(schema.password);
       return ctx.value() === pass ? null : { kind: 'mismatch', message: 'Las contraseñas no coinciden' };
