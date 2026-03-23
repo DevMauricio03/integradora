@@ -96,3 +96,12 @@ export interface Reporte {
     publicaciones?: Post;
     perfiles?: Perfil; // Informante
 }
+
+export interface Notificacion {
+    id: string;
+    user_id: string;
+    tipo: string;
+    mensaje: string;
+    leido: boolean;
+    creado: string;
+}

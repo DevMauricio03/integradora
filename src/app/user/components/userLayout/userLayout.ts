@@ -13,6 +13,8 @@ import {
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { NotificationStoreService } from '../../../core/services/notification-store.service';
+
 @Component({
   selector: 'app-user-layout',
   standalone: true,
@@ -26,12 +28,17 @@ export class UserLayoutComponent {
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly notificationStore = inject(NotificationStoreService);
 
   title = signal('');
   showCreateButton = signal(false);
   showSearch = signal(true);
   centerTitle = signal(false);
   isMenuOpen = signal(false);
+
+  // ── Notificaciones ────────────────────────────────────────────
+  readonly notificationCount = this.notificationStore.unreadCount;
+  readonly hasNotifications = this.notificationStore.hasNotifications;
 
   constructor() {
     this.router.events
@@ -49,6 +56,11 @@ export class UserLayoutComponent {
         this.centerTitle.set(data['centerTitle'] === true);
         this.isMenuOpen.set(false); // Cierra el menú al navegar
       });
+
+    // Cargar notificaciones al inicializar
+    this.notificationStore.loadNotificaciones().catch(err =>
+      console.error('[UserLayout] Error cargando notificaciones:', err)
+    );
   }
 
   toggleMenu() {
@@ -61,6 +73,7 @@ export class UserLayoutComponent {
     }
     return route;
   }
+
   goToCreate() {
     this.router.navigate(['/user/crear']);
   }
