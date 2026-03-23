@@ -119,8 +119,8 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   // ── Lifecycle ─────────────────────────────────────────────────
 
   constructor() {
-    // ✅ REACTIVE: Reaccionar a cambios del perfil en AuthStoreService
-    // Cuando el usuario cambia (logout/login), actualiza automáticamente el currentUserId
+    // REACTIVE: React to profile changes in AuthStoreService
+    // When user changes (logout/login), automatically update currentUserId
     effect(() => {
       const perfil = this.authStore.perfil();
       this.currentUserId.set(perfil?.id ?? null);

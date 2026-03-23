@@ -18,7 +18,7 @@ export class AdminLayout implements OnInit {
   private readonly adminReportsStore = inject(AdminReportsStoreService);
 
   ngOnInit() {
-    // ✅ Inicializar Realtime para el módulo de admin
+    // Initialize Realtime for admin module
     this.adminReportsStore.initRealtime();
   }
 

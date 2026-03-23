@@ -19,7 +19,7 @@ export class Notificaciones implements OnInit {
   private readonly notificationStore = inject(NotificationStoreService);
 
   // ── Signals expuestas ─────────────────────────────────────────
-  // ✅ Signals reactivos - OnPush detecta cambios automáticamente
+  // Reactive signals - OnPush detects changes automatically
   readonly notificaciones = this.notificationStore.notificaciones;
   readonly isLoading = this.notificationStore.isLoading;
   readonly hasNotifications = this.notificationStore.hasNotifications;

@@ -201,9 +201,9 @@ export class PostStoreService {
     this._feedPosts.set([]);
     this._pendingPosts.set([]);
     this._avisosCache = null;
-    this._avisosPromise = null;        // ✅ NEW: prevenir stale promise
+    this._avisosPromise = null;        // NEW: prevent stale promise
     this._tipoCache.clear();
-    this._tipoPromises.clear();        // ✅ NEW: prevenir stale promises
+    this._tipoPromises.clear();        // NEW: prevent stale promises
   }
 
   /**

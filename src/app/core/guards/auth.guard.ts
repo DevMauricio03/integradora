@@ -18,10 +18,10 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
-    // ✅ FASE 6: Inicializar Realtime para sesión activa
-    // Cubre el caso cuando el usuario recarga la página o navega sin logout
+    // Initialize Realtime for active session
+    // Covers the case when user reloads the page or navigates without logout
     if (data.session.user?.id) {
-      console.log('[AuthGuard] 🔐 Sesión activa detectada, inicializando Realtime para userId:', data.session.user.id);
+      console.log('[AuthGuard] Active session detected, initializing Realtime for userId:', data.session.user.id);
       this.notificationStore.initRealtime(data.session.user.id);
     }
 

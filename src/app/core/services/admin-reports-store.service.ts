@@ -104,18 +104,18 @@ export class AdminReportsStoreService {
     }
 
     /**
-     * ✅ Inicializar Realtime para escuchar cambios en reportes
+     * Initialize Realtime to listen for report changes
      *
-     * Escucha INSERT y UPDATE en tabla "reportes"
-     * Agrega/actualiza reportes al estado sin recargar
-     * Se debe llamar automáticamente desde AdminLayout
+     * Listens to INSERT and UPDATE on "reportes" table
+     * Adds/updates reports to state without reloading
+     * Should be called automatically from AdminLayout
      */
     public initRealtime(): void {
-        console.log('[AdminReportsStore] 🔐 initRealtime() - inicializando...');
+        console.log('[AdminReportsStore] Initializing Realtime');
 
         // Si ya está activo, no reinicializar
         if (this._realtimeInitialized && this._realtimeChannel) {
-            console.log('[AdminReportsStore] ℹ️ Realtime ya activo, saltando init');
+            console.log('[AdminReportsStore] Realtime already active, skipping init');
             return;
         }
 
@@ -132,7 +132,7 @@ export class AdminReportsStoreService {
      */
     private _subscribeToRealtime(): void {
         try {
-            console.log('[AdminReportsStore] 🔌 Intentando conectar a Realtime');
+            console.log('[AdminReportsStore] Attempting to connect to Realtime');
 
             this._realtimeChannel = this.supabaseClient
                 .channel('admin-reportes-changes')
@@ -144,7 +144,7 @@ export class AdminReportsStoreService {
                         table: 'reportes'
                     },
                     (payload) => {
-                        console.log('[AdminReportsStore] 📨 EVENTO REALTIME RECIBIDO:', payload.eventType, payload.new);
+                        console.log('[AdminReportsStore] Realtime event received:', payload.eventType);
 
                         if (payload.eventType === 'INSERT') {
                             this._handleReportInsert(payload.new);
@@ -156,19 +156,19 @@ export class AdminReportsStoreService {
                     }
                 )
                 .subscribe((status) => {
-                    console.log('[AdminReportsStore] 🔔 Estado Realtime:', status);
+                    console.log('[AdminReportsStore] Realtime status:', status);
 
                     if (status === 'SUBSCRIBED') {
                         this._realtimeInitialized = true;
-                        console.log('[AdminReportsStore] ✅ CONECTADO a Realtime exitosamente');
+                        console.log('[AdminReportsStore] Connected to Realtime successfully');
                     } else if (status === 'CHANNEL_ERROR') {
-                        console.error('[AdminReportsStore] ❌ ERROR - Verifica que Realtime esté HABILITADO en Supabase');
+                        console.error('[AdminReportsStore] Error - Verify that Realtime is enabled in Supabase');
                     } else if (status === 'TIMED_OUT') {
-                        console.error('[AdminReportsStore] ⏱️ TIMEOUT en conexión');
+                        console.error('[AdminReportsStore] Timeout in connection');
                     }
                 });
         } catch (err) {
-            console.error('[AdminReportsStore] 💥 Error al suscribirse a Realtime:', err);
+            console.error('[AdminReportsStore] Error subscribing to Realtime:', err);
         }
     }
 
@@ -177,14 +177,14 @@ export class AdminReportsStoreService {
      */
     private _handleReportInsert(newReport: any): void {
         if (!newReport || !newReport.id) {
-            console.log('[AdminReportsStore] ⚠️ Reporte inválido en INSERT, ignorando');
+            console.log('[AdminReportsStore] Invalid report in INSERT, ignoring');
             return;
         }
 
-        // ── DEDUPLICACIÓN ─────────────────────────────────────
+        // ── DEDUPLICATION ─────────────────────────────────────
         const exists = this._items().some(r => r.id === newReport.id);
         if (exists) {
-            console.log('[AdminReportsStore] ⚠️ Reporte duplicado ignorado:', newReport.id);
+            console.log('[AdminReportsStore] Duplicate report ignored:', newReport.id);
             return;
         }
 
@@ -193,7 +193,7 @@ export class AdminReportsStoreService {
 
         // ¿Debe incluirse este reporte basado en filtro actual?
         if (this._shouldIncludeReport(mappedReport)) {
-            console.log('[AdminReportsStore] ✨ Agregando nuevo reporte:', newReport.id);
+            console.log('[AdminReportsStore] Adding new report:', newReport.id);
 
             // Agregar al inicio de la lista
             this._items.update(prev => [mappedReport, ...prev]);
@@ -208,7 +208,7 @@ export class AdminReportsStoreService {
      */
     private _handleReportUpdate(updatedReport: any): void {
         if (!updatedReport || !updatedReport.id) {
-            console.log('[AdminReportsStore] ⚠️ Reporte inválido en UPDATE, ignorando');
+            console.log('[AdminReportsStore] Invalid report in UPDATE, ignoring');
             return;
         }
 
@@ -219,12 +219,12 @@ export class AdminReportsStoreService {
 
             if (exists) {
                 // Actualizar reporte existente
-                console.log('[AdminReportsStore] 🔄 Actualizando reporte:', updatedReport.id);
+                console.log('[AdminReportsStore] Updating report:', updatedReport.id);
                 return list.map(r => r.id === updatedReport.id ? mappedReport : r);
             } else {
                 // Si el reporte actualizado cumple con el filtro actual y no estaba en la lista
                 if (this._shouldIncludeReport(mappedReport)) {
-                    console.log('[AdminReportsStore] ✨ Agregando reporte actualizado:', updatedReport.id);
+                    console.log('[AdminReportsStore] Adding updated report:', updatedReport.id);
                     return [mappedReport, ...list];
                 }
                 return list;
@@ -241,7 +241,7 @@ export class AdminReportsStoreService {
         const hadReport = this._items().some(r => r.id === deletedReport.id);
 
         if (hadReport) {
-            console.log('[AdminReportsStore] 🗑️ Eliminando reporte:', deletedReport.id);
+            console.log('[AdminReportsStore] Deleting report:', deletedReport.id);
             this._items.update(list => list.filter(r => r.id !== deletedReport.id));
             this._totalCount.update(count => Math.max(0, count - 1));
         }

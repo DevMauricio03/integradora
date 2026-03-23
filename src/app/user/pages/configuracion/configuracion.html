@@ -81,7 +81,7 @@
 			<section class="card-seccion card-danger">
 				<div class="config-fila con-borde">
 					<p class="texto-peligro-info">Cierra tu sesión actual de forma segura en este navegador.</p>
-					<button class="btn-outline-danger" (click)="cerrarSesion()">Cerrar sesión</button>
+					<button class="btn-outline-danger" (click)="abrirConfirmacionCerrarSesion()">Cerrar sesión</button>
 				</div>
 				<div class="config-fila">
 					<p class="texto-peligro-info">Eliminar tu cuenta es una acción permanente y no se puede deshacer.</p>
@@ -122,8 +122,20 @@
 	/>
 }
 
+@if (showConfirmLogout()) {
+	<app-confirm-modal
+		titulo="¿Cerrar sesión?"
+		mensaje="Tu sesión será cerrada en este navegador. Podrás iniciar sesión nuevamente en cualquier momento."
+		botonConfirmar="Cerrar sesión"
+		botonCancelar="Cancelar"
+		[esPeligroso]="false"
+		(confirm)="cerrarSesion()"
+		(closed)="showConfirmLogout.set(false)"
+	/>
+}
+
 @if (showConfirmDelete()) {
-	<app-confirm-modal 
+	<app-confirm-modal
 		titulo="¿Eliminar tu cuenta permanentemente?"
 		mensaje="Esta acción borrará todas tus publicaciones, comentarios y perfil. No podrás recuperar tu información."
 		botonConfirmar="Eliminar permanentemente"

@@ -22,7 +22,7 @@ export class PerfilPublicoPage implements OnInit {
   private readonly pubService = inject(PublicationService);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  // ✅ REACTIVE: Usar signal del store directamente
+  // REACTIVE: Use signal from store directly
   readonly perfil = this.authStore.perfil;
   readonly defaultAvatarUrl = 'https://i.pinimg.com/236x/6c/55/d4/6c55d49dd6839b5b79e84a1aa6d2260d.jpg';
 
@@ -46,8 +46,8 @@ export class PerfilPublicoPage implements OnInit {
   readonly isDeleting = signal(false);
 
   constructor() {
-    // ✅ REACTIVE: Reaccionar automáticamente a cambios del perfil
-    // Cuando el perfil se actualiza (ej: después de editar), recarga los posts
+    // REACTIVE: React automatically to profile changes
+    // When the profile is updated (ex: after editing), reload posts
     effect(() => {
       const perfilActual = this.perfil();
       if (perfilActual?.id) {

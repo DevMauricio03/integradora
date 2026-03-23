@@ -22,6 +22,7 @@ export class Configuracion {
   // Estados de modales
   showChangePassword = signal(false);
   showSuccessDownload = signal(false);
+  showConfirmLogout = signal(false);
   showConfirmDelete = signal(false);
   showSuccessDelete = signal(false);
   showSuccessPassword = signal(false);
@@ -57,7 +58,12 @@ export class Configuracion {
   }
 
   // 3. Cerrar sesión
+  abrirConfirmacionCerrarSesion() {
+    this.showConfirmLogout.set(true);
+  }
+
   async cerrarSesion() {
+    this.showConfirmLogout.set(false);
     await this.supabaseService.signOut();
     this.router.navigate(['/auth/inicio-sesion']);
   }

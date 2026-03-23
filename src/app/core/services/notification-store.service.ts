@@ -62,7 +62,7 @@ export class NotificationStoreService {
   }
 
   /**
-   * ✅ FASE 3: Inicializar Realtime de forma EXPLÍCITA e INDEPENDIENTE
+   * FASE 3: Inicializar Realtime de forma EXPLÍCITA e INDEPENDIENTE
    *
    * Este método debe llamarse automáticamente cuando el usuario se autentica.
    * NO depender de loadNotificaciones() para evitar circular dependencies.
@@ -70,11 +70,11 @@ export class NotificationStoreService {
    * Llamar desde: AuthService.signIn() o un guard
    */
   public initRealtime(userId: string): void {
-    console.log('[NotificationStore] 🔐 initRealtime() - iniciando para userId:', userId);
+    console.log('[NotificationStore] Initializing Realtime for userId:', userId);
 
     // Si ya hay un canal activo, no reinicializar
     if (this._realtimeInitialized && this._realtimeChannel) {
-      console.log('[NotificationStore] ℹ️ Realtime ya activo, saltando init');
+      console.log('[NotificationStore] Realtime already active, skipping init');
       return;
     }
 
@@ -92,7 +92,7 @@ export class NotificationStoreService {
    * También solicita permiso de notificaciones del navegador (una sola vez).
    * Muestra notificaciones push del navegador para nuevas notificaciones.
    *
-   * ⚠️ IMPORTANTE: Realtime se inicializa de forma INDEPENDIENTE en initRealtime()
+   * IMPORTANTE: Realtime se inicializa de forma INDEPENDIENTE en initRealtime()
    * Este método NO inicia Realtime para evitar dependencias circulares.
    */
   async loadNotificaciones(): Promise<void> {
@@ -144,8 +144,8 @@ export class NotificationStoreService {
           this._unreadCount.set(countResult.count);
         }
 
-        // ✅ Realtime se inicializa de forma INDEPENDIENTE en initRealtime()
-        // NO se inicializa aquí para evitar duplicaciones y permitir proper cleanup en logout
+        // Realtime is initialized independently in initRealtime()
+        // NOT initialized here to avoid duplications and allow proper cleanup on logout
       } catch (err) {
         console.error('[NotificationStore] Error al cargar notificaciones:', err);
       }
@@ -177,7 +177,7 @@ export class NotificationStoreService {
    */
   private _subscribeToRealtime(userId: string): void {
     try {
-      console.log('[NotificationStore] 🔌 Intentando conectar a Realtime para user:', userId);
+      console.log('[NotificationStore] Attempting to connect to Realtime for user:', userId);
 
       this._realtimeChannel = this.supabaseClient
         .channel(`notificaciones:${userId}`)
@@ -190,16 +190,16 @@ export class NotificationStoreService {
             filter: `user_id=eq.${userId}`,
           },
           (payload) => {
-            console.log('[NotificationStore] 📨 EVENTO REALTIME RECIBIDO:', payload);
+            console.log('[NotificationStore] Realtime event received:', payload);
             const newNotificacion = payload.new as Notificacion;
 
-            // ── DEDUPLICACIÓN ─────────────────────────────────────
+            // ── DEDUPLICATION ─────────────────────────────────────
             if (this._notificaciones().some(n => n.id === newNotificacion.id)) {
-              console.log('[NotificationStore] ⚠️ Notificación duplicada ignorada');
+              console.log('[NotificationStore] Duplicate notification ignored');
               return;
             }
 
-            console.log('[NotificationStore] ✨ Agregando notificación:', newNotificacion);
+            console.log('[NotificationStore] Adding new notification:', newNotificacion);
 
             // Agregar notificación al inicio de la lista
             this._notificaciones.update(prev => [newNotificacion, ...prev]);
@@ -214,7 +214,7 @@ export class NotificationStoreService {
 
             // ── DOCUMENT VISIBILITY CHECK (PATRÓN ESTÁNDAR) ────────
             if (document.visibilityState === 'visible') {
-              // ✅ Usuario DENTRO de la app → SOLO toast
+              // User INSIDE the app → ONLY toast
               this.toastService.show(
                 `${title} - ${newNotificacion.mensaje}`,
                 'info',
@@ -222,7 +222,7 @@ export class NotificationStoreService {
                 () => this.router.navigate(['/user/notificaciones'])
               );
             } else {
-              // ✅ Usuario FUERA de la app → SOLO push notification
+              // User OUTSIDE the app → ONLY push notification
               if (Notification.permission === 'granted') {
                 this.browserNotifService.show({
                   title: title,
@@ -236,21 +236,21 @@ export class NotificationStoreService {
           }
         )
         .subscribe((status) => {
-          console.log('[NotificationStore] 🔔 Estado Realtime:', status);
+          console.log('[NotificationStore] Realtime status:', status);
 
           if (status === 'SUBSCRIBED') {
             this._realtimeInitialized = true;
-            console.log('[NotificationStore] ✅ CONECTADO a Realtime exitosamente');
+            console.log('[NotificationStore] Connected to Realtime successfully');
           } else if (status === 'CHANNEL_ERROR') {
-            console.error('[NotificationStore] ❌ ERROR - Verifica que Realtime esté HABILITADO en Supabase para tabla "notificaciones"');
+            console.error('[NotificationStore] Error - Verify that Realtime is enabled in Supabase for "notificaciones" table');
           } else if (status === 'TIMED_OUT') {
-            console.error('[NotificationStore] ⏱️ TIMEOUT en conexión');
+            console.error('[NotificationStore] Timeout in connection');
           } else if (status === 'CLOSED') {
-            console.warn('[NotificationStore] 🔌 Canal cerrado');
+            console.warn('[NotificationStore] Channel closed');
           }
         });
     } catch (err) {
-      console.error('[NotificationStore] 💥 Error al suscribirse a Realtime:', err);
+      console.error('[NotificationStore] Error subscribing to Realtime:', err);
     }
   }
 
@@ -266,23 +266,23 @@ export class NotificationStoreService {
   }
 
   /**
-   * Construir tag para push notifications con agrupación inteligente.
+   * Build tag for push notifications with intelligent grouping.
    *
-   * Estrategia de tagging (ahora con campos de contexto reales):
-   * - Si tiene post_id → tag incluye el ID del post
-   * - Si tiene comentario_id → tag incluye el ID del comentario
-   * - Si no tiene contexto → tag solo con tipo
+   * Tagging strategy (now with real context fields):
+   * - If has post_id → tag includes post ID
+   * - If has comentario_id → tag includes comment ID
+   * - If no context → tag only with type
    *
-   * Resultado:
-   * ✅ Notificaciones sobre el MISMO post se agrupan
-   * ✅ Notificaciones sobre posts DISTINTOS se mantienen separadas
-   * ✅ SIN hacks con substring de mensaje
-   * ✅ Preciso y confiable
+   * Result:
+   * Notifications about the SAME post are grouped
+   * Notifications about DIFFERENT posts stay separate
+   * No hacks with message substring
+   * Precise and reliable
    *
-   * Ejemplo:
-   * - 3 comentarios eliminados del post_id "xyz" → tag: "notif-comentario_eliminado-post-xyz"
-   * - comentario eliminado del post_id "abc" → tag: "notif-comentario_eliminado-post-abc"
-   * - usuario suspendido (sin contexto) → tag: "notif-usuario_suspendido"
+   * Example:
+   * - 3 deleted comments from post_id "xyz" → tag: "notif-comentario_eliminado-post-xyz"
+   * - deleted comment from post_id "abc" → tag: "notif-comentario_eliminado-post-abc"
+   * - suspended user (no context) → tag: "notif-usuario_suspendido"
    */
   private buildNotificationTag(notif: Notificacion): string {
     const baseTag = `notif-${notif.tipo}`;
@@ -301,21 +301,21 @@ export class NotificationStoreService {
   }
 
   /**
-   * Obtener título legible para tipo de notificación
+   * Get readable title for notification type
    */
   private getTitleForType(tipo: string): string {
     const titleMap: Record<string, string> = {
-      'post_aceptado': '✅ Publicación Aceptada',
-      'post_aprobado': '✅ Publicación Aprobada',
-      'post_rechazado': '❌ Publicación Rechazada',
-      'comentario_eliminado': '🗑️ Comentario Eliminado',
-      'post_eliminado': '🗑️ Publicación Eliminada',
-      'usuario_suspendido': '🔒 Cuenta Suspendida',
-      'admin_action': '⚙️ Acción Administrativa',
-      'reporte_resuelto': '✅ Reporte Resuelto',
-      'reporte_revision': 'ℹ️ Reporte Revisado',
+      'post_aceptado': 'Publication Accepted',
+      'post_aprobado': 'Publication Approved',
+      'post_rechazado': 'Publication Rejected',
+      'comentario_eliminado': 'Comment Deleted',
+      'post_eliminado': 'Publication Deleted',
+      'usuario_suspendido': 'Account Suspended',
+      'admin_action': 'Administrative Action',
+      'reporte_resuelto': 'Report Resolved',
+      'reporte_revision': 'Report Reviewed',
     };
-    return titleMap[tipo] || 'Nueva Notificación';
+    return titleMap[tipo] || 'New Notification';
   }
 
   /**
