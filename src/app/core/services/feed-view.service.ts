@@ -36,6 +36,19 @@ export class FeedViewService {
     private readonly auth = inject(AuthService);
 
     /**
+     * Helper centralizado para asegurar un ordenamiento determinista en el feed.
+     * Al añadir 'id' como segundo criterio, garantizamos que Postgres no mezcle
+     * filas con el mismo timestamp ('creado') en distintas páginas.
+     */
+    private _getBaseFeedQuery() {
+        return this.db
+            .from('feed_posts')
+            .select('*')
+            .order('creado', { ascending: false })
+            .order('id', { ascending: false });
+    }
+
+    /**
      * Obtener el feed paginado desde la VIEW feed_posts.
      *
      * @param page  Número de página (0-indexed)
@@ -55,10 +68,7 @@ export class FeedViewService {
         const from = page * limit;
         const to = from + limit - 1;
 
-        const { data, error } = await this.db
-            .from('feed_posts')
-            .select('*')
-            .order('creado', { ascending: false })
+        const { data, error } = await this._getBaseFeedQuery()
             .range(from, to);
 
         return { data: data as FeedPost[] || [], error };
@@ -69,11 +79,8 @@ export class FeedViewService {
      * Uso: vistas filtradas (Experiencias, etc.) que necesitan todos los registros.
      */
     async getFeedPostsByTipo(tipo: string): Promise<{ data: FeedPost[] | null; error: any }> {
-        const { data, error } = await this.db
-            .from('feed_posts')
-            .select('*')
-            .eq('tipo', tipo)
-            .order('creado', { ascending: false });
+        const { data, error } = await this._getBaseFeedQuery()
+            .eq('tipo', tipo);
 
         return { data: data as FeedPost[] || null, error };
     }
@@ -98,11 +105,8 @@ export class FeedViewService {
      * Uso: página Avisos Oficiales.
      */
     async getFeedAnuncios(): Promise<{ data: FeedPost[] | null; error: any }> {
-        const { data, error } = await this.db
-            .from('feed_posts')
-            .select('*')
-            .eq('fuente', 'anuncio')
-            .order('creado', { ascending: false });
+        const { data, error } = await this._getBaseFeedQuery()
+            .eq('fuente', 'anuncio');
 
         return { data: data as FeedPost[] || null, error };
     }
@@ -112,12 +116,9 @@ export class FeedViewService {
      * Uso: página de perfil (muestra todas las publicaciones del usuario).
      */
     async getFeedPostsByAutor(autorId: string): Promise<{ data: FeedPost[] | null; error: any }> {
-        const { data, error } = await this.db
-            .from('feed_posts')
-            .select('*')
+        const { data, error } = await this._getBaseFeedQuery()
             .eq('autor_id', autorId)
-            .eq('fuente', 'publicacion')
-            .order('creado', { ascending: false });
+            .eq('fuente', 'publicacion');
 
         return { data: data as FeedPost[] || null, error };
     }
