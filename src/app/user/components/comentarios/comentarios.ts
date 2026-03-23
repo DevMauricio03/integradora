@@ -68,6 +68,10 @@ export class Comentarios implements OnInit {
   readonly commentToDelete    = signal<string | null>(null);
   readonly isDeleting         = signal(false);
 
+  // ── Promise Guards (prevención de race conditions) ────────────
+  private _submitPromise: Promise<void> | null = null;
+  private _deletePromise: Promise<void> | null = null;
+
   private offset = 0;
 
   // ── Conteo de palabras ────────────────────────────────────────
@@ -139,24 +143,33 @@ export class Comentarios implements OnInit {
       return;
     }
 
+    // ── Guard: reutilizar Promise si ya hay una en vuelo
+    if (this._submitPromise) return this._submitPromise;
+
     this.errorPublish.set(null);
     this.isPublishing.set(true);
 
-    try {
-      const { data, error } = await this.svc.crearComentario(this.postId, text);
+    this._submitPromise = (async () => {
+      try {
+        const { data, error } = await this.svc.crearComentario(this.postId, text);
 
-      if (error || !data) {
-        this.errorPublish.set('No se pudo publicar el comentario. Intenta de nuevo.');
-        return;
+        if (error || !data) {
+          this.errorPublish.set('No se pudo publicar el comentario. Intenta de nuevo.');
+          return;
+        }
+
+        this.comentarios.update(prev => [data, ...prev]);
+        this.offset += 1;
+        this.commentText.set('');
+      } finally {
+        this.isPublishing.set(false);
+        this.cdr.markForCheck();
       }
+    })().finally(() => {
+      this._submitPromise = null;
+    });
 
-      this.comentarios.update(prev => [data, ...prev]);
-      this.offset += 1;
-      this.commentText.set('');
-    } finally {
-      this.isPublishing.set(false);
-      this.cdr.markForCheck();
-    }
+    return this._submitPromise;
   }
 
   // ── Eliminar ──────────────────────────────────────────────────
@@ -176,20 +189,30 @@ export class Comentarios implements OnInit {
     const id = this.commentToDelete();
     if (!id || this.isDeleting()) return;
 
+    // ── Guard: reutilizar Promise si ya hay una en vuelo
+    if (this._deletePromise) return this._deletePromise;
+
     this.isDeleting.set(true);
-    try {
-      const { error } = await this.svc.deleteComentario(id);
-      if (!error) {
-        this.comentarios.update(prev => prev.filter(c => c.id !== id));
-        this.offset = Math.max(0, this.offset - 1);
-      } else {
-        console.error('[Comentarios] Error al eliminar:', error);
+
+    this._deletePromise = (async () => {
+      try {
+        const { error } = await this.svc.deleteComentario(id);
+        if (!error) {
+          this.comentarios.update(prev => prev.filter(c => c.id !== id));
+          this.offset = Math.max(0, this.offset - 1);
+        } else {
+          console.error('[Comentarios] Error al eliminar:', error);
+        }
+      } finally {
+        this.isDeleting.set(false);
+        this.closeDeleteConfirm();
+        this.cdr.markForCheck();
       }
-    } finally {
-      this.isDeleting.set(false);
-      this.closeDeleteConfirm();
-      this.cdr.markForCheck();
-    }
+    })().finally(() => {
+      this._deletePromise = null;
+    });
+
+    return this._deletePromise;
   }
 
   // ── Reportar comentario ───────────────────────────────────────

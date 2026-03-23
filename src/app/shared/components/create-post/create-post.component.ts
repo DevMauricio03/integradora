@@ -56,6 +56,9 @@ export class CreatePostComponent {
   selectedSubtype = signal<'producto' | 'servicio' | null>(null);
   private imageFiles = signal<File[]>([]);
 
+  // ── Promise Guard (prevención de race conditions) ────────────
+  private _publishPromise: Promise<void> | null = null;
+
   private readonly postStore = inject(PostStoreService);
   private readonly router = inject(Router);
 
@@ -180,34 +183,43 @@ export class CreatePostComponent {
   async publish() {
     if (this.isPublishing()) return;
 
+    // ── Guard: reutilizar Promise si ya hay una en vuelo
+    if (this._publishPromise) return this._publishPromise;
+
     this.isPublishing.set(true);
 
-    try {
-      const postData = { ...this.postModel() };
+    this._publishPromise = (async () => {
+      try {
+        const postData = { ...this.postModel() };
 
-      // 1. Subir imágenes si hay archivos seleccionados
-      if (this.imageFiles().length > 0) {
-        console.log('Subiendo archivos:', this.imageFiles());
-        const urls = await this.postStore.uploadPostImages(this.imageFiles());
-        console.log('URLs obtenidas:', urls);
+        // 1. Subir imágenes si hay archivos seleccionados
+        if (this.imageFiles().length > 0) {
+          console.log('Subiendo archivos:', this.imageFiles());
+          const urls = await this.postStore.uploadPostImages(this.imageFiles());
+          console.log('URLs obtenidas:', urls);
 
-        if (urls.length === 0) {
-          throw new Error('No se pudieron subir las imágenes. Verifica que el bucket "publicaciones" exista y sea público.');
+          if (urls.length === 0) {
+            throw new Error('No se pudieron subir las imágenes. Verifica que el bucket "publicaciones" exista y sea público.');
+          }
+
+          postData.images = urls;
+          postData.image = urls[0];
         }
 
-        postData.images = urls;
-        postData.image = urls[0];
+        await this.postStore.addPost(postData);
+        this.router.navigate(['/user/crear/exito'], { state: { post: postData } });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Error desconocido';
+        console.error('Error detallado al publicar:', message);
+        alert('Error: ' + message);
+      } finally {
+        this.isPublishing.set(false);
       }
+    })().finally(() => {
+      this._publishPromise = null;
+    });
 
-      await this.postStore.addPost(postData);
-      this.router.navigate(['/user/crear/exito'], { state: { post: postData } });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error desconocido';
-      console.error('Error detallado al publicar:', message);
-      alert('Error: ' + message);
-    } finally {
-      this.isPublishing.set(false);
-    }
+    return this._publishPromise;
   }
 
   handleFile(event: Event) {
