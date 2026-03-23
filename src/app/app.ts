@@ -3,9 +3,13 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SupabaseService } from './core/services/supabase.service';
 import { filter } from 'rxjs';
+import { Subscription } from '@supabase/supabase-js';
 import { SuspensionModal } from './shared/components/suspensionModal/suspensionModal';
 import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
 
+
+// Step 1: Variable a nivel de módulo para proteger el listener de múltiples inicializaciones
+let authListenerSub: Subscription | null = null;
 
 @Component({
   selector: 'app-root',
@@ -36,19 +40,36 @@ export class App implements OnInit {
 
   ngOnInit() {
     // === LISTENER GLOBAL DE AUTH STATE ===
-    // Detecta cambios de autenticación inmediatamente (logout, suspension, etc)
-    this.supabase.onAuthStateChange((event, session) => {
+    // Limpiamos cualquier suscripción previa si la hubiera (Idempotencia global)
+    if (authListenerSub) {
+      authListenerSub.unsubscribe();
+    }
+
+    const { data } = this.supabase.onAuthStateChange((event, session) => {
+      // Step 2: Identificar Password Recovery para no tratarlo como login normal
+      if (event === 'PASSWORD_RECOVERY') {
+        console.log('[App] Recovery detectado. Usuario puede actualizar password.');
+        return; // Detenemos aquí, no tratamos como SIGNED_IN
+      }
+
       if (event === 'SIGNED_OUT') {
         // Logout detectado: resetear estado y redirigir
-        // (SupabaseService.signOut() ya limpió todos los stores)
         this.mostrarModalSuspension.set(false);
         this.router.navigate(['/auth/bienvenida']);
       } else if (event === 'SIGNED_IN' && session) {
-        // LOGIN detectado: verificar que se usan datos frescos del nuevo usuario
-        // El siguiente acceso a getPerfilActual() DEBE ir a la BD (no caché)
+        // Verificamos que realmente sea un login estándar:
+        // Supabase emite SIGNED_IN junto con PASSWORD_RECOVERY al abrir un enlace de recuperación.
+        // Como interceptamos PASSWORD_RECOVERY arriba, reducimos los falsos positivos.
+        // Aún así, nos aseguramos que estamos en una ruta que espera un login o verificamos.
+        const hash = window.location.hash;
+        if (hash && hash.includes('type=recovery')) {
+           return; // Seguro adicional contra falsos SIGNED_IN durante recovery
+        }
+        
         console.log('[App] Login detectado - nuevo usuario activo');
       }
     });
+    authListenerSub = data?.subscription;
 
     // === VERIFICAR SUSPENSIÓN EN CADA NAVEGACIÓN ===
     // Verificamos el estado de la cuenta en cada cambio de ruta principal
