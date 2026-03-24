@@ -4,20 +4,10 @@
   <div class="form-card">
     <div class="form-header">
       <h2 class="main-title">
-        @switch (currentType()) {
-        @case ('aviso') { Crear Aviso }
-        @case ('evento') { Crear Evento }
-        @case ('oferta') { Crear Oferta }
-        @case ('experiencia') { Crear Experiencia }
-        }
+        {{ headerTitle() }}
       </h2>
       <p class="subtitle">
-        @switch (currentType()) {
-        @case ('aviso') { Comparte noticias y anuncios con tu comunidad. }
-        @case ('evento') { Organiza un evento e invita a tu comunidad universitaria. }
-        @case ('oferta') { Ofrece servicios o vende productos. }
-        @case ('experiencia') { Comparte tu trayectoria profesional y consejos. }
-        }
+        {{ headerSubtitle() }}
       </p>
     </div>
 
@@ -78,15 +68,9 @@
 
         <!-- Título Dinámico -->
         <div class="form-field">
-          <label for="postTitle">
-            @switch (currentType()) {
-            @case ('evento') { Título del evento * }
-            @case ('oferta') { Título del {{ selectedSubtype() }} * }
-            @default { Título de la publicación * }
-            }
-          </label>
+          <label for="postTitle">{{ titleLabel() }}</label>
           <input id="postTitle" type="text" [formField]="postForm.title"
-            [placeholder]="currentType() === 'evento' ? 'Ej: RoboTICup 2026' : 'Ej: Importante: Cierre de laboratorio'"
+            [placeholder]="titlePlaceholder()"
             [class.error-border]="postForm.title().touched() && postForm.title().invalid()">
           @if (postForm.title().touched() && postForm.title().invalid()) {
           <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{
@@ -98,7 +82,7 @@
         <div class="form-field">
           <label for="postDesc">Descripción *</label>
           <textarea id="postDesc" rows="4" [formField]="postForm.description"
-            [placeholder]="currentType() === 'evento' ? 'Detalles del evento, ponentes, agenda...' : 'Escribe los detalles importantes aquí...'"
+            [placeholder]="descriptionPlaceholder()"
             [class.error-border]="postForm.description().touched() && postForm.description().invalid()"></textarea>
           @if (postForm.description().touched() && postForm.description().invalid()) {
           <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{

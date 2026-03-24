@@ -128,6 +128,48 @@ export class CreatePostComponent {
 
   currentType = computed(() => this.postModel().type);
 
+  // --- Dynamic Text Signals ---
+  headerTitle = computed(() => {
+    const titles: Record<string, string> = {
+      'aviso': 'Crear Aviso',
+      'evento': 'Crear Evento',
+      'oferta': 'Crear Oferta',
+      'experiencia': 'Crear Experiencia'
+    };
+    return titles[this.currentType()] || 'Crear Publicación';
+  });
+
+  headerSubtitle = computed(() => {
+    const subtitles: Record<string, string> = {
+      'aviso': 'Comparte noticias y anuncios con tu comunidad.',
+      'evento': 'Organiza un evento e invita a tu comunidad universitaria.',
+      'oferta': 'Ofrece servicios o vende productos.',
+      'experiencia': 'Comparte tu trayectoria profesional y consejos.'
+    };
+    return subtitles[this.currentType()] || 'Completa los datos de tu publicación.';
+  });
+
+  titleLabel = computed(() => {
+    switch (this.currentType()) {
+      case 'evento': return 'Título del evento *';
+      case 'oferta': return `Título del ${this.selectedSubtype() || 'producto'} *`;
+      default: return 'Título de la publicación *';
+    }
+  });
+
+  titlePlaceholder = computed(() => 
+    this.currentType() === 'evento' 
+      ? 'Ej: RoboTICup 2026' 
+      : 'Ej: Importante: Cierre de laboratorio'
+  );
+
+  descriptionPlaceholder = computed(() => 
+    this.currentType() === 'evento' 
+      ? 'Detalles del evento, ponentes, agenda...' 
+      : 'Escribe los detalles importantes aquí...'
+  );
+  // ----------------------------
+
   selectType(typeId: string) {
     this.postModel.update(m => {
       const newModel = { ...m, type: typeId };
