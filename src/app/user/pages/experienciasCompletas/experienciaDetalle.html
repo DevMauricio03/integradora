@@ -30,9 +30,30 @@
     [avatar]="p.avatar"
     [details]="p.details"
     [expirationDate]="p.expirationDate"
+    (report)="openReportModal(p)"
   />
 
   <app-comentarios [postId]="p.id" [publicacion]="p" />
+
+  @if (showReportModal()) {
+    @if (selectedPostForReport(); as post) {
+      <app-report-modal
+        [post]="post"
+        (closed)="closeReportModal()"
+        (reported)="handleReport($event)">
+      </app-report-modal>
+    }
+  }
+
+  @if (showSuccessReport()) {
+    <app-success-modal
+      titulo="¡Reporte enviado!"
+      mensaje="Gracias por informarnos. El equipo de moderación revisará la publicación en breve."
+      botonTexto="Entendido"
+      (confirm)="showSuccessReport.set(false)"
+      (closed)="showSuccessReport.set(false)">
+    </app-success-modal>
+  }
 
   }
 

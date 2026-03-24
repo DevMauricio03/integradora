@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseClientService } from './supabase-client.service';
+import { AuthStoreService } from './auth-store.service';
+import { Post } from './post-store.service';
 
 /**
  * Layer 1 – Servicio especializado: Reportes.
@@ -11,6 +13,7 @@ import { SupabaseClientService } from './supabase-client.service';
 @Injectable({ providedIn: 'root' })
 export class ReportService {
     private readonly db = inject(SupabaseClientService).client;
+    private readonly authStore = inject(AuthStoreService);
 
     // ── Lectura (admin) ──────────────────────────────────────────
 
@@ -207,6 +210,47 @@ export class ReportService {
                 : { tipo_reporte: 'publicacion' }
             )
         });
+    }
+
+    /**
+     * Reporta una publicación (método de alto nivel para componentes).
+     * Valida que el usuario esté autenticado antes de crear el reporte.
+     *
+     * @param post - Publicación a reportar
+     * @param event - Motivo y detalles del reporte
+     * @returns { success: boolean; error?: any }
+     */
+    async reportPost(
+        post: Post,
+        event: { reason: string; details: string }
+    ): Promise<{ success: boolean; error?: any }> {
+        try {
+            const perfilActual = await this.authStore.getPerfilActual();
+
+            if (!perfilActual) {
+                return {
+                    success: false,
+                    error: { message: 'Debes iniciar sesión para reportar.' }
+                };
+            }
+
+            const { error } = await this.createReport({
+                publicacion_id: post.id,
+                autor_id: post.authorId,
+                informante_id: perfilActual.id,
+                motivo: event.reason,
+                detalles: event.details
+            });
+
+            if (error) {
+                return { success: false, error };
+            }
+
+            return { success: true };
+        } catch (error) {
+            console.error('[ReportService] reportPost() error:', error);
+            return { success: false, error };
+        }
     }
 
     /** Cambiar el estado de un reporte (resuelto / rechazado) */
