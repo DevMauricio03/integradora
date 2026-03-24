@@ -57,7 +57,7 @@
 
     <nav>
       <ul>
-        <li routerLink="/user/feed" routerLinkActive="active">
+        <li routerLink="/user/feed" routerLinkActive="active" (click)="onInicioClick($event)">
           <app-icon name="home"></app-icon>
           <span>Inicio</span>
         </li>
@@ -85,7 +85,7 @@
     </nav>
   </aside>
 
-  <main class="contenido">
+  <main class="contenido" #mainScroll>
     <router-outlet></router-outlet>
   </main>
 

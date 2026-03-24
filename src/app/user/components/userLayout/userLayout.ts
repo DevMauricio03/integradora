@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import {
   ActivatedRoute,
@@ -14,6 +14,7 @@ import { filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { NotificationStoreService } from '../../../core/services/notification-store.service';
+import { PostStoreService } from '../../../core/services/post-store.service';
 
 @Component({
   selector: 'app-user-layout',
@@ -29,6 +30,7 @@ export class UserLayoutComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly notificationStore = inject(NotificationStoreService);
+  private readonly postStore = inject(PostStoreService);
 
   title = signal('');
   showCreateButton = signal(false);
@@ -78,5 +80,25 @@ export class UserLayoutComponent implements OnInit {
 
   goToCreate() {
     this.router.navigate(['/user/crear']);
+  }
+
+  async onInicioClick(event: Event) {
+    if (this.router.url === '/user/feed') {
+      event.preventDefault();
+      
+      // Close mobile menu if it is open
+      this.isMenuOpen.set(false);
+
+      // Wait for feed data to finish loading
+      await this.postStore.loadFeed(true);
+
+      // Wait for Angular to complete DOM re-render the new data using double rAF
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          // The window is the real scroll container, not the <main> element
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+    }
   }
 }
