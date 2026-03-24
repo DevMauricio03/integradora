@@ -74,12 +74,7 @@ export class PostStoreService {
 
   public readonly posts = computed<Post[]>(() =>
     [...this._pendingPosts(), ...this._feedPosts()]
-      .sort((a, b) => {
-        if (!a.rawDate && !b.rawDate) return 0;
-        if (!a.rawDate) return 1;
-        if (!b.rawDate) return -1;
-        return b.rawDate.getTime() - a.rawDate.getTime();
-      })
+      .sort((a, b) => this.sortByDateDesc(a, b))
   );
 
   public readonly isLoading = computed<boolean>(() =>
@@ -229,13 +224,7 @@ export class PostStoreService {
     const unique = combinado.filter(
       (post, i, self) => self.findIndex(p => p.id === post.id) === i
     );
-    return unique
-      .sort((a, b) => {
-        if (!a.rawDate && !b.rawDate) return 0;
-        if (!a.rawDate) return 1;
-        if (!b.rawDate) return -1;
-        return b.rawDate.getTime() - a.rawDate.getTime();
-      });
+    return unique.sort((a, b) => this.sortByDateDesc(a, b));
   }
 
   /** Elimina un post del estado local (optimistic delete). */
@@ -373,12 +362,7 @@ export class PostStoreService {
       const { data: anunciosData } = await this.anuncioService.getAnuncios();
       const anuncios = anunciosData ? anunciosData.map(a => this.mapLegacyAnuncio(a as any)) : [];
       const combined = [...pubs, ...anuncios]
-        .sort((a, b) => {
-          if (!a.rawDate && !b.rawDate) return 0;
-          if (!a.rawDate) return 1;
-          if (!b.rawDate) return -1;
-          return b.rawDate.getTime() - a.rawDate.getTime();
-        });
+        .sort((a, b) => this.sortByDateDesc(a, b));
       this._hasMore.set(false); // En fallback cargamos de una vez
       return combined;
     }
@@ -482,6 +466,26 @@ export class PostStoreService {
       details: { contacto_url: a.contacto_url, fecha_inicio: a.fecha_inicio, fecha_fin: a.fecha_fin },
       status: 'activo'
     };
+  }
+
+  /**
+   * Null-safe date comparator for sorting posts by rawDate (newest first).
+   * Handles null, undefined, and Invalid Date objects.
+   */
+  private sortByDateDesc(a: Post, b: Post): number {
+    const aDate = a.rawDate;
+    const bDate = b.rawDate;
+
+    // Both invalid → equal
+    const aValid = aDate != null && !isNaN(aDate.getTime());
+    const bValid = bDate != null && !isNaN(bDate.getTime());
+
+    if (!aValid && !bValid) return 0;
+    if (!aValid) return 1;  // Push a to end
+    if (!bValid) return -1; // Push b to end
+
+    // Both valid → newest first
+    return bDate.getTime() - aDate.getTime();
   }
 
   private formatTime(dateStr: string): string {

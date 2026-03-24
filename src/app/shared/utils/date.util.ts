@@ -25,7 +25,7 @@ function ensureUtcTimestamp(dateStr: string): string {
 
   // Si es formato ISO sin Z (YYYY-MM-DDTHH:MM:SS), debe ser UTC
   // Agregamos Z para garantizar parsing correcto como UTC
-  if (trimmed.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?$/)) {
+  if (trimmed.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/)) {
     const normalized = trimmed + 'Z';
     console.warn(
       '[DateUtil] TIMESTAMP SIN UTC DETECTADO - Normalizando:',
@@ -55,6 +55,19 @@ export function formatTimeAgo(dateStr: string | Date): string {
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMins / 60);
+
+    // 🔍 TEMPORARY DEBUG - Remove after debugging
+    console.log('[TIME DEBUG]', {
+      original: dateStr,
+      normalized: normalizedStr,
+      parsed: date,
+      timestamp: date.getTime(),
+      now: now,
+      nowTimestamp: now.getTime(),
+      diffMs: diffMs,
+      diffMins: diffMins,
+      isValidDate: !isNaN(date.getTime())
+    });
 
     if (diffMins < 1) return 'Ahora';
     if (diffMins < 60) return `${diffMins} min`;
