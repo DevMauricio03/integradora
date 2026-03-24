@@ -81,12 +81,8 @@
       }
 
       <!-- BOTÓN -->
-      <button type="submit" class="boton-recuperar" [disabled]="recoverForm().pending() || cargando()">
-        @if (cargando()) {
-        Enviando...
-        } @else {
-        Enviar enlace de recuperación
-        }
+      <button type="submit" class="boton-recuperar" [disabled]="isDisabled()">
+        {{ buttonText() }}
       </button>
 
       <!-- VOLVER -->

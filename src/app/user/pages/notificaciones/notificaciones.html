@@ -37,21 +37,21 @@
   <!-- Notifications List (MEJORADO: Muestra total incluso si todas están leídas) -->
   @if (!isLoading() && hasAnyNotifications()) {
   <div class="notifications-list">
-    @for (notif of notificaciones(); track notif.id) {
+    @for (notif of notificacionesViewModel(); track notif.id) {
     <div class="notification-item"
          [class.unread]="!notif.leido"
-         [class.clickable]="puedeVerDetalles(notif.tipo)"
-         (click)="puedeVerDetalles(notif.tipo) ? abrirDetalleNotificacion(notif) : markAsRead(notif)">
+         [class.clickable]="notif.canViewDetails"
+         (click)="notif.canViewDetails ? abrirDetalleNotificacion(notif) : markAsRead(notif)">
       <!-- Badge de tipo -->
-      <div class="notification-badge" [style.backgroundColor]="getColorForType(notif.tipo)">
+      <div class="notification-badge" [style.backgroundColor]="notif.iconColor">
         <span class="badge-icon">●</span>
       </div>
 
       <!-- Contenido -->
       <div class="notification-content">
-        <h4 class="notification-type">{{ getTypeLabel(notif.tipo) }}</h4>
+        <h4 class="notification-type">{{ notif.typeLabel }}</h4>
         <p class="notification-message">{{ notif.mensaje }}</p>
-        <span class="notification-time">{{ formatDate(notif.creado) }}</span>
+        <span class="notification-time">{{ notif.formattedDate }}</span>
       </div>
 
       <!-- Botón eliminar -->

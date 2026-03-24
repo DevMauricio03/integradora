@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal, output, input, computed } from '@angular/core';
 import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { StatusBadge } from '../../../shared/components/statusBadge/statusBadge';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
@@ -28,7 +28,7 @@ const DURATION_OPTIONS: { value: SuspensionDuration; label: string }[] = [
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuarioDetalleModal implements OnInit {
-    @Input() usuario: any;
+    usuario = input<any>();
     closed = output<void>();
     refresh = output<void>();
 
@@ -39,6 +39,16 @@ export class UsuarioDetalleModal implements OnInit {
     roles = signal<{ id: string; nombre: string }[]>([]);
     isEditingRole = signal(false);
     isProcessing = signal(false);
+
+    readonly formattedDate = computed(() => this.usuario() ? this.formatDate(this.usuario().creado) : 'N/A');
+    
+    readonly currentRoleName = computed(() => this.usuario()?.roles?.nombre || 'Alumno');
+    readonly esSuspendido = computed(() => {
+        const u = this.usuario();
+        if (u?.estado !== 'suspendido') return false;
+        if (!u?.fecha_suspension) return false;
+        return new Date(u.fecha_suspension) > new Date();
+    });
 
     // Suspension duration selector
     readonly durationOptions = DURATION_OPTIONS;
@@ -71,7 +81,7 @@ export class UsuarioDetalleModal implements OnInit {
 
     async cargarActividadReciente() {
         const result: { titulo: string, subtitulo: string, color: string }[] = [];
-        const { data: posts } = await this.pubService.getUserRecentPosts(this.usuario.id, 2);
+        const { data: posts } = await this.pubService.getUserRecentPosts(this.usuario().id, 2);
 
         if (posts && posts.length > 0) {
             posts.forEach((p: { titulo: string; tipo: string; creado: string }) => {
@@ -119,7 +129,7 @@ export class UsuarioDetalleModal implements OnInit {
         if (!roleId) return;
 
         this.isProcessing.set(true);
-        const { error } = await this.adminUserService.updateUserRole(this.usuario.id, roleId);
+        const { error } = await this.adminUserService.updateUserRole(this.usuario().id, roleId);
 
         if (error) {
             this.mostrarFeedback('Error al actualizar el rol: ' + error.message, 'error');
@@ -127,8 +137,9 @@ export class UsuarioDetalleModal implements OnInit {
             // Actualizamos localmente para el modal
             const selectedRole = this.roles().find(r => r.id === roleId);
             if (selectedRole) {
-                this.usuario.roles = { nombre: selectedRole.nombre };
-                this.usuario.rol_id = roleId;
+                const u = this.usuario();
+                u.roles = { nombre: selectedRole.nombre };
+                u.rol_id = roleId;
             }
             this.isEditingRole.set(false);
             this.refresh.emit(); // Notificar al padre para que recargue la lista
@@ -148,11 +159,11 @@ export class UsuarioDetalleModal implements OnInit {
         this.confirmacionConfig.set({
             titulo: 'Restablecer contraseña',
             textoBoton: 'Enviar correo',
-            mensaje: `¿Seguro que deseas enviar un correo de restablecimiento de contraseña a ${this.usuario.correoInstitucional}?`,
+            mensaje: `¿Seguro que deseas enviar un correo de restablecimiento de contraseña a ${this.usuario().correoInstitucional}?`,
             tipo: 'info',
             accion: async () => {
                 this.isProcessing.set(true);
-                const { error } = await this.authService.resetPassword(this.usuario.correoInstitucional);
+                const { error } = await this.authService.resetPassword(this.usuario().correoInstitucional);
                 if (error) {
                     this.mostrarFeedback('No se pudo enviar el correo: ' + error.message, 'error');
                 } else {
@@ -165,15 +176,10 @@ export class UsuarioDetalleModal implements OnInit {
         this.mostrarConfirmacion.set(true);
     }
 
-    /** Returns true if the user is actively suspended: estado = 'suspendido' AND fecha_suspension > now(). */
-    get esSuspendido(): boolean {
-        if (this.usuario?.estado !== 'suspendido') return false;
-        if (!this.usuario?.fecha_suspension) return false;
-        return new Date(this.usuario.fecha_suspension) > new Date();
-    }
+    // esSuspendido is now a computed property
 
     prepararSuspenderCuenta() {
-        if (this.esSuspendido) {
+        if (this.esSuspendido()) {
             // Reactivation flow — no duration needed
             this.mostrarSelectorDuracion.set(false);
             this.confirmacionConfig.set({
@@ -183,12 +189,13 @@ export class UsuarioDetalleModal implements OnInit {
                 tipo: 'info',
                 accion: async () => {
                     this.isProcessing.set(true);
-                    const { error } = await this.adminUserService.unsuspendUserRpc(this.usuario.id);
+                    const { error } = await this.adminUserService.unsuspendUserRpc(this.usuario().id);
                     if (error) {
                         this.mostrarFeedback('Error al activar la cuenta: ' + (error as any).message, 'error');
                     } else {
-                        this.usuario.estado = 'activo';
-                        this.usuario.fecha_suspension = null;
+                        const u = this.usuario();
+                        u.estado = 'activo';
+                        u.fecha_suspension = null;
                         this.mostrarFeedback('Cuenta activada con éxito.', 'success');
                         this.refresh.emit();
                     }
@@ -203,17 +210,18 @@ export class UsuarioDetalleModal implements OnInit {
             this.confirmacionConfig.set({
                 titulo: 'Suspender cuenta',
                 textoBoton: 'Sí, suspender',
-                mensaje: `¿Suspender la cuenta de ${this.usuario.nombre} ${this.usuario.apellidos}? El usuario no podrá acceder durante el periodo seleccionado.`,
+                mensaje: `¿Suspender la cuenta de ${this.usuario().nombre} ${this.usuario().apellidos}? El usuario no podrá acceder durante el periodo seleccionado.`,
                 tipo: 'danger',
                 accion: async () => {
                     this.isProcessing.set(true);
                     const duration = this.selectedDuration();
-                    const { error } = await this.adminUserService.suspendUserRpc(this.usuario.id, duration);
+                    const { error } = await this.adminUserService.suspendUserRpc(this.usuario().id, duration);
                     if (error) {
                         this.mostrarFeedback('Error al suspender la cuenta: ' + (error as any).message, 'error');
                     } else {
-                        this.usuario.estado = 'suspendido';
-                        this.usuario.fecha_suspension = this.computeSuspensionEnd(duration);
+                        const u = this.usuario();
+                        u.estado = 'suspendido';
+                        u.fecha_suspension = this.computeSuspensionEnd(duration);
                         const label = DURATION_OPTIONS.find(o => o.value === duration)?.label ?? duration;
                         this.mostrarFeedback(`Cuenta suspendida por ${label}.`, 'success');
                         this.refresh.emit();

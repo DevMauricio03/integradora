@@ -52,7 +52,7 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   hasMore = this.postStore.hasMore;
 
   carreras = signal<Carrera[]>([]);
-  currentUserId = signal<string | null>(null);
+  readonly currentUserId = computed(() => this.authStore.perfil()?.id ?? null);
 
   // ── Filtros ───────────────────────────────────────────────────
   selectedTipo = signal<string>('todas');
@@ -124,14 +124,7 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
 
   // ── Lifecycle ─────────────────────────────────────────────────
 
-  constructor() {
-    // REACTIVE: React to profile changes in AuthStoreService
-    // When user changes (logout/login), automatically update currentUserId
-    effect(() => {
-      const perfil = this.authStore.perfil();
-      this.currentUserId.set(perfil?.id ?? null);
-    });
-  }
+  constructor() {}
 
   ngOnInit() {
     this.initialLoad();
@@ -156,7 +149,6 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
       this.authStore.getPerfilActual()
     ]);
     if (carrerasRes.data) this.carreras.set(carrerasRes.data);
-    if (perfil) this.currentUserId.set(perfil.id);
 
     const posts = this.postStore.posts();
     const firstImageUrl = posts[0]?.images?.[0] ?? posts[0]?.image;

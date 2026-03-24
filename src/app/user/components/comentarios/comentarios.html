@@ -2,8 +2,8 @@
 
   <div class="comentarios-header">
     <span>COMENTARIOS</span>
-    @if (!disabled && comentarios().length > 0) {
-    <span class="comentarios-count">{{ comentarios().length }}</span>
+    @if (!disabled && comentariosViewModel().length > 0) {
+    <span class="comentarios-count">{{ comentariosViewModel().length }}</span>
     }
   </div>
 
@@ -67,29 +67,29 @@
     </div>
     }
   </div>
-  } @else if (comentarios().length === 0) {
+  } @else if (comentariosViewModel().length === 0) {
   <p class="comentarios-empty">Sé el primero en comentar esta experiencia.</p>
   } @else {
   <ul class="comentarios-list">
-    @for (c of comentarios(); track c.id) {
+    @for (c of comentariosViewModel(); track c.id) {
     <li class="comentario-item">
       <div class="comentario-avatar">
         @if (c.perfiles?.foto_url) {
-        <img [src]="c.perfiles!.foto_url" [alt]="authorName(c)" class="avatar-img">
+        <img [src]="c.perfiles!.foto_url" [alt]="c.authorName" class="avatar-img">
         } @else {
-        <div class="avatar-placeholder">{{ authorInitial(c) }}</div>
+        <div class="avatar-placeholder">{{ c.authorInitial }}</div>
         }
       </div>
 
       <div class="comentario-body">
         <div class="comentario-meta">
           <div class="meta-left">
-            <strong class="comentario-autor">{{ authorName(c) }}</strong>
-            <span class="comentario-tiempo">{{ formatTime(c.creado) }}</span>
+            <strong class="comentario-autor">{{ c.authorName }}</strong>
+            <span class="comentario-tiempo">{{ c.formattedTime }}</span>
           </div>
 
           <!-- ⋯ Menú de opciones -->
-          @if (!disabled && (canDelete(c) || canReport(c))) {
+          @if (!disabled && (c.canDelete || c.canReport)) {
           <div class="menu-wrapper" (click)="$event.stopPropagation()">
             <button
               type="button"
@@ -103,13 +103,13 @@
 
             @if (openMenuId() === c.id) {
             <div class="menu-dropdown">
-              @if (canDelete(c)) {
+              @if (c.canDelete) {
               <button type="button" class="menu-item menu-item--danger" (click)="openDeleteConfirm(c.id)">
                 <span class="menu-icon"></span>
                 Eliminar comentario
               </button>
               }
-              @if (canReport(c)) {
+              @if (c.canReport) {
               <button type="button" class="menu-item menu-item--danger" (click)="openCommentReport(c)">
                 Reportar comentario
               </button>

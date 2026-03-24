@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, signal, computed, input } from '@angular/core';
 import { SuccessModal } from '../../../shared/components/successModal/successModal';
 import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
@@ -18,7 +18,7 @@ import { NotificationService } from '../../../core/services/notification.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReporteDetalleModal {
-  @Input() reporte: any;
+  reporte = input<any>();
   @Output() closed = new EventEmitter<void>();
   @Output() actionExecuted = new EventEmitter<void>();
 
@@ -27,6 +27,10 @@ export class ReporteDetalleModal {
 
   isProcessing = signal<boolean>(false);
   showSuspensionOptions = signal<boolean>(false);
+
+  readonly formattedDate = computed(() => this.reporte() ? this.formatDate(this.reporte().creado) : '');
+  readonly formattedCommentDate = computed(() => this.reporte()?.comentario ? this.formatDate(this.reporte().comentario.creado) : '');
+  readonly previewSectionTitle = computed(() => this.reporte()?.tipo_reporte === 'comentario' ? 'COMENTARIO' : 'CONTENIDO');
 
   // ── Modales de eliminación ─────────────────────────────────────────
   mostrarModalMotivo = signal<boolean>(false);
@@ -48,7 +52,7 @@ export class ReporteDetalleModal {
    */
   private askForDeletionReason(type: 'publicacion' | 'comentario') {
     // Pre-llenar con motivo del reporte si existe
-    this.motivoEliminacion.set(this.reporte?.motivo || '');
+    this.motivoEliminacion.set(this.reporte()?.motivo || '');
     this.tipoEliminacionEnCurso.set(type);
     this.mostrarModalMotivo.set(true);
   }
@@ -68,8 +72,9 @@ export class ReporteDetalleModal {
     this.mostrarModalMotivo.set(false);
 
     // Actualizar reporte con motivo personalizado
-    if (this.reporte) {
-      this.reporte.motivo = this.motivoEliminacion();
+    const rep = this.reporte();
+    if (rep) {
+      rep.motivo = this.motivoEliminacion();
     }
 
     // Abrir modal de confirmación
@@ -108,13 +113,13 @@ export class ReporteDetalleModal {
         this.isProcessing.set(true);
         this.mostrarConfirmacion.set(false);
 
-        const autorId = this.reporte?.autor_id;
-        const informanteId = this.reporte?.reportado_por;
+        const autorId = this.reporte()?.autor_id;
+        const informanteId = this.reporte()?.reportado_por;
 
         try {
           const accionModeracion = type === 'publicacion' ? 'eliminar_publicacion' : 'eliminar_comentario';
           const { error } = await this.reportService.moderarReporte(
-            this.reporte.id,
+            this.reporte().id,
             accionModeracion as 'eliminar_publicacion' | 'eliminar_comentario',
           );
           if (error) throw error;
@@ -124,8 +129,8 @@ export class ReporteDetalleModal {
             try {
               const notificationType = type === 'publicacion' ? 'post_eliminado' : 'comentario_eliminado';
               const notificationMsg = type === 'publicacion'
-                ? `Tu publicación fue eliminada por moderación. Motivo: ${this.reporte.motivo}`
-                : `Uno de tus comentarios fue eliminado por moderación. Motivo: ${this.reporte.motivo}`;
+                ? `Tu publicación fue eliminada por moderación. Motivo: ${this.reporte().motivo}`
+                : `Uno de tus comentarios fue eliminado por moderación. Motivo: ${this.reporte().motivo}`;
 
               // Incluir contexto de la entidad en la notificación
               const notificationData: any = {
@@ -136,8 +141,8 @@ export class ReporteDetalleModal {
               };
 
               // Agregar post_id si es publicación eliminada
-              if (type === 'publicacion' && this.reporte.publicacion_id) {
-                notificationData.post_id = this.reporte.publicacion_id;
+              if (type === 'publicacion' && this.reporte().publicacion_id) {
+                notificationData.post_id = this.reporte().publicacion_id;
               }
 
               await this.notificationService.createNotificacion(notificationData);
@@ -153,7 +158,7 @@ export class ReporteDetalleModal {
               await this.notificationService.createNotificacion({
                 user_id: informanteId,
                 tipo: 'reporte_resuelto',
-                mensaje: `Tu reporte fue revisado por moderación. Acción tomada: ${accionTexto}. Motivo: ${this.reporte.motivo}`,
+                mensaje: `Tu reporte fue revisado por moderación. Acción tomada: ${accionTexto}. Motivo: ${this.reporte().motivo}`,
                 leido: false
               });
             } catch (notifError) {
@@ -188,9 +193,9 @@ export class ReporteDetalleModal {
     this.isProcessing.set(true);
     try {
       // Obtener el ID del informante ANTES de ejecutar la acción
-      const informanteId = this.reporte?.reportado_por;
+      const informanteId = this.reporte()?.reportado_por;
 
-      const { error } = await this.reportService.moderarReporte(this.reporte.id, 'descartar');
+      const { error } = await this.reportService.moderarReporte(this.reporte().id, 'descartar');
       if (error) throw error;
 
       // Notificar al informante que su reporte fue revisado
@@ -260,7 +265,7 @@ export class ReporteDetalleModal {
         this.mostrarConfirmacion.set(false);
         try {
           const { data, error } = await this.reportService.moderarReporte(
-            this.reporte.id,
+            this.reporte().id,
             'suspender_usuario',
             hours,
           );

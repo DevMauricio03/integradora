@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Navbar } from '../../../shared/components/navbar/navbar';
@@ -38,6 +38,9 @@ export class RecuperarContrasena {
   cargando = signal(false);
   emailEnviado = signal(false);
   errorEnvio = signal('');
+
+  isDisabled = computed(() => this.recoverForm().pending() || this.cargando());
+  buttonText = computed(() => this.cargando() ? 'Enviando...' : 'Enviar enlace de recuperación');
 
   constructor(private supabaseService: SupabaseService, private readonly router: Router) { }
   /**

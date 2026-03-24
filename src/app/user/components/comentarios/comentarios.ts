@@ -50,6 +50,15 @@ export class Comentarios implements OnInit {
 
   // ── Estado ────────────────────────────────────────────────────
   readonly comentarios    = signal<Comentario[]>([]);
+  readonly comentariosViewModel = computed(() => this.comentarios().map(c => ({
+    ...c,
+    authorName: this.authorName(c),
+    authorInitial: this.authorInitial(c),
+    formattedTime: this.formatTime(c.creado || ''),
+    canDelete: this.canDelete(c),
+    canReport: this.canReport(c)
+  })));
+  
   readonly isLoading      = signal(false);
   readonly isLoadingMore  = signal(false);
   readonly isPublishing   = signal(false);
@@ -342,9 +351,9 @@ export class Comentarios implements OnInit {
     return !this.isOwn(c);
   }
 
-  reportModalAutor(): string {
+  readonly reportModalAutor = computed(() => {
     const c = this.reportingComment();
     if (!c) return '';
     return this.authorName(c);
-  }
+  });
 }

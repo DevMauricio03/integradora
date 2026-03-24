@@ -168,6 +168,26 @@ export class CreatePostComponent {
       ? 'Detalles del evento, ponentes, agenda...' 
       : 'Escribe los detalles importantes aquí...'
   );
+
+  // --- Validation Logic ---
+  showTitleError = computed(() => this.postForm.title().touched() && this.postForm.title().invalid());
+  titleErrorMessage = computed(() => {
+    const errs = this.postForm.title().errors();
+    return errs?.length ? errs[0].message : '';
+  });
+
+  showDescError = computed(() => this.postForm.description().touched() && this.postForm.description().invalid());
+  descErrorMessage = computed(() => {
+    const errs = this.postForm.description().errors();
+    return errs?.length ? errs[0].message : '';
+  });
+
+  // --- UI Section Visibility ---
+  readonly isOfertaProducto = computed(() => this.currentType() === 'oferta' && this.selectedSubtype() === 'producto');
+  readonly isOfertaServicio = computed(() => this.currentType() === 'oferta' && this.selectedSubtype() === 'servicio');
+  
+  // --- UI Text ---
+  readonly publishButtonText = computed(() => this.isPublishing() ? 'Publicando...' : 'Publicar Ahora');
   // ----------------------------
 
   selectType(typeId: string) {

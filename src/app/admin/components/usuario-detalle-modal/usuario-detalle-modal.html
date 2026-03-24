@@ -1,29 +1,29 @@
 <app-modal-base ancho="550px" [mostrarCerrar]="true" (closed)="closed.emit()">
-    <div class="modal-content-wrapper" *ngIf="usuario">
+    <div class="modal-content-wrapper" *ngIf="usuario()">
         <div class="modal-header">
             <h2>Detalle de Usuario</h2>
         </div>
 
         <div class="user-profile-head">
-            <img [src]="usuario.foto_url || 'https://ui-avatars.com/api/?name=' + usuario.nombre + '&background=random&color=fff'"
-                [alt]="usuario.nombre" class="profile-lg">
-            <h3>{{ usuario.nombre }} {{ usuario.apellidos }}</h3>
+            <img [src]="usuario().foto_url || 'https://ui-avatars.com/api/?name=' + usuario().nombre + '&background=random&color=fff'"
+                [alt]="usuario().nombre" class="profile-lg">
+            <h3>{{ usuario().nombre }} {{ usuario().apellidos }}</h3>
 
             <div class="role-management">
-                <p class="role-text" *ngIf="!isEditingRole()">{{ usuario.roles?.nombre || 'Alumno' }}</p>
+                <p class="role-text" *ngIf="!isEditingRole()">{{ currentRoleName() }}</p>
                 <div class="role-selector-wrapper" *ngIf="isEditingRole()">
                     <select class="role-select" (change)="onRoleSelect($event)" [disabled]="isProcessing()">
                         <option value="">Seleccionar rol...</option>
                         @for (role of roles(); track role.id) {
-                        <option [value]="role.id" [selected]="role.id === usuario.rol_id">{{ role.nombre }}</option>
+                        <option [value]="role.id" [selected]="role.id === usuario().rol_id">{{ role.nombre }}</option>
                         }
                     </select>
                 </div>
             </div>
 
             <div class="badges-row">
-                <app-status-badge [text]="(usuario.estado || 'activo').toUpperCase()"
-                    [type]="usuario.estado === 'suspendido' ? 'suspended' : (usuario.estado === 'pendiente' ? 'pending' : 'active')"></app-status-badge>
+                <app-status-badge [text]="(usuario().estado || 'activo').toUpperCase()"
+                    [type]="usuario().estado === 'suspendido' ? 'suspended' : (usuario().estado === 'pendiente' ? 'pending' : 'active')"></app-status-badge>
                 <div class="custom-badge-verified">VERIFICADO</div>
             </div>
         </div>
@@ -31,15 +31,15 @@
         <div class="details-section">
             <div class="detail-item">
                 <span class="detail-label">CORREO ELECTRÓNICO</span>
-                <p>{{ usuario.correoInstitucional }}</p>
+                <p>{{ usuario().correoInstitucional }}</p>
             </div>
             <div class="detail-item">
                 <span class="detail-label">UNIVERSIDAD</span>
-                <p>{{ usuario.universidades?.acronimo || 'N/A' }}</p>
+                <p>{{ usuario().universidades?.acronimo || 'N/A' }}</p>
             </div>
             <div class="detail-item">
                 <span class="detail-label">FECHA DE REGISTRO</span>
-                <p>{{ formatDate(usuario.creado) }}</p>
+                <p>{{ formattedDate() }}</p>
             </div>
         </div>
 
@@ -70,10 +70,10 @@
             <button class="action-btn" (click)="prepararRestablecerContrasena()" [disabled]="isProcessing()">
                 <app-icon name="refresh-cw" [size]="16"></app-icon> Restablecer contraseña
             </button>
-            <button class="action-btn" [ngClass]="esSuspendido ? 'btn-active' : 'danger'"
+            <button class="action-btn" [ngClass]="esSuspendido() ? 'btn-active' : 'danger'"
                 (click)="prepararSuspenderCuenta()" [disabled]="isProcessing()">
-                <app-icon [name]="esSuspendido ? 'user-check' : 'ban'" [size]="16"></app-icon>
-                {{ esSuspendido ? 'Activar cuenta' : 'Suspender cuenta' }}
+                <app-icon [name]="esSuspendido() ? 'user-check' : 'ban'" [size]="16"></app-icon>
+                {{ esSuspendido() ? 'Activar cuenta' : 'Suspender cuenta' }}
             </button>
         </div>
 

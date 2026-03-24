@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationStoreService } from '../../../core/services/notification-store.service';
 import { Notificacion } from '../../../core/models/supabase.models';
@@ -21,6 +21,14 @@ export class Notificaciones implements OnInit {
   // ── Signals expuestas ─────────────────────────────────────────
   // Reactive signals - OnPush detects changes automatically
   readonly notificaciones = this.notificationStore.notificaciones;
+  readonly notificacionesViewModel = computed(() => this.notificaciones().map(notif => ({
+    ...notif,
+    typeLabel: this.getTypeLabel(notif.tipo),
+    formattedDate: this.formatDate(notif.creado),
+    iconColor: this.getColorForType(notif.tipo),
+    canViewDetails: this.puedeVerDetalles(notif.tipo)
+  })));
+  
   readonly isLoading = this.notificationStore.isLoading;
   readonly hasNotifications = this.notificationStore.hasNotifications;
   readonly hasAnyNotifications = this.notificationStore.hasAnyNotifications;

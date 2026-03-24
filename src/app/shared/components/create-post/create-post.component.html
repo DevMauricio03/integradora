@@ -71,10 +71,9 @@
           <label for="postTitle">{{ titleLabel() }}</label>
           <input id="postTitle" type="text" [formField]="postForm.title"
             [placeholder]="titlePlaceholder()"
-            [class.error-border]="postForm.title().touched() && postForm.title().invalid()">
-          @if (postForm.title().touched() && postForm.title().invalid()) {
-          <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{
-            postForm.title().errors()[0].message }}</span>
+            [class.error-border]="showTitleError()">
+          @if (showTitleError()) {
+          <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{ titleErrorMessage() }}</span>
           }
         </div>
 
@@ -83,10 +82,9 @@
           <label for="postDesc">Descripción *</label>
           <textarea id="postDesc" rows="4" [formField]="postForm.description"
             [placeholder]="descriptionPlaceholder()"
-            [class.error-border]="postForm.description().touched() && postForm.description().invalid()"></textarea>
-          @if (postForm.description().touched() && postForm.description().invalid()) {
-          <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{
-            postForm.description().errors()[0].message }}</span>
+            [class.error-border]="showDescError()"></textarea>
+          @if (showDescError()) {
+          <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{ descErrorMessage() }}</span>
           }
         </div>
 
@@ -151,7 +149,7 @@
         }
 
         <!-- CAMPOS ESPECÍFICOS: OFERTA - PRODUCTO -->
-        @if (currentType() === 'oferta' && selectedSubtype() === 'producto') {
+        @if (isOfertaProducto()) {
         <div class="form-row">
           <div class="form-field">
             <label for="postPrice">Precio *</label>
@@ -218,7 +216,7 @@
         }
 
         <!-- CAMPOS ESPECÍFICOS: OFERTA - SERVICIO -->
-        @if (currentType() === 'oferta' && selectedSubtype() === 'servicio') {
+        @if (isOfertaServicio()) {
         <div class="form-field">
           <label for="postServiceType">Tipo de servicio *</label>
           <div class="select-container">
@@ -382,7 +380,7 @@
       <button type="button" class="btn-cancelar" (click)="backToForm()">Editar</button>
       <button type="button" class="btn-siguiente" (click)="publish()"
         [disabled]="postForm().pending() || isPublishing()">
-        <span>{{ isPublishing() ? 'Publicando...' : 'Publicar Ahora' }}</span>
+        <span>{{ publishButtonText() }}</span>
       </button>
     </div>
   </div>

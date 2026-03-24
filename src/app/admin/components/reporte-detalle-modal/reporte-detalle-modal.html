@@ -1,15 +1,15 @@
 <app-modal-base ancho="600px" [mostrarCerrar]="true" (closed)="closed.emit()">
-    <div class="modal-content-wrapper" *ngIf="reporte">
+    <div class="modal-content-wrapper" *ngIf="reporte()">
         <div class="modal-header">
-            <h2>Detalle de Reporte #{{ reporte.id?.slice(0, 8) }}</h2>
+            <h2>Detalle de Reporte #{{ reporte().id?.slice(0, 8) }}</h2>
         </div>
 
         <!-- Alert Status -->
-        <div class="report-status-alert" [ngClass]="reporte.estado">
+        <div class="report-status-alert" [ngClass]="reporte().estado">
             <app-icon name="info" [size]="20"></app-icon>
             <div class="alert-texts">
-                <strong>Estado: {{ reporte.estado | uppercase }}</strong>
-                <span>Reportado el {{ formatDate(reporte.creado) }}</span>
+                <strong>Estado: {{ reporte().estado | uppercase }}</strong>
+                <span>Reportado el {{ formattedDate() }}</span>
             </div>
         </div>
 
@@ -17,59 +17,59 @@
         <div class="reason-section">
             <span class="section-label">MOTIVO DEL REPORTE</span>
             <div class="reason-content">
-                <h3>{{ reporte.motivo }}</h3>
-                <p *ngIf="reporte.detalles">"{{ reporte.detalles }}"</p>
+                <h3>{{ reporte().motivo }}</h3>
+                <p *ngIf="reporte().detalles">"{{ reporte().detalles }}"</p>
             </div>
             <div class="reporter-info">
-                <img [src]="reporte.informante?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte.informante?.nombre + '+' + reporte.informante?.apellidos + '&background=random&color=fff'"
+                <img [src]="reporte().informante?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte().informante?.nombre + '+' + reporte().informante?.apellidos + '&background=random&color=fff'"
                     class="mini-avatar" alt="Avatar informante">
                 <div class="reporter-meta">
-                    <span>Por <strong>{{ reporte.informante?.nombre }} {{ reporte.informante?.apellidos
+                    <span>Por <strong>{{ reporte().informante?.nombre }} {{ reporte().informante?.apellidos
                             }}</strong></span>
                     <span class="dot-separator">•</span>
-                    <span>{{ reporte.informante?.carrera?.nombre }}</span>
+                    <span>{{ reporte().informante?.carrera?.nombre }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Vista previa del contenido -->
         <div class="preview-section">
-            <span class="section-label">VISTA PREVIA DEL {{ reporte.tipo_reporte === 'comentario' ? 'COMENTARIO' : 'CONTENIDO' }}</span>
+            <span class="section-label">VISTA PREVIA DEL {{ previewSectionTitle() }}</span>
 
             <!-- Mostrar comentario reportado -->
-            <ng-container *ngIf="reporte.tipo_reporte === 'comentario' && reporte.comentario">
+            <ng-container *ngIf="reporte().tipo_reporte === 'comentario' && reporte().comentario">
                 <div class="content-preview-card">
                     <div class="author-row">
-                        <img [src]="reporte.autor?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte.autor?.nombre + '+' + reporte.autor?.apellidos + '&background=random&color=fff'"
+                        <img [src]="reporte().autor?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte().autor?.nombre + '+' + reporte().autor?.apellidos + '&background=random&color=fff'"
                             class="mini-avatar" alt="Avatar autor">
                         <div class="author-meta">
-                            <span class="user-handle">{{ reporte.autor?.nombre }} {{ reporte.autor?.apellidos }}</span>
-                            <span class="post-time">{{ formatDate(reporte.comentario.creado) }}</span>
+                            <span class="user-handle">{{ reporte().autor?.nombre }} {{ reporte().autor?.apellidos }}</span>
+                            <span class="post-time">{{ formattedCommentDate() }}</span>
                         </div>
                     </div>
                     <div class="post-body">
-                        <p>{{ reporte.comentario.contenido }}</p>
+                        <p>{{ reporte().comentario.contenido }}</p>
                     </div>
                 </div>
             </ng-container>
 
             <!-- Mostrar publicación reportada (comportamiento actual) -->
-            <ng-container *ngIf="reporte.tipo_reporte !== 'comentario' && reporte.publicaciones">
+            <ng-container *ngIf="reporte().tipo_reporte !== 'comentario' && reporte().publicaciones">
                 <div class="content-preview-card">
                     <div class="author-row">
-                        <img [src]="reporte.autor?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte.autor?.nombre + '+' + reporte.autor?.apellidos + '&background=random&color=fff'"
+                        <img [src]="reporte().autor?.foto_url || 'https://ui-avatars.com/api/?name=' + reporte().autor?.nombre + '+' + reporte().autor?.apellidos + '&background=random&color=fff'"
                             class="mini-avatar" alt="Avatar autor">
                         <div class="author-meta">
-                            <span class="user-handle">{{ reporte.autor?.nombre }} {{ reporte.autor?.apellidos }}</span>
-                            <span class="post-time">{{ reporte.publicaciones?.tipo | uppercase }}</span>
+                            <span class="user-handle">{{ reporte().autor?.nombre }} {{ reporte().autor?.apellidos }}</span>
+                            <span class="post-time">{{ reporte().publicaciones?.tipo | uppercase }}</span>
                         </div>
                     </div>
                     <div class="post-body">
-                        <h4>{{ reporte.publicaciones?.titulo }}</h4>
-                        <p>{{ reporte.publicaciones?.descripcion }}</p>
+                        <h4>{{ reporte().publicaciones?.titulo }}</h4>
+                        <p>{{ reporte().publicaciones?.descripcion }}</p>
                     </div>
-                    <div class="post-image-placeholder" *ngIf="reporte.publicaciones?.imagen_url">
-                        <img [src]="reporte.publicaciones?.imagen_url" style="width: 100%; border-radius: 8px;"
+                    <div class="post-image-placeholder" *ngIf="reporte().publicaciones?.imagen_url">
+                        <img [src]="reporte().publicaciones?.imagen_url" style="width: 100%; border-radius: 8px;"
                             alt="Publicación reportada">
                     </div>
                 </div>
@@ -77,16 +77,16 @@
         </div>
 
         <!-- Acciones -->
-        <div class="actions-group" *ngIf="reporte.estado === 'pendiente' && !isProcessing()">
+        <div class="actions-group" *ngIf="reporte().estado === 'pendiente' && !isProcessing()">
             <button class="action-btn success" (click)="descartarReporte()">
                 <app-icon name="check" [size]="16"></app-icon> Descartar reporte
             </button>
 
             <!-- Botón dinámico: cambia según sea publicación o comentario -->
-            <button *ngIf="reporte.tipo_reporte === 'comentario'" class="action-btn danger" (click)="eliminarComentario()">
+            <button *ngIf="reporte().tipo_reporte === 'comentario'" class="action-btn danger" (click)="eliminarComentario()">
                 <app-icon name="trash-2" [size]="16"></app-icon> Eliminar comentario
             </button>
-            <button *ngIf="reporte.tipo_reporte !== 'comentario'" class="action-btn danger" (click)="eliminarPublicacion()">
+            <button *ngIf="reporte().tipo_reporte !== 'comentario'" class="action-btn danger" (click)="eliminarPublicacion()">
                 <app-icon name="trash-2" [size]="16"></app-icon> Eliminar publicación
             </button>
 
