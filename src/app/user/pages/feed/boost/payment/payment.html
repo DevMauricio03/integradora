@@ -1,0 +1,81 @@
+<div class="boost-layout">
+  <div class="payment-container">
+    
+    <header class="payment-header">
+      <div class="security-badge">
+        <app-icon name="lock" [size]="16"></app-icon> Pago Encriptado de Extremo a Extremo
+      </div>
+      <h1 class="boost-title">Impulsa tu Publicación</h1>
+      <p class="boost-subtitle">Confirma los detalles de tu Boost para aumentar el alcance de tu contenido.</p>
+    </header>
+
+    <div class="payment-grid">
+      
+      <!-- Columna Izquierda: Resumen -->
+      <aside class="summary-section">
+        <div class="summary-card">
+          <h3 class="card-title">Resumen del Pedido</h3>
+          <div class="summary-block">
+            <span class="summary-lbl">PUBLICACIÓN</span>
+            <p class="summary-val">Hackathon Universitaria 2024</p>
+          </div>
+          <div class="summary-block divider">
+            <span class="summary-lbl">TIPO DE BOOST</span>
+            <p class="summary-val boost-tag"><app-icon name="zap" [size]="16"></app-icon> Boost Destacado (7 días)</p>
+          </div>
+          
+          <div class="summary-totals">
+            <div class="tot-row"><span>Subtotal</span><span>$14.99</span></div>
+            <div class="tot-row"><span>Impuestos (IVA)</span><span>$2.40</span></div>
+            <div class="tot-row main-total"><span>Total a pagar</span><span>$17.39</span></div>
+          </div>
+        </div>
+
+        <div class="security-guarantee-banner">
+          <app-icon name="shield" [size]="24" class="icon-primary"></app-icon>
+          <div>
+            <strong>Garantía de Seguridad</strong>
+            <p>Tu información de pago está cifrada de extremo a extremo y nunca se almacena en nuestros servidores.</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Columna Derecha: Formulario -->
+      <main class="form-section">
+        <div class="payment-form-card">
+          <h3 class="card-title">Información de pago</h3>
+          <p class="stripe-info"><app-icon name="lock" [size]="14"></app-icon> El pago se procesa de forma segura a través de Stripe.</p>
+
+          <form class="checkout-form">
+            <div class="form-group">
+              <label>Correo electrónico</label>
+              <!-- reutilizando inputs con estilo global similar -->
+              <input type="email" class="input-global" placeholder="usuario@universidad.edu" />
+            </div>
+
+            <div class="form-group">
+              <label>Nombre en la tarjeta</label>
+              <input type="text" class="input-global" placeholder="Nombre completo" />
+            </div>
+
+            <div class="form-group">
+              <label>Información de la tarjeta</label>
+              <div class="input-global card-input-wrapper">
+                <input type="text" placeholder="1234 5678 1234 5678" />
+                <app-icon name="credit-card" [size]="20" class="input-icon"></app-icon>
+              </div>
+              <div class="card-extra-inputs">
+                <input type="text" class="input-global" placeholder="MM / YY" />
+                <input type="text" class="input-global" placeholder="CVC" />
+              </div>
+            </div>
+
+            <button type="button" class="btn-primario-sm w-full" (click)="confirmPayment()">Confirmar pago</button>
+            <button type="button" class="btn-ghost w-full" style="margin-top: 16px;" (click)="goBack()">Volver</button>
+          </form>
+        </div>
+      </main>
+
+    </div>
+  </div>
+</div>

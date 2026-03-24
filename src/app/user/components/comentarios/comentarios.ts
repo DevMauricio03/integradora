@@ -99,18 +99,20 @@ export class Comentarios implements OnInit {
   readonly isOverLimit = computed(() => this.wordCount() > MAX_WORDS);
 
   // ── Ciclo de vida ─────────────────────────────────────────────
-  async ngOnInit() {
-    const perfil = await this.authStore.getPerfilActual();
-    if (perfil) {
-      this.currentUserId.set(perfil.id);
-      const roles: any = perfil.roles;
-      const roleName = Array.isArray(roles) ? roles[0]?.nombre : roles?.nombre;
-      this.isAdmin.set(!!roleName?.toLowerCase().includes('admin'));
-    }
+  ngOnInit(): void {
+    (async () => {
+      const perfil = await this.authStore.getPerfilActual();
+      if (perfil) {
+        this.currentUserId.set(perfil.id);
+        const roles: any = perfil.roles;
+        const roleName = Array.isArray(roles) ? roles[0]?.nombre : roles?.nombre;
+        this.isAdmin.set(!!roleName?.toLowerCase().includes('admin'));
+      }
 
-    if (!this.disabled && this.postId) {
-      this.loadPage(0, true);
-    }
+      if (!this.disabled && this.postId) {
+        this.loadPage(0, true);
+      }
+    })().catch(console.error);
   }
 
   // ── Carga paginada ────────────────────────────────────────────
@@ -227,11 +229,11 @@ export class Comentarios implements OnInit {
     this._deletePromise = (async () => {
       try {
         const { error } = await this.svc.deleteComentario(id);
-        if (!error) {
+        if (error) {
+          console.error('[Comentarios] Error al eliminar:', error);
+        } else {
           this.comentarios.update(prev => prev.filter(c => c.id !== id));
           this.offset = Math.max(0, this.offset - 1);
-        } else {
-          console.error('[Comentarios] Error al eliminar:', error);
         }
       } finally {
         this.isDeleting.set(false);

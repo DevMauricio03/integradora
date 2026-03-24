@@ -8,7 +8,6 @@ import {
   inject,
   signal,
   computed,
-  effect
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { PostStoreService, Post } from '../../../core/services/post-store.service';
@@ -72,7 +71,7 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
 
   // ── Sentinel para IntersectionObserver ────────────────────────
   /** Elemento al final del feed que activa la carga automática. */
-  @ViewChild('scrollAnchor') private scrollAnchorRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('scrollAnchor') private readonly scrollAnchorRef!: ElementRef<HTMLDivElement>;
   private _observer: IntersectionObserver | null = null;
 
   // ── Posts filtrados ───────────────────────────────────────────
@@ -211,7 +210,7 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
     link.rel = 'preload';
     link.as = 'image';
     link.href = url;
-    link.setAttribute('data-preload-feed', 'true');
+    link.dataset['preloadFeed'] = 'true';
     document.head.appendChild(link);
   }
 

@@ -1,0 +1,41 @@
+<div class="boost-layout center-layout">
+  <div class="success-card">
+    
+    <!-- Icono central -->
+    <div class="success-icon-wrapper">
+      <app-icon name="rocket" [size]="48" class="icon-star"></app-icon>
+    </div>
+
+    <!-- Mensaje -->
+    <h1 class="success-title">¡Publicación impulsada!</h1>
+    <p class="success-subtitle">El Boost se ha aplicado correctamente. Tu contenido tendrá mayor visibilidad en la comunidad.</p>
+
+    <!-- Resumen -->
+    <div class="success-summary-box">
+      <div class="summary-item">
+        <span class="lbl">Tipo de Boost</span>
+        <span class="val accent"><app-icon name="zap" [size]="14"></app-icon> Premium University</span>
+      </div>
+      <div class="summary-item">
+        <span class="lbl">Duración</span>
+        <span class="val">7 días</span>
+      </div>
+      <div class="summary-item">
+        <span class="lbl">Fecha de expiración</span>
+        <span class="val bold">24 Oct, 2024</span>
+      </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="success-actions">
+      <button class="btn-primario-sm w-full" (click)="goToFeed()">
+        <app-icon name="eye" [size]="18"></app-icon> Ver mi publicación
+      </button>
+      <button class="btn-ghost" (click)="goToFeed()">Ir al inicio</button>
+    </div>
+
+    <!-- Nota inferior -->
+    <p class="success-footer-note">Recibirás un recordatorio 24 horas antes de que tu boost expire.</p>
+    
+  </div>
+</div>

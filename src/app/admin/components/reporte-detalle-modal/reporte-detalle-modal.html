@@ -125,10 +125,11 @@
             </p>
 
             <div style="margin-bottom: 24px;">
-                <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+                <label for="motivoDeleteAdmin" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
                     Motivo de eliminación
                 </label>
                 <textarea
+                    id="motivoDeleteAdmin"
                     [ngModel]="motivoEliminacion()"
                     (ngModelChange)="motivoEliminacion.set($event)"
                     placeholder="Ej: Contenido inapropiado, no cumple reglas de comunidad, spam..."
@@ -144,7 +145,7 @@
                 </button>
                 <button
                     (click)="confirmarMotivo()"
-                    style="background: #EF4444; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
+                    style="background: #DC2626; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
                     Eliminar Contenido
                 </button>
             </div>

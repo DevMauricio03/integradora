@@ -120,7 +120,7 @@ export class ReporteDetalleModal {
           const accionModeracion = type === 'publicacion' ? 'eliminar_publicacion' : 'eliminar_comentario';
           const { error } = await this.reportService.moderarReporte(
             this.reporte().id,
-            accionModeracion as 'eliminar_publicacion' | 'eliminar_comentario',
+            accionModeracion,
           );
           if (error) throw error;
 
@@ -135,7 +135,7 @@ export class ReporteDetalleModal {
               // Incluir contexto de la entidad en la notificación
               const notificationData: any = {
                 user_id: autorId,
-                tipo: notificationType as 'post_eliminado' | 'comentario_eliminado',
+                tipo: notificationType,
                 mensaje: notificationMsg,
                 leido: false
               };
@@ -264,7 +264,7 @@ export class ReporteDetalleModal {
         this.isProcessing.set(true);
         this.mostrarConfirmacion.set(false);
         try {
-          const { data, error } = await this.reportService.moderarReporte(
+          const { error } = await this.reportService.moderarReporte(
             this.reporte().id,
             'suspender_usuario',
             hours,

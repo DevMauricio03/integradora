@@ -12,12 +12,12 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PublicacionComple implements OnInit {
-  private router = inject(Router);
+  private readonly router = inject(Router);
   post = signal<any>(null);
 
   ngOnInit() {
-    const state = window.history.state;
-    if (state && state.post) {
+    const state = globalThis.history.state;
+    if (state?.post) {
       this.post.set(state.post);
     }
   }
@@ -27,6 +27,6 @@ export class PublicacionComple implements OnInit {
   }
 
   irAImpulso() {
-    this.router.navigate(['/user/feed']); // Temporal
+    this.router.navigate(['/user/feed/boost/plan-selection']);
   }
 }

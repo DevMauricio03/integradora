@@ -90,7 +90,7 @@
 
           <!-- ⋯ Menú de opciones -->
           @if (!disabled && (c.canDelete || c.canReport)) {
-          <div class="menu-wrapper" (click)="$event.stopPropagation()">
+          <div class="menu-wrapper" role="button" tabindex="0" (click)="$event.stopPropagation()" (keydown.space)="$event.stopPropagation()">
             <button
               type="button"
               class="menu-trigger"

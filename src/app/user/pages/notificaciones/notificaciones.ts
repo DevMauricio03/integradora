@@ -109,7 +109,7 @@ export class Notificaciones implements OnInit {
       'reporte_resuelto': 'Reporte Resuelto',
       'reporte_revision': 'Reporte Revisado',
     };
-    return typeMap[tipo] || tipo.replace(/_/g, ' ');
+    return typeMap[tipo] || tipo.replaceAll('_', ' ');
   }
 
   /**

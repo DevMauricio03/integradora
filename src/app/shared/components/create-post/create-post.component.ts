@@ -54,7 +54,7 @@ export class CreatePostComponent {
   showRules = signal(false);
   isPublishing = signal(false);
   selectedSubtype = signal<'producto' | 'servicio' | null>(null);
-  private imageFiles = signal<File[]>([]);
+  private readonly imageFiles = signal<File[]>([]);
 
   // ── Promise Guard (prevención de race conditions) ────────────
   private _publishPromise: Promise<void> | null = null;
@@ -322,6 +322,6 @@ export class CreatePostComponent {
 
   onNumericInput(event: Event) {
     const input = event.target as HTMLInputElement;
-    input.value = input.value.replace(/[^0-9]/g, '');
+    input.value = input.value.replace(/\D/g, '');
   }
 }

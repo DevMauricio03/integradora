@@ -1,0 +1,93 @@
+<div class="boost-layout">
+  <div class="boost-container">
+    
+    <!-- Encabezado -->
+    <header class="boost-header">
+      <h1 class="boost-title">¡Dale un impulso a tu post!</h1>
+      <p class="boost-subtitle">Aumenta el alcance de tu publicación y llega a más estudiantes de la comunidad.</p>
+    </header>
+
+    <!-- Post Preview Card (Reutilizando estructura de visualización estática) -->
+    <div class="post-preview-card">
+      <div class="post-thumbnail"></div>
+      <div class="post-meta">
+        <span class="lbl-selected">PUBLICACIÓN SELECCIONADA</span>
+        <h3 class="post-title">Título de publicación (Hackathon Universitaria 2024)</h3>
+        <p class="post-date">Publicado hace 2 días • Evento</p>
+      </div>
+    </div>
+
+    <!-- Pricing Grid -->
+    <div class="plans-grid">
+      
+      <!-- Card Día -->
+      <article class="plan-card">
+        <header class="plan-header">
+          <h4 class="plan-name">DÍA</h4>
+          <div class="plan-price-wrapper">
+            <span class="plan-price">$1.99</span>
+            <span class="plan-currency">MXN<br>/día</span>
+          </div>
+        </header>
+        <ul class="plan-features">
+          <li><app-icon name="check-circle" [size]="16"></app-icon> 24h de visibilidad prioritaria</li>
+          <li><app-icon name="check-circle" [size]="16"></app-icon> Alcance estimado x2</li>
+        </ul>
+      </article>
+
+      <!-- Card Semanal (Recomendado) -->
+      <article class="plan-card plan-recommended">
+        <div class="recommended-badge">RECOMENDADO</div>
+        <header class="plan-header">
+          <div class="plan-name-row">
+            <h4 class="plan-name">SEMANAL</h4>
+            <app-icon class="icon-check-blue" name="check-circle" [size]="20"></app-icon>
+          </div>
+          <div class="plan-price-wrapper">
+            <span class="plan-price">$9.99</span>
+            <span class="plan-currency">MXN<br>/7 días</span>
+          </div>
+        </header>
+        <ul class="plan-features">
+          <li><app-icon name="check-circle" [size]="16"></app-icon> 7 días de visibilidad prioritaria</li>
+          <li><app-icon name="check-circle" [size]="16"></app-icon> Destacado en el feed</li>
+          <li><app-icon name="check-circle" [size]="16"></app-icon> Alcance estimado x5</li>
+        </ul>
+      </article>
+
+      <!-- Card Mensual -->
+      <article class="plan-card">
+        <header class="plan-header">
+          <h4 class="plan-name">MENSUAL</h4>
+          <div class="plan-price-wrapper">
+            <span class="plan-price">$29.99</span>
+            <span class="plan-currency">MXN<br>/30 días</span>
+          </div>
+        </header>
+        <ul class="plan-features">
+          <li><app-icon name="check-circle" [size]="16"></app-icon> 30 días de visibilidad prioritaria</li>
+          <li><app-icon name="check-circle" [size]="16"></app-icon> Máximo alcance</li>
+          <li><app-icon name="check-circle" [size]="16"></app-icon> Destacado en el feed</li>
+          <li><app-icon name="check-circle" [size]="16"></app-icon> Soporte prioritario</li>
+        </ul>
+      </article>
+
+    </div>
+
+    <!-- Acciones -->
+    <div class="boost-actions">
+      <!-- Mantenemos clases reutilizables btn-primario-sm -->
+      <button class="btn-primario-sm" (click)="goToPayment()">
+        Continuar al pago <app-icon name="chevron-right" [size]="16"></app-icon>
+      </button>
+      <button class="btn-ghost">Cancelar</button>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="info-banner">
+      <app-icon class="info-icon" name="info" [size]="20"></app-icon>
+      <p>Tu post aparecerá en los primeros lugares de las búsquedas y el feed principal durante el periodo contratado. Los pagos son procesados de forma segura a través de nuestra pasarela institucional.</p>
+    </div>
+
+  </div>
+</div>

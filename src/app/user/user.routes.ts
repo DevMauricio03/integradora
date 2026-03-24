@@ -16,6 +16,21 @@ export const USER_ROUTES: Routes = [
         data: { title: 'Inicio', showCreateButton: true }
       },
       {
+        path: 'feed/boost/plan-selection',
+        loadComponent: () => import('./pages/feed/boost/plan-selection/plan-selection').then(m => m.PlanSelectionComponent),
+        data: { title: 'Impulsar' }
+      },
+      {
+        path: 'feed/boost/payment',
+        loadComponent: () => import('./pages/feed/boost/payment/payment').then(m => m.PaymentComponent),
+        data: { title: 'Pago' }
+      },
+      {
+        path: 'feed/boost/success',
+        loadComponent: () => import('./pages/feed/boost/success/success').then(m => m.SuccessComponent),
+        data: { title: 'Impulsado' }
+      },
+      {
         path: 'perfil',
         loadComponent: () =>
           import('./pages/perfil/perfil').then(m => m.PerfilPublicoPage),
