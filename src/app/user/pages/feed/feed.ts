@@ -100,7 +100,8 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
     if (fecha !== 'todas') {
       const today = new Date();
       currentPosts = currentPosts.filter((p: Post) => {
-        const pDate = new Date(p.rawDate);
+        if (!p.rawDate) return false;
+        const pDate = new Date(p.rawDate!);
         if (fecha === 'este dia') return pDate.toDateString() === today.toDateString();
         if (fecha === 'esta semana') {
           const diffDays = Math.floor((Date.now() - pDate.getTime()) / 86400000);

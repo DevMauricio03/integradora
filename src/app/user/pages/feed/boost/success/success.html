@@ -14,11 +14,11 @@
     <div class="success-summary-box">
       <div class="summary-item">
         <span class="lbl">Tipo de Boost</span>
-        <span class="val accent"><app-icon name="zap" [size]="14"></app-icon> Premium University</span>
+        <span class="val accent"><app-icon name="zap" [size]="14"></app-icon> Boost {{ boostStore.selectedPlan() | titlecase }}</span>
       </div>
       <div class="summary-item">
-        <span class="lbl">Duración</span>
-        <span class="val">7 días</span>
+        <span class="lbl">Publicación</span>
+        <span class="val">{{ boostStore.selectedPost()?.title || 'Sin título' }}</span>
       </div>
       <div class="summary-item">
         <span class="lbl">Fecha de expiración</span>
@@ -28,14 +28,31 @@
 
     <!-- Botones de Acción -->
     <div class="success-actions">
-      <button class="btn-primario-sm w-full" (click)="goToFeed()">
-        <app-icon name="eye" [size]="18"></app-icon> Ver mi publicación
-      </button>
-      <button class="btn-ghost" (click)="goToFeed()">Ir al inicio</button>
+      <button class="btn-primario-sm" (click)="goToFeed()">Ir al inicio</button>
+      <button class="btn-ghost" (click)="openPreview()">Ver publicación</button>
     </div>
-
-    <!-- Nota inferior -->
-    <p class="success-footer-note">Recibirás un recordatorio 24 horas antes de que tu boost expire.</p>
-    
   </div>
 </div>
+
+@if (showPreview()) {
+  <app-modal-base ancho="600px" (closed)="showPreview.set(false)" [mostrarCerrar]="true">
+    @if (boostStore.selectedPost(); as post) {
+      <app-post-card
+        [id]="post.id"
+        [author]="post.author"
+        [role]="post.role"
+        [time]="post.time"
+        [title]="post.title"
+        [content]="post.content"
+        [badge]="post.badge"
+        [image]="post.image"
+        [images]="post.images"
+        [category]="post.category"
+        [avatar]="post.avatar"
+        [expirationDate]="post.expirationDate"
+        [details]="post.details"
+        [isPreview]="true"
+      ></app-post-card>
+    }
+  </app-modal-base>
+}

@@ -8,20 +8,26 @@
     </header>
 
     <!-- Post Preview Card (Reutilizando estructura de visualización estática) -->
-    <div class="post-preview-card">
-      <div class="post-thumbnail"></div>
-      <div class="post-meta">
-        <span class="lbl-selected">PUBLICACIÓN SELECCIONADA</span>
-        <h3 class="post-title">Título de publicación (Hackathon Universitaria 2024)</h3>
-        <p class="post-date">Publicado hace 2 días • Evento</p>
+    @if (boostStore.selectedPost(); as post) {
+      <div class="post-preview-card">
+        <div class="post-thumbnail" [style.background-image]="post.image ? 'url(' + post.image + ')' : ''"></div>
+        <div class="post-meta">
+          <span class="lbl-selected">PUBLICACIóN SELECCIONADA</span>
+          <h3 class="post-title">{{ post.title || 'Publicación sin título' }}</h3>
+          <p class="post-date">{{ post['time'] || 'Recientemente' }} {{ post.type ? '• ' + post.type : '' }}</p>
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Pricing Grid -->
     <div class="plans-grid">
       
       <!-- Card Día -->
-      <article class="plan-card">
+      <article class="plan-card" 
+               [class.active]="boostStore.selectedPlan() === 'daily'"
+               (click)="selectPlan('daily')"
+               (keydown.enter)="selectPlan('daily')"
+               tabindex="0">
         <header class="plan-header">
           <h4 class="plan-name">DÍA</h4>
           <div class="plan-price-wrapper">
@@ -35,8 +41,12 @@
         </ul>
       </article>
 
-      <!-- Card Semanal (Recomendado) -->
-      <article class="plan-card plan-recommended">
+      <!-- Card Semanal (Badge visual only, selection driven by signal) -->
+      <article class="plan-card"
+               [class.active]="boostStore.selectedPlan() === 'weekly'"
+               (click)="selectPlan('weekly')"
+               (keydown.enter)="selectPlan('weekly')"
+               tabindex="0">
         <div class="recommended-badge">RECOMENDADO</div>
         <header class="plan-header">
           <div class="plan-name-row">
@@ -55,8 +65,11 @@
         </ul>
       </article>
 
-      <!-- Card Mensual -->
-      <article class="plan-card">
+      <article class="plan-card"
+               [class.active]="boostStore.selectedPlan() === 'monthly'"
+               (click)="selectPlan('monthly')"
+               (keydown.enter)="selectPlan('monthly')"
+               tabindex="0">
         <header class="plan-header">
           <h4 class="plan-name">MENSUAL</h4>
           <div class="plan-price-wrapper">
@@ -77,10 +90,10 @@
     <!-- Acciones -->
     <div class="boost-actions">
       <!-- Mantenemos clases reutilizables btn-primario-sm -->
-      <button class="btn-primario-sm" (click)="goToPayment()">
+      <button class="btn-primario-sm" (click)="goToPayment()" [disabled]="!boostStore.isReadyForPayment()">
         Continuar al pago <app-icon name="chevron-right" [size]="16"></app-icon>
       </button>
-      <button class="btn-ghost">Cancelar</button>
+      <button class="btn-ghost" (click)="cancel()">Cancelar</button>
     </div>
 
     <!-- Info Banner -->

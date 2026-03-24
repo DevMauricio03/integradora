@@ -54,8 +54,8 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 
     .btn-cerrar {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 12px;
+      right: 12px;
       width: 32px;
       height: 32px;
       border: none;
@@ -68,6 +68,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
       align-items: center;
       justify-content: center;
       transition: background 0.15s;
+      z-index: 10;
     }
 
     .btn-cerrar:hover {

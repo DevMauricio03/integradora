@@ -17,17 +17,17 @@
           <h3 class="card-title">Resumen del Pedido</h3>
           <div class="summary-block">
             <span class="summary-lbl">PUBLICACIÓN</span>
-            <p class="summary-val">Hackathon Universitaria 2024</p>
+            <p class="summary-val">{{ boostStore.selectedPost()?.title || 'Publicación' }}</p>
           </div>
           <div class="summary-block divider">
             <span class="summary-lbl">TIPO DE BOOST</span>
-            <p class="summary-val boost-tag"><app-icon name="zap" [size]="16"></app-icon> Boost Destacado (7 días)</p>
+            <p class="summary-val boost-tag"><app-icon name="zap" [size]="16"></app-icon> Boost {{ boostStore.selectedPlan() | titlecase }}</p>
           </div>
           
           <div class="summary-totals">
-            <div class="tot-row"><span>Subtotal</span><span>$14.99</span></div>
-            <div class="tot-row"><span>Impuestos (IVA)</span><span>$2.40</span></div>
-            <div class="tot-row main-total"><span>Total a pagar</span><span>$17.39</span></div>
+            <div class="tot-row"><span>Subtotal</span><span>{{ boostStore.price() | currency:'MXN' }}</span></div>
+            <div class="tot-row"><span>Impuestos (IVA)</span><span>{{ (boostStore.price() * 0.16) | currency:'MXN' }}</span></div>
+            <div class="tot-row main-total"><span>Total a pagar</span><span>{{ (boostStore.price() * 1.16) | currency:'MXN' }}</span></div>
           </div>
         </div>
 
@@ -46,31 +46,74 @@
           <h3 class="card-title">Información de pago</h3>
           <p class="stripe-info"><app-icon name="lock" [size]="14"></app-icon> El pago se procesa de forma segura a través de Stripe.</p>
 
-          <form class="checkout-form">
+          <form class="checkout-form" (submit)="confirmPayment($event)" novalidate>
             <div class="form-group">
-              <label>Correo electrónico</label>
-              <!-- reutilizando inputs con estilo global similar -->
-              <input type="email" class="input-global" placeholder="usuario@universidad.edu" />
+              <label for="email">Correo electrónico</label>
+              <div class="input-global card-input-wrapper" [class.error-border]="paymentForm.email().touched() && paymentForm.email().invalid()">
+                <app-icon name="mail" [size]="20" class="input-icon"></app-icon>
+                <input id="email" type="email" placeholder="ejemplo@gmail.com" [formField]="paymentForm.email">
+              </div>
+              @if (paymentForm.email().touched() && paymentForm.email().invalid()) {
+                <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{ paymentForm.email().errors()[0].message }}</span>
+              }
             </div>
 
             <div class="form-group">
-              <label>Nombre en la tarjeta</label>
-              <input type="text" class="input-global" placeholder="Nombre completo" />
+              <label for="cardName">Nombre en la tarjeta</label>
+              <input id="cardName" type="text" class="input-global" placeholder="Nombre completo" [formField]="paymentForm.cardName" (input)="onCardNameInput($event)" [class.error-border]="paymentForm.cardName().touched() && paymentForm.cardName().invalid()">
+              @if (paymentForm.cardName().touched() && paymentForm.cardName().invalid()) {
+                <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">{{ paymentForm.cardName().errors()[0].message }}</span>
+              }
             </div>
 
             <div class="form-group">
-              <label>Información de la tarjeta</label>
-              <div class="input-global card-input-wrapper">
-                <input type="text" placeholder="1234 5678 1234 5678" />
+              <label for="cardNumber">Información de la tarjeta</label>
+              <div class="input-global card-input-wrapper" [class.error-border]="paymentForm.cardNumber().touched() && paymentForm.cardNumber().invalid()">
+                <input
+                  id="cardNumber"
+                  type="text"
+                  inputmode="numeric"
+                  placeholder="1234 5678 1234 5678"
+                  [value]="paymentModel().cardNumber"
+                  (input)="onCardNumberInput($event)"
+                  maxlength="16"
+                >
                 <app-icon name="credit-card" [size]="20" class="input-icon"></app-icon>
               </div>
               <div class="card-extra-inputs">
-                <input type="text" class="input-global" placeholder="MM / YY" />
-                <input type="text" class="input-global" placeholder="CVC" />
+                <input
+                  id="expiryDate"
+                  type="text"
+                  inputmode="numeric"
+                  class="input-global"
+                  placeholder="MM/YY"
+                  [value]="paymentModel().expiryDate"
+                  (input)="onExpiryDateInput($event)"
+                  maxlength="5"
+                  [class.error-border]="paymentForm.expiryDate().touched() && paymentForm.expiryDate().invalid()"
+                >
+                <input
+                  id="cvv"
+                  type="text"
+                  inputmode="numeric"
+                  class="input-global"
+                  placeholder="CVV"
+                  [value]="paymentModel().cvv"
+                  (input)="onCvvInput($event)"
+                  maxlength="3"
+                  [class.error-border]="paymentForm.cvv().touched() && paymentForm.cvv().invalid()"
+                >
               </div>
+              
+              @if ((paymentForm.cardNumber().touched() && paymentForm.cardNumber().invalid()) || (paymentForm.expiryDate().touched() && paymentForm.expiryDate().invalid()) || (paymentForm.cvv().touched() && paymentForm.cvv().invalid())) {
+                <span class="error-campo" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;">Por favor, verifica la información de tu tarjeta.</span>
+              }
             </div>
 
-            <button type="button" class="btn-primario-sm w-full" (click)="confirmPayment()">Confirmar pago</button>
+            <button type="submit" class="btn-primario-sm w-full" [disabled]="loading() || paymentForm().pending()">
+              <app-icon name="lock" [size]="16"></app-icon> 
+              {{ loading() ? 'Procesando...' : 'Confirmar pago' }}
+            </button>
             <button type="button" class="btn-ghost w-full" style="margin-top: 16px;" (click)="goBack()">Volver</button>
           </form>
         </div>

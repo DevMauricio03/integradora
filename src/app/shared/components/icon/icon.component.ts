@@ -1,6 +1,6 @@
 import { Component, Input, computed } from '@angular/core';
 
-export type IconName = 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-up' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'rocket' | 'menu' | 'share' | 'eye' | 'credit-card' | 'zap' | 'lock';
+export type IconName = 'plus' | 'plus-circle' | 'bell' | 'flag' | 'home' | 'briefcase' | 'megaphone' | 'user' | 'settings' | 'search' | 'users' | 'shield' | 'graduation' | 'ban' | 'calendar' | 'tag' | 'upload' | 'arrow-left' | 'check' | 'check-circle' | 'chevron-down' | 'chevron-up' | 'package' | 'tool' | 'clock' | 'map-pin' | 'dollar-sign' | 'phone' | 'building' | 'shapes' | 'log-out' | 'file-text' | 'alert-triangle' | 'user-check' | 'refresh-cw' | 'shopping-bag' | 'x' | 'chevron-left' | 'chevron-right' | 'info' | 'image' | 'trash-2' | 'rocket' | 'menu' | 'share' | 'eye' | 'credit-card' | 'zap' | 'lock' | 'mail';
 
 @Component({
   selector: 'app-icon',
@@ -97,6 +97,7 @@ export class IconComponent {
     'credit-card': ['M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z', 'M1 10h22'],
     zap: ['M13 2L3 14h9l-1 8 10-12h-9l1-8z'],
     lock: ['M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z', 'M7 11V7a5 5 0 0 1 10 0v4'],
+    mail: ['M4 4H20V20H4V4Z', 'M4 4L12 13L20 4']
   };
 
   paths = computed(() => this.icons[this.name] || []);

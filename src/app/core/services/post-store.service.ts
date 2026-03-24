@@ -19,7 +19,7 @@ export interface Post {
   authorCarreraId?: string;
   role: string;
   time: string;
-  rawDate: Date;
+  rawDate: Date | null;
   avatar?: string;
   details?: any;
   status: string;
@@ -74,7 +74,12 @@ export class PostStoreService {
 
   public readonly posts = computed<Post[]>(() =>
     [...this._pendingPosts(), ...this._feedPosts()]
-      .sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime())
+      .sort((a, b) => {
+        if (!a.rawDate && !b.rawDate) return 0;
+        if (!a.rawDate) return 1;
+        if (!b.rawDate) return -1;
+        return b.rawDate.getTime() - a.rawDate.getTime();
+      })
   );
 
   public readonly isLoading = computed<boolean>(() =>
@@ -179,8 +184,8 @@ export class PostStoreService {
         authorId: p.autor_id,
         authorCarreraId: perfilesRaw?.carrera_id,
         role: roleName,
-        time: this.formatTime(p.creado || new Date().toISOString()),
-        rawDate: new Date(p.creado || new Date().toISOString()),
+        time: p.creado ? this.formatTime(p.creado) : '',
+        rawDate: p.creado ? new Date(p.creado) : null,
         avatar: perfilesRaw?.foto_url ||
           `https://api.dicebear.com/7.x/initials/svg?seed=${perfilesRaw?.nombre || 'U'}`,
         details: p.detalles,
@@ -224,7 +229,13 @@ export class PostStoreService {
     const unique = combinado.filter(
       (post, i, self) => self.findIndex(p => p.id === post.id) === i
     );
-    return unique.sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime());
+    return unique
+      .sort((a, b) => {
+        if (!a.rawDate && !b.rawDate) return 0;
+        if (!a.rawDate) return 1;
+        if (!b.rawDate) return -1;
+        return b.rawDate.getTime() - a.rawDate.getTime();
+      });
   }
 
   /** Elimina un post del estado local (optimistic delete). */
@@ -361,7 +372,13 @@ export class PostStoreService {
     if (page === 0) {
       const { data: anunciosData } = await this.anuncioService.getAnuncios();
       const anuncios = anunciosData ? anunciosData.map(a => this.mapLegacyAnuncio(a as any)) : [];
-      const combined = [...pubs, ...anuncios].sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime());
+      const combined = [...pubs, ...anuncios]
+        .sort((a, b) => {
+          if (!a.rawDate && !b.rawDate) return 0;
+          if (!a.rawDate) return 1;
+          if (!b.rawDate) return -1;
+          return b.rawDate.getTime() - a.rawDate.getTime();
+        });
       this._hasMore.set(false); // En fallback cargamos de una vez
       return combined;
     }
@@ -385,8 +402,8 @@ export class PostStoreService {
       authorId: row.autor_id,
       authorCarreraId: row.autor_carrera_id || undefined,
       role: row.autor_rol || 'Miembro',
-      time: this.formatTime(row.creado || new Date().toISOString()),
-      rawDate: new Date(row.creado || new Date().toISOString()),
+      time: row.creado ? this.formatTime(row.creado) : '',
+      rawDate: row.creado ? new Date(row.creado) : null,
       avatar: row.autor_foto_url || undefined,
       details: row.detalles,
       status: row.estado || 'activo'
@@ -412,8 +429,8 @@ export class PostStoreService {
       authorId: p.autor_id,
       authorCarreraId: perfilesRaw?.carrera_id || undefined,
       role: roleName,
-      time: this.formatTime(p.creado || new Date().toISOString()),
-      rawDate: new Date(p.creado || new Date().toISOString()),
+      time: p.creado ? this.formatTime(p.creado) : '',
+      rawDate: p.creado ? new Date(p.creado) : null,
       avatar: perfilesRaw?.foto_url || undefined,
       details: p.detalles,
       status: p.estado || 'pendiente'
@@ -439,8 +456,8 @@ export class PostStoreService {
       authorId: p.autor_id,
       authorCarreraId: perfilesRaw?.carrera_id || undefined,
       role: roleName,
-      time: this.formatTime(p.creado || new Date().toISOString()),
-      rawDate: new Date(p.creado || new Date().toISOString()),
+      time: p.creado ? this.formatTime(p.creado) : '',
+      rawDate: p.creado ? new Date(p.creado) : null,
       avatar: perfilesRaw?.foto_url || undefined,
       details: p.detalles,
       status: p.estado || 'activo'
@@ -459,8 +476,8 @@ export class PostStoreService {
       author: 'Tuunka',
       authorId: 'admin_tuunka',
       role: 'Administrador',
-      time: this.formatTime(a.creado || new Date().toISOString()),
-      rawDate: new Date(a.creado || new Date().toISOString()),
+      time: a.creado ? this.formatTime(a.creado) : '',
+      rawDate: a.creado ? new Date(a.creado) : null,
       avatar: undefined,
       details: { contacto_url: a.contacto_url, fecha_inicio: a.fecha_inicio, fecha_fin: a.fecha_fin },
       status: 'activo'

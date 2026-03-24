@@ -90,10 +90,21 @@
   flex-direction: column;
 }
 
+/* .plan-recommended only positions the badge — it does NOT style the selected state */
 .plan-recommended {
+  position: relative;
+}
+
+/* Reactive active state — driven exclusively by boostStore.selectedPlan() signal */
+.plan-card.active {
   border: 2px solid var(--primary);
+  background: #F0F4FF;
+  box-shadow: 0 6px 20px rgba(19, 91, 236, 0.15);
   transform: scale(1.02);
-  box-shadow: 0 10px 15px -3px rgba(19, 91, 236, 0.1);
+}
+
+.plan-card.active .plan-name {
+  color: var(--primary);
 }
 
 .recommended-badge {
