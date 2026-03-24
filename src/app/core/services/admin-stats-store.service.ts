@@ -43,8 +43,9 @@ export class AdminStatsStoreService {
     readonly reportsTrend = signal<number>(0);
     readonly recentUsers = signal<any[]>([]);
     readonly quickModeration = signal<any[]>([]);
-    readonly chartPathLine = signal<string>('M0,135 L125,135 L250,135 L375,135 L500,135');
-    readonly chartPathFill = signal<string>('M0,135 L125,135 L250,135 L375,135 L500,135 L500,150 L0,150 Z');
+
+    // Chart data (raw data only - presentation logic in component)
+    readonly chartDataPoints = signal<number[]>([0, 0, 0, 0, 0]);
     readonly chartLabels = signal<string[]>(['', '', '', '', '']);
 
     // ── Control de caché ──────────────────────────────────────────
@@ -156,9 +157,10 @@ export class AdminStatsStoreService {
         this._buildChart(chartData.data ?? []);
     }
 
-    // ── Chart builder ──────────────────────────────────────────────
+    // ── Chart builder (data only - no UI logic) ───────────────────
 
     private _buildChart(data: any[]) {
+        // Distribute data into 5 buckets (6 days each for 30 days)
         const pointsData = [0, 0, 0, 0, 0];
         const now = new Date();
         const rangeMs = 30 * 86400000;
@@ -170,19 +172,10 @@ export class AdminStatsStoreService {
             if (index >= 0 && index <= 4) pointsData[index]++;
         });
 
-        const maxPoints = Math.max(...pointsData, 1);
-        const minY = 20, maxY = 135, stepX = 500 / 4;
-        const offsets = [0, stepX, stepX * 2, stepX * 3, 500];
-        const pointYs = pointsData.map(v => maxY - ((v / maxPoints) * (maxY - minY)));
+        // Store raw data
+        this.chartDataPoints.set(pointsData);
 
-        let dLine = `M0,${pointYs[0]}`;
-        for (let i = 1; i < 5; i++) {
-            const cp = offsets[i - 1] + (offsets[i] - offsets[i - 1]) / 2;
-            dLine += ` C${cp},${pointYs[i - 1]} ${cp},${pointYs[i]} ${offsets[i]},${pointYs[i]}`;
-        }
-        this.chartPathLine.set(dLine);
-        this.chartPathFill.set(`${dLine} L500,150 L0,150 Z`);
-
+        // Generate labels
         const labels = [];
         for (let i = 4; i >= 0; i--) {
             const d = new Date();

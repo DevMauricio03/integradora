@@ -94,6 +94,23 @@
     color: #065F46;
 }
 
+.stat-badge.negative {
+    background: #FEF2F2;
+    color: #991B1B;
+}
+
+.stat-badge.neutral {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.trend-context {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 400;
+}
+
 .stat-info h3 {
     font-size: 13px;
     font-weight: 600;
@@ -523,4 +540,69 @@
         opacity: 1;
         transform: translate(-50%, 0);
     }
+}
+
+/* Chart Enhancements */
+
+/* Y-axis labels */
+.y-axis-label {
+    font-size: 10px;
+    fill: #9CA3AF;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Hover zones */
+.hover-zone {
+    cursor: pointer;
+}
+
+/* Hover points */
+.hover-point {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.hover-point.visible {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(19, 91, 236, 0.5));
+}
+
+/* Tooltip */
+.chart-tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    z-index: 10;
+    min-width: 160px;
+}
+
+.tooltip-date {
+    font-size: 12px;
+    color: #6B7280;
+    margin-bottom: 6px;
+}
+
+.tooltip-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.tooltip-value .value {
+    font-size: 18px;
+    color: #135BEC;
+}
+
+.tooltip-change {
+    font-size: 11px;
+    color: #EF4444;
+}
+
+.tooltip-change.positive {
+    color: #10B981;
 }

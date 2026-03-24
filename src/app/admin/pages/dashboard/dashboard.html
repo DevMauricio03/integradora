@@ -26,19 +26,22 @@
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
                 </div>
-                <div class="stat-badge" [ngClass]="usersTrend() >= 0 ? 'positive' : 'negative'">
+                @let trend1 = usersTrend();
+                <div class="stat-badge" [ngClass]="getTrendClass(trend1)">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round"
-                        [style.transform]="usersTrend() >= 0 ? '' : 'scaleY(-1)'">
+                        [style.transform]="trend1 && trend1 >= 0 ? '' : 'scaleY(-1)'"
+                        [style.opacity]="trend1 === null || trend1 === 0 ? '0' : '1'">
                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                         <polyline points="17 6 23 6 23 12"></polyline>
                     </svg>
-                    {{ usersTrend() > 0 ? '+' : '' }}{{ usersTrend() }}%
+                    {{ getTrendLabel(trend1) }}
                 </div>
             </div>
             <div class="stat-info">
                 <h3>Usuarios Totales</h3>
                 <p class="stat-value">{{ totalUsers() }}</p>
+                <p class="trend-context">vs últimos 30 días</p>
             </div>
         </div>
 
@@ -55,19 +58,22 @@
                         <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
                 </div>
-                <div class="stat-badge" [ngClass]="postsTrend() >= 0 ? 'positive' : 'negative'">
+                @let trend2 = postsTrend();
+                <div class="stat-badge" [ngClass]="getTrendClass(trend2)">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round"
-                        [style.transform]="postsTrend() >= 0 ? '' : 'scaleY(-1)'">
+                        [style.transform]="trend2 && trend2 >= 0 ? '' : 'scaleY(-1)'"
+                        [style.opacity]="trend2 === null || trend2 === 0 ? '0' : '1'">
                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                         <polyline points="17 6 23 6 23 12"></polyline>
                     </svg>
-                    {{ postsTrend() > 0 ? '+' : '' }}{{ postsTrend() }}%
+                    {{ getTrendLabel(trend2) }}
                 </div>
             </div>
             <div class="stat-info">
                 <h3>Posts Activos</h3>
                 <p class="stat-value">{{ activePosts() }}</p>
+                <p class="trend-context">vs últimos 30 días</p>
             </div>
         </div>
 
@@ -84,14 +90,16 @@
                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
                     </svg>
                 </div>
-                <div class="stat-badge" [ngClass]="reportsTrend() >= 0 ? 'positive' : 'negative'">
+                @let trend3 = reportsTrend();
+                <div class="stat-badge" [ngClass]="getTrendClass(trend3)">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round"
-                        [style.transform]="reportsTrend() >= 0 ? '' : 'scaleY(-1)'">
+                        [style.transform]="trend3 && trend3 >= 0 ? '' : 'scaleY(-1)'"
+                        [style.opacity]="trend3 === null || trend3 === 0 ? '0' : '1'">
                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                         <polyline points="17 6 23 6 23 12"></polyline>
                     </svg>
-                    {{ reportsTrend() > 0 ? '+' : '' }}{{ reportsTrend() }}%
+                    {{ getTrendLabel(trend3) }}
                 </div>
             </div>
             <div class="stat-info">
@@ -100,6 +108,7 @@
                     <p class="stat-value">{{ pendingReports() }}</p>
                     <span class="stat-subtext">Requieren atención</span>
                 </div>
+                <p class="trend-context">vs últimos 30 días</p>
             </div>
         </div>
     </div>
@@ -109,22 +118,27 @@
         <div class="dashboard-card chart-card">
             <div class="card-header-flex">
                 <div>
-                    <h2 class="card-title">Actividad de Usuarios</h2>
-                    <p class="card-subtitle">Visitas e interacciones (Últimos 30 días)</p>
+                    <h2 class="card-title">Actividad de Publicaciones</h2>
+                    <p class="card-subtitle">Nuevas publicaciones (Últimos 30 días)</p>
                 </div>
                 <div class="chart-legend">
-                    <span class="legend-item"><span class="dot dot-blue"></span> Visitas</span>
-                    <span class="legend-item"><span class="dot dot-gray"></span> Posts</span>
+                    <span class="legend-item"><span class="dot dot-blue"></span> Publicaciones</span>
                 </div>
             </div>
             <div class="chart-placeholder">
-                <!-- SVG mimicking the chart -->
-                <svg viewBox="0 0 500 150" preserveAspectRatio="none"
-                    style="width:100%; height: 100%; overflow: visible;">
+                <!-- SVG Chart -->
+                <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="width:100%; height: 100%; overflow: visible;">
                     <!-- Grid lines -->
                     <line x1="0" y1="30" x2="500" y2="30" stroke="#f0f0f0" stroke-width="1" stroke-dasharray="4" />
                     <line x1="0" y1="70" x2="500" y2="70" stroke="#f0f0f0" stroke-width="1" stroke-dasharray="4" />
                     <line x1="0" y1="110" x2="500" y2="110" stroke="#f0f0f0" stroke-width="1" stroke-dasharray="4" />
+
+                    <!-- Y-axis scale -->
+                    @let scale = yAxisScale();
+                    <text x="5" y="25" class="y-axis-label">{{ scale[4] }}</text>
+                    <text x="5" y="65" class="y-axis-label">{{ scale[2] }}</text>
+                    <text x="5" y="105" class="y-axis-label">{{ scale[1] }}</text>
+                    <text x="5" y="145" class="y-axis-label">{{ scale[0] }}</text>
 
                     <!-- Gradient Fill -->
                     <defs>
@@ -133,15 +147,58 @@
                             <stop offset="100%" stop-color="rgba(19, 91, 236, 0)" />
                         </linearGradient>
                     </defs>
+
+                    <!-- Fill area -->
                     <path [attr.d]="chartPathFill()" fill="url(#chart-fill)" />
+
                     <!-- Line -->
-                    <path [attr.d]="chartPathLine()" fill="none" stroke="#135BEC" stroke-width="3"
-                        stroke-linecap="round" />
+                    <path [attr.d]="chartPathLine()" fill="none" stroke="#135BEC" stroke-width="3" stroke-linecap="round" />
+
+                    <!-- Hover zones + points -->
+                    @for (point of hoverPoints(); track $index) {
+                        <!-- Invisible hover zone -->
+                        <circle
+                            [attr.cx]="point.x"
+                            [attr.cy]="point.y"
+                            r="25"
+                            fill="transparent"
+                            class="hover-zone"
+                            (mouseenter)="showTooltip(point, $index)"
+                            (mouseleave)="hideTooltip()" />
+
+                        <!-- Visible point (shows on hover) -->
+                        <circle
+                            [attr.cx]="point.x"
+                            [attr.cy]="point.y"
+                            r="4"
+                            fill="#135BEC"
+                            [class.visible]="hoveredPoint() === $index"
+                            class="hover-point" />
+                    }
                 </svg>
+
+                <!-- Tooltip -->
+                @if (tooltipData(); as tooltip) {
+                    <div class="chart-tooltip"
+                         [style.left.px]="tooltipPosition().x"
+                         [style.top.px]="tooltipPosition().y">
+                        <div class="tooltip-date">{{ tooltip.date }}</div>
+                        <div class="tooltip-value">
+                            <span class="value">{{ tooltip.count }}</span> publicaciones
+                        </div>
+                        @if (tooltip.change !== null) {
+                            @let change = tooltip.change;
+                            <div class="tooltip-change" [class.positive]="change >= 0">
+                                {{ change > 0 ? '+' : '' }}{{ change }}% vs día anterior
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- X-axis labels -->
                 <div class="chart-x-axis">
-                    <!-- Iteración dinámica de las de la gráfica -->
                     @for (label of chartLabels(); track $index) {
-                    <span>{{ label }}</span>
+                        <span>{{ label }}</span>
                     }
                 </div>
             </div>
