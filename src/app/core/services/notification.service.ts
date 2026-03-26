@@ -57,7 +57,7 @@ export class NotificationService {
    * Utilizado por servicios administrativos/backend para generar notificaciones.
    */
   async createNotificacion(data: Omit<Notificacion, 'id' | 'creado'>): Promise<{ data: Notificacion | null; error: any }> {
-    const { data: result, error } = await this.db
+    const { error } = await this.db
       .from('notificaciones')
       .insert({
         user_id: data.user_id,
@@ -66,11 +66,9 @@ export class NotificationService {
         leido: data.leido ?? false,
         post_id: data.post_id,
         comentario_id: data.comentario_id,
-      })
-      .select('id, user_id, tipo, mensaje, leido, creado, post_id, comentario_id')
-      .single();
+      });
 
-    return { data: result as Notificacion | null, error };
+    return { data: null, error };
   }
 
   /**
