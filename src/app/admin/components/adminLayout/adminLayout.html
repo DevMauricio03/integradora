@@ -32,7 +32,7 @@
                     <span>Reportes</span>
                 </li>
                 <li class="config-item logout">
-                    <button (click)="logout()" class="logout-btn">
+                    <button (click)="openLogoutConfirm()" class="logout-btn">
                         <app-icon name="log-out"></app-icon>
                         <span>Cerrar sesión</span>
                     </button>
@@ -48,3 +48,15 @@
         </footer>
     </main>
 </div>
+
+@if (showLogoutConfirm()) {
+    <app-confirm-modal
+        titulo="¿Cerrar sesión?"
+        mensaje="Vas a salir del panel de administración. Podrás volver a entrar iniciando sesión otra vez."
+        botonConfirmar="Sí, cerrar sesión"
+        botonCancelar="Cancelar"
+        [esPeligroso]="false"
+        (confirm)="logout()"
+        (closed)="closeLogoutConfirm()">
+    </app-confirm-modal>
+}
