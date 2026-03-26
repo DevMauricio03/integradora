@@ -8,7 +8,7 @@ class SupabaseServiceStub {
     return {
       data: {
         subscription: {
-          unsubscribe() {}
+          unsubscribe() { }
         }
       }
     };
