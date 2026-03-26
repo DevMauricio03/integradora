@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { environment } from '../../../environments/environment';
 
 /** Instancia única a nivel de módulo para prevenir duplicaciones por chunking de Angular */
 let sharedClient: SupabaseClient | null = null;
@@ -15,8 +16,8 @@ export class SupabaseClientService {
     constructor() {
         if (!sharedClient) {
             sharedClient = createClient(
-                'https://osdecmrfyxxieyrmtugv.supabase.co',
-                'sb_publishable_ui93Xiqzl7OAoaY0nNanBw_xFpJtWst'
+                environment.supabaseUrl,
+                environment.supabasePublishableKey
             );
         }
         this.client = sharedClient;

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { User } from '@supabase/supabase-js';
 import { SupabaseClientService } from './supabase-client.service';
+import { environment } from '../../../environments/environment';
 
 /**
  * Layer 1 – Servicio especializado: Autenticación.
@@ -86,8 +87,10 @@ export class AuthService {
 
     /** Enviar email de recuperación de contraseña */
     resetPassword(email: string) {
+        const appBaseUrl = environment.appBaseUrl || window.location.origin;
+
         return this.db.auth.resetPasswordForEmail(email, {
-            redirectTo: 'http://localhost:4200/auth/nueva-password'
+            redirectTo: `${appBaseUrl}${environment.passwordRecoveryPath}`
         });
     }
 
