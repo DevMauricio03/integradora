@@ -63,7 +63,7 @@ export class RegistroPage implements OnInit {
     required(schema.email, { message: 'El correo es obligatorio' });
     email(schema.email, { message: 'Formato de correo inválido' });
     pattern(schema.email, /^[^\s@]+@[^\s@]+\.edu(\.[a-z]+)?$/i, { message: 'Usa un correo institucional (.edu)' });
-    maxLength(schema.email, 25, { message: 'Máximo 25 caracteres' });
+    maxLength(schema.email, 60, { message: 'Máximo 60 caracteres' });
 
     // Universidad y Carrera: Campos obligatorios
     required(schema.universidad);
