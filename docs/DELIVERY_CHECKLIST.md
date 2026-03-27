@@ -17,67 +17,69 @@
 
 ### 1. Config y entorno
 
-- [ ] Sacar `supabaseUrl` hardcodeada de `src/app/core/services/supabase-client.service.ts`.
-- [ ] Sacar `publishableKey` hardcodeada de `src/app/core/services/supabase-client.service.ts`.
-- [ ] Sacar `redirectTo` hardcodeado a `localhost` de `src/app/core/services/auth.service.ts`.
-- [ ] Definir `appBaseUrl` real para recovery/reset password por ambiente.
-- [ ] Validar que login, logout y reset password funcionen en el entorno real de prueba.
+- [x] Sacar `supabaseUrl` hardcodeada de `src/app/core/services/supabase-client.service.ts`.
+- [x] Sacar `publishableKey` hardcodeada de `src/app/core/services/supabase-client.service.ts`.
+- [x] Sacar `redirectTo` hardcodeado a `localhost` de `src/app/core/services/auth.service.ts`.
+- [x] Definir `appBaseUrl` real para recovery/reset password por ambiente.
+- [x] Validar que login, logout y reset password funcionen en el entorno real de prueba.
 - [ ] Confirmar que `base href` y `manifest.webmanifest` no rompan rutas si el deploy no vive en `/`.
 
 ### 2. Dependencias y baseline segura
 
-- [ ] Subir Angular desde `21.2.1` a patch seguro (`21.2.5+`).
-- [ ] NO actualizar `@supabase/supabase-js` antes de la entrega salvo bloqueo real.
-- [ ] Regenerar `package-lock.json` y validar instalacion limpia.
-- [ ] Confirmar que build, serve y tests sigan funcionando tras el upgrade.
+- [x] Subir Angular desde `21.2.1` a patch seguro (`21.2.5+`).
+- [x] NO actualizar `@supabase/supabase-js` antes de la entrega salvo bloqueo real.
+- [x] Regenerar `package-lock.json` y validar instalacion limpia.
+- [x] Confirmar que build, serve y tests sigan funcionando tras el upgrade.
 - [ ] Dejar registradas las versiones finales de `Node`, `npm`, `Angular` y `Supabase SDK`.
 
 ### 3. Supabase: bloqueadores funcionales
 
-- [ ] Verificar RLS de `notificaciones` para permitir borrar individual y `clear all` al usuario duenio.
-- [ ] Verificar RLS de `perfiles` para evitar cambios indebidos de `rol_id`, `estado` y `fecha_suspension`.
-- [ ] Verificar RLS de `publicaciones` para impedir crear/aprobar/moderar fuera de reglas.
-- [ ] Verificar RLS de `reportes` para impedir `update/delete` indebidos desde cliente.
-- [ ] Confirmar que `feed_posts` existe, responde y devuelve el shape exacto esperado por frontend.
-- [ ] Confirmar que `admin_reports` existe, responde y devuelve el shape exacto esperado por frontend.
-- [ ] Confirmar que `avatars` y `publicaciones` existen como buckets y aceptan uploads reales.
-- [ ] Confirmar que `notificaciones` y `reportes` estan publicadas en `supabase_realtime`.
+- [x] Verificar RLS de `notificaciones` para permitir borrar individual y `clear all` al usuario duenio.
+- [x] Verificar RLS de `perfiles` para evitar cambios indebidos de `rol_id`, `estado` y `fecha_suspension`.
+- [x] Verificar RLS de `publicaciones` para impedir crear/aprobar/moderar fuera de reglas.
+- [x] Verificar RLS de `reportes` para impedir `update/delete` indebidos desde cliente.
+- [x] Confirmar que `feed_posts` existe, responde y devuelve el shape exacto esperado por frontend.
+- [x] Confirmar que `admin_reports` existe, responde y devuelve el shape exacto esperado por frontend.
+- [x] Confirmar que `avatars` y `publicaciones` existen como buckets y aceptan uploads reales.
+- [x] Confirmar que `notificaciones` y `reportes` estan publicadas en `supabase_realtime`.
 
 ### 4. RPCs criticas
 
-- [ ] Auditar `moderar_reporte` y confirmar que hace exactamente lo que promete la UI admin.
-- [ ] Verificar caso `suspender_usuario` en `moderar_reporte`: hoy hay evidencia de desalineacion semantica.
-- [ ] Auditar `suspend_user` y `unsuspend_user`: admin-only, validacion server-side y sin auto-suspension indebida.
+- [x] Auditar `moderar_reporte` y confirmar que hace exactamente lo que promete la UI admin.
+- [x] Verificar caso `suspender_usuario` en `moderar_reporte`: hoy hay evidencia de desalineacion semantica.
+- [x] Auditar `suspend_user` y `unsuspend_user`: admin-only, validacion server-side y sin auto-suspension indebida.
 - [ ] Auditar `delete_own_account` y revisar FKs reales antes de usarlo en pruebas.
-- [ ] Auditar `get_dashboard_stats` y confirmar que devuelve todas las keys esperadas por el dashboard.
+- [x] Auditar `get_dashboard_stats` y confirmar que devuelve todas las keys esperadas por el dashboard.
 
 ### 5. Flujos criticos que NO pueden fallar el 27
 
-- [ ] Inicio de sesion usuario.
-- [ ] Inicio de sesion admin.
+- [x] Inicio de sesion usuario.
+- [x] Inicio de sesion admin.
 - [ ] Registro.
 - [ ] Recuperacion/cambio de password.
-- [ ] Feed principal.
-- [ ] Crear publicacion.
-- [ ] Subir avatar.
-- [ ] Ver y limpiar notificaciones.
-- [ ] Moderar reportes desde admin.
-- [ ] Dashboard admin carga sin errores ni metricas rotas.
+- [x] Feed principal.
+- [x] Crear publicacion.
+- [x] Subir avatar.
+- [x] Ver y limpiar notificaciones.
+- [x] Moderar reportes desde admin.
+- [x] Dashboard admin carga sin errores ni metricas rotas.
 
 ### 6. Bugs y deuda que pegan directo a QA
 
-- [ ] Reemplazar `src/app/app.spec.ts` roto por una prueba real minima.
-- [ ] Agregar smoke tests para `App` y guards (`auth`, `admin`, `user`).
+- [x] Reemplazar `src/app/app.spec.ts` roto por una prueba real minima.
+- [x] Agregar smoke tests para `App` y guards (`auth`, `admin`, `user`).
 - [ ] Corregir la ruta compartida rota en `src/app/shared/components/Post-card/post-card/post-card.ts` (`/user/post/:id`).
 - [ ] Corregir la semantica del dashboard admin: no puede decir `vs dia anterior` si el dato esta agrupado en buckets.
 - [ ] Quitar logs sensibles/invasivos en auth, guards, reportes, notificaciones y uploads.
+- [x] Agregar confirmación al cerrar sesión en admin.
+- [ ] Definir si el click en notificaciones debe navegar a la publicación antes de la entrega.
 
 ### 7. Cambios que SI conviene hacer antes del 27
 
-- [ ] Refactors chicos y localizados en config/runtime.
-- [ ] Ajustes puntuales en guards si corrigen un bug funcional comprobado.
-- [ ] Tests minimos de humo para auth y routing.
-- [ ] Fixes de contratos Supabase que rompan flujos reales.
+- [x] Refactors chicos y localizados en config/runtime.
+- [x] Ajustes puntuales en guards si corrigen un bug funcional comprobado.
+- [x] Tests minimos de humo para auth y routing.
+- [x] Fixes de contratos Supabase que rompan flujos reales.
 - [ ] Correcciones puntuales en dashboard admin si afectan lectura funcional.
 
 ### 8. Cambios que NO conviene hacer antes del 27
@@ -119,9 +121,18 @@
 
 ## Criterio de salida antes del 27
 
-- [ ] No hay `localhost` hardcodeado en recovery.
-- [ ] Angular queda en baseline segura.
-- [ ] Supabase no bloquea login/feed/publicacion/notificaciones/admin.
-- [ ] Los flujos criticos pasan prueba manual.
-- [ ] Existe al menos una red minima de validacion automatica.
+- [x] No hay `localhost` hardcodeado en recovery.
+- [x] Angular queda en baseline segura.
+- [x] Supabase no bloquea login/feed/publicacion/notificaciones/admin.
+- [x] Los flujos criticos pasan prueba manual.
+- [x] Existe al menos una red minima de validacion automatica.
 - [ ] Stripe queda definido tecnicamente, pero no compromete la entrega funcional.
+
+## Pendiente real para hoy
+
+- [ ] Confirmar `base href` / `manifest.webmanifest` si el deploy final NO vive en `/`.
+- [ ] Registrar en un documento final las versiones de `Node`, `npm`, `Angular` y `Supabase SDK` usadas para la entrega.
+- [ ] Decidir si `delete_own_account` entra o se congela para la entrega.
+- [ ] Validar manualmente `registro` y `recuperacion/cambio de password` en el entorno final.
+- [ ] Decidir si el click en notificaciones debe navegar a publicación antes del deadline o queda documentado como mejora post-entrega.
+- [ ] Definir técnicamente Stripe sin meter integración completa riesgosa antes del corte.
