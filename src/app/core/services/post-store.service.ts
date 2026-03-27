@@ -60,6 +60,9 @@ export class PostStoreService {
   private readonly _currentPage = signal<number>(0);
   private readonly _hasMore = signal<boolean>(true);
 
+  // ── Búsqueda global (navbar → feed) ──────────────────────────
+  public readonly searchQuery = signal<string>('');
+
   // Promise guards (deduplicación)
   private _feedPromise: Promise<void> | null = null;
   private _morePromise: Promise<void> | null = null;

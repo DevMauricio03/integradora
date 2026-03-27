@@ -30,13 +30,14 @@ export class UserLayoutComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly notificationStore = inject(NotificationStoreService);
-  private readonly postStore = inject(PostStoreService);
+  readonly postStore = inject(PostStoreService);
 
   title = signal('');
   showCreateButton = signal(false);
   showSearch = signal(true);
   centerTitle = signal(false);
   isMenuOpen = signal(false);
+  mobileSearchOpen = signal(false);
 
   // ── Notificaciones ────────────────────────────────────────────
   // Reactive signal - OnPush detects changes automatically
@@ -57,6 +58,7 @@ export class UserLayoutComponent implements OnInit {
         this.showSearch.set(data['hideSearch'] !== true);
         this.centerTitle.set(data['centerTitle'] === true);
         this.isMenuOpen.set(false);
+        this.mobileSearchOpen.set(false);
       });
   }
 
@@ -69,6 +71,19 @@ export class UserLayoutComponent implements OnInit {
 
   toggleMenu() {
     this.isMenuOpen.update(open => !open);
+  }
+
+  toggleMobileSearch() {
+    const opening = !this.mobileSearchOpen();
+    this.mobileSearchOpen.set(opening);
+    if (!opening) {
+      this.postStore.searchQuery.set('');
+    }
+  }
+
+  onSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.postStore.searchQuery.set(value);
   }
 
   private getDeepestChild(route: ActivatedRoute): ActivatedRoute {

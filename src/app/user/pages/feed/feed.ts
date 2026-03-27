@@ -119,6 +119,16 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
         p.authorCarreraId === carrera || p.type === 'Aviso Oficial');
     }
 
+    // Búsqueda por texto
+    const query = this.postStore.searchQuery().trim().toLowerCase();
+    if (query) {
+      currentPosts = currentPosts.filter((p: Post) =>
+        p.title.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query) ||
+        p.author.toLowerCase().includes(query)
+      );
+    }
+
     return currentPosts;
   });
 
