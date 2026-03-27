@@ -30,7 +30,7 @@
             <input type="text" placeholder="Buscar por nombre, correo..." class="search-input"
                 [value]="store.searchTerm()" (input)="onSearchInput($event)" (keyup)="onSearchKeyup($event)">
             <button class="btn-refresh" (click)="store.refresh()" [disabled]="store.isLoading()">
-                <app-icon name="clock" [size]="18"></app-icon>
+                <app-icon name="refresh-cw" [size]="18"></app-icon>
                 Actualizar
             </button>
         </div>

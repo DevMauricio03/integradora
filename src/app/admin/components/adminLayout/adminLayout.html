@@ -1,4 +1,4 @@
-<app-navbar [showMenu]="true">
+<app-navbar [showMenu]="true" (onToggleMenu)="toggleMenu()">
     <div navbar-center class="admin-top-title">{{ getTitle() }}</div>
     <div navbar-right class="right-content">
         <div class="admin-profile">
@@ -12,22 +12,31 @@
 </app-navbar>
 
 <div class="layout">
-    <aside class="sidebar admin-sidebar">
+    @if (isMenuOpen()) {
+    <div class="menu-overlay" (click)="toggleMenu()"></div>
+    }
+
+    <aside class="sidebar admin-sidebar" [class.open]="isMenuOpen()">
+        <div class="sidebar-header-mobile">
+            <button class="close-menu-btn" (click)="toggleMenu()">
+                <app-icon name="x" [size]="24"></app-icon>
+            </button>
+        </div>
         <nav>
             <ul>
-                <li routerLink="/admin/dashboard" routerLinkActive="active">
+                <li routerLink="/admin/dashboard" routerLinkActive="active" (click)="toggleMenu()">
                     <app-icon name="home"></app-icon>
                     <span>Inicio</span>
                 </li>
-                <li routerLink="/admin/users" routerLinkActive="active">
+                <li routerLink="/admin/users" routerLinkActive="active" (click)="toggleMenu()">
                     <app-icon name="users"></app-icon>
                     <span>Usuarios</span>
                 </li>
-                <li routerLink="/admin/publications" routerLinkActive="active">
+                <li routerLink="/admin/publications" routerLinkActive="active" (click)="toggleMenu()">
                     <app-icon name="file-text"></app-icon>
                     <span>Publicaciones</span>
                 </li>
-                <li routerLink="/admin/reports" routerLinkActive="active">
+                <li routerLink="/admin/reports" routerLinkActive="active" (click)="toggleMenu()">
                     <app-icon name="alert-triangle"></app-icon>
                     <span>Reportes</span>
                 </li>

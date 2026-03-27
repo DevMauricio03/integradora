@@ -28,6 +28,7 @@ export class ExperienciaDetallePage implements OnInit {
   readonly showSuccessReport = signal(false);
   readonly selectedPostForReport = signal<Post | null>(null);
   readonly isReporting = signal(false);
+  readonly isExperiencia = signal(false);
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -37,6 +38,7 @@ export class ExperienciaDetallePage implements OnInit {
       const result = await this.postStore.getPostById(id);
       if (result) {
         this.post.set(result);
+        this.isExperiencia.set(result.type?.toLowerCase() === 'experiencia');
       } else {
         this.notFound.set(true);
       }
@@ -46,7 +48,12 @@ export class ExperienciaDetallePage implements OnInit {
   }
 
   volver() {
-    this.router.navigate(['/user/experiencias']);
+    if (this.isExperiencia()) {
+      this.router.navigate(['/user/experiencias']);
+      return;
+    }
+
+    this.router.navigate(['/user/feed']);
   }
 
   openReportModal(post: Post) {

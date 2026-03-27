@@ -19,6 +19,7 @@ export class AdminLayout implements OnInit {
   private readonly adminReportsStore = inject(AdminReportsStoreService);
 
   readonly showLogoutConfirm = signal(false);
+  readonly isMenuOpen = signal(false);
 
   ngOnInit() {
     // Initialize Realtime for admin module
@@ -37,6 +38,10 @@ export class AdminLayout implements OnInit {
     this.showLogoutConfirm.set(false);
     await this.supabaseService.signOut();
     this.router.navigate(['/auth/bienvenida']);
+  }
+
+  toggleMenu() {
+    this.isMenuOpen.update(open => !open);
   }
 
   getTitle(): string {

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { StatusBadge } from '../../../shared/components/statusBadge/statusBadge';
 import { UsuarioDetalleModal } from '../../components/usuario-detalle-modal/usuario-detalle-modal';
 import { ReporteDetalleModal } from '../../components/reporte-detalle-modal/reporte-detalle-modal';
 import { SuccessModal } from '../../../shared/components/successModal/successModal';
@@ -10,7 +11,7 @@ import { AdminReportsStoreService } from '../../../core/services/admin-reports-s
 @Component({
     selector: 'app-admin-reports',
     standalone: true,
-    imports: [CommonModule, IconComponent, UsuarioDetalleModal, ReporteDetalleModal, SuccessModal],
+    imports: [CommonModule, IconComponent, StatusBadge, UsuarioDetalleModal, ReporteDetalleModal, SuccessModal],
     templateUrl: './reports.html',
     styleUrls: ['./reports.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +44,15 @@ export class AdminReports implements OnInit {
 
         // Recargar desde el store
         setTimeout(() => this.store.refresh(), 1500);
+    }
+
+    mapTypeToLabel(type: string | null | undefined): string {
+        switch ((type || '').toLowerCase()) {
+            case 'oferta': return 'Aviso';
+            case 'evento': return 'Evento';
+            case 'experiencia': return 'Experiencia';
+            default: return 'Aviso';
+        }
     }
 
     onSearch(event: Event) { this.store.setSearchTerm((event.target as HTMLInputElement).value); }

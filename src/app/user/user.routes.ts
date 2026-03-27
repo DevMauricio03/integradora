@@ -56,6 +56,12 @@ export const USER_ROUTES: Routes = [
         data: { title: 'Detalle de Experiencia', hideSearch: true, centerTitle: true }
       },
       {
+        path: 'post/:id',
+        loadComponent: () =>
+          import('./pages/experienciasCompletas/experienciaDetalle').then(m => m.ExperienciaDetallePage),
+        data: { title: 'Detalle de Publicación', hideSearch: true, centerTitle: true }
+      },
+      {
         path: 'avisos',
         loadComponent: () =>
           import('./pages/avisos-oficiales/avisos-oficiales').then(m => m.AvisosOficiales),

@@ -112,7 +112,7 @@
                                     <app-icon name="x" [size]="16"></app-icon>
                                 </button>
                                 @if (pub.estado !== 'activo') {
-                                <button class="btn-action approve" title="Aprobar" (click)="approvePublication(pub.id)">
+                                <button class="btn-action approve" title="Aprobar" (click)="solicitarAprobacion(pub)">
                                     <app-icon name="check-circle" [size]="16"></app-icon>
                                 </button>
                                 }
@@ -164,36 +164,38 @@
 <!-- Modal de confirmación para rechazo con motivo -->
 @if(mostrarConfirmacionRechazo()) {
 <app-modal-base ancho="450px" [mostrarCerrar]="true" (closed)="cancelarRechazoPublicacion()">
-    <div style="padding: 32px 24px;">
-        <h2 style="margin-bottom: 8px; font-weight: 700; color: var(--text-main); font-size: 18px;">
+    <div class="reject-modal-content">
+        <div class="reject-modal-header">
+        <h2 class="reject-modal-title">
             Rechazar Publicación
         </h2>
-        <p style="margin: 0 0 20px 0; font-size: 14px; color: var(--text-secondary);">
+        <p class="reject-modal-subtitle">
             Proporciona un motivo para el rechazo que se enviará al autor.
         </p>
+        </div>
 
-        <div style="margin-bottom: 24px;">
-            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+        <div class="reject-modal-field">
+            <label class="reject-modal-label">
                 Motivo del rechazo
             </label>
             <textarea
                 [(ngModel)]="motivoRechazo"
                 placeholder="Ej: Contenido inapropiado, no cumple reglas de comunidad, spam..."
-                style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 13px; font-family: inherit; color: var(--text-main); resize: vertical; outline: none; transition: border-color 0.2s;"
+                class="reject-modal-textarea"
                 (focus)="onMotivoBorderFocus($event)"
                 (blur)="onMotivoBorderBlur($event)"
                 rows="4"></textarea>
         </div>
 
-        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <div class="reject-modal-actions">
             <button
                 (click)="cancelarRechazoPublicacion()"
-                style="background: none; border: none; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer; padding: 10px 16px;">
+                class="reject-modal-cancel">
                 Cancelar
             </button>
             <button
                 (click)="confirmarRechazoPublicacion()"
-                style="background: #EF4444; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;"
+                class="reject-modal-confirm"
                 (mouseenter)="onButtonHoverEnter($event)"
                 (mouseleave)="onButtonHoverLeave($event)">
                 Rechazar Publicación
@@ -201,4 +203,16 @@
         </div>
     </div>
 </app-modal-base>
+}
+
+@if (mostrarConfirmacionAprobacion()) {
+<app-confirm-modal
+    titulo="¿Aprobar publicación?"
+    mensaje="La publicación se volverá visible para la comunidad y se notificará al autor."
+    botonConfirmar="Sí, aprobar"
+    botonCancelar="Cancelar"
+    [esPeligroso]="false"
+    (confirm)="confirmApprovePublication()"
+    (closed)="cancelarAprobacion()">
+</app-confirm-modal>
 }

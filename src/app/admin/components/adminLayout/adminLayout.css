@@ -78,6 +78,9 @@
     /* max-width se rige por appLayout normal */
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 /* Navbar Top Center Title */
@@ -141,7 +144,33 @@
 
 @media (max-width: 768px) {
     .admin-sidebar {
-        display: none;
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: -265px;
+        width: 260px;
+        height: 100vh;
+        z-index: 2000;
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+        background: white;
+        border-right: 1px solid var(--border-light);
+    }
+
+    .admin-sidebar.open {
+        transform: translateX(265px);
+    }
+
+    .menu-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1999;
+        backdrop-filter: blur(2px);
     }
 
     .admin-contenido {
@@ -155,5 +184,30 @@
     .admin-top-title {
         font-size: 14px;
         white-space: normal;
+    }
+
+    .sidebar-header-mobile {
+        display: flex;
+        justify-content: flex-end;
+        padding: 16px;
+        border-bottom: 1px solid #f3f4f6;
+        margin-bottom: 8px;
+    }
+
+    .close-menu-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #4b5563;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
+
+    .close-menu-btn:hover {
+        background: #f1f5f9;
     }
 }

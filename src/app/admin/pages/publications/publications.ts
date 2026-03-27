@@ -9,11 +9,12 @@ import { ModalBase } from '../../../shared/components/modalBase/modalBase';
 import { PostCardComponent } from '../../../shared/components/Post-card/post-card/post-card';
 import { NotificationService } from '../../../core/services/notification.service';
 import { FormsModule } from '@angular/forms';
+import { ConfirmModal } from '../../../shared/components/confirmModal/confirmModal';
 
 @Component({
     selector: 'app-admin-publications',
     standalone: true,
-    imports: [StatusBadge, IconComponent, UsuarioDetalleModal, CommonModule, ModalBase, PostCardComponent, FormsModule],
+    imports: [StatusBadge, IconComponent, UsuarioDetalleModal, CommonModule, ModalBase, PostCardComponent, FormsModule, ConfirmModal],
     templateUrl: './publications.html',
     styleUrls: ['./publications.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +28,8 @@ export class AdminPublications implements OnInit {
     usuarioSeleccionado = signal<any>(null);
     mostrarModalPublicacion = signal(false);
     publicacionSeleccionada = signal<any>(null);
+    mostrarConfirmacionAprobacion = signal(false);
+    publicacionPendienteAprobacion = signal<any>(null);
     mostrarConfirmacionRechazo = signal(false);
     motivoRechazo = signal<string>('');
 
@@ -34,7 +37,23 @@ export class AdminPublications implements OnInit {
         this.store.loadPublications();
     }
 
-    async approvePublication(id: string) {
+    solicitarAprobacion(publicacion: any) {
+        this.publicacionPendienteAprobacion.set(publicacion);
+        this.mostrarConfirmacionAprobacion.set(true);
+    }
+
+    cancelarAprobacion() {
+        this.mostrarConfirmacionAprobacion.set(false);
+        this.publicacionPendienteAprobacion.set(null);
+    }
+
+    async confirmApprovePublication() {
+        const publication = this.publicacionPendienteAprobacion();
+        if (!publication?.id) return;
+
+        this.mostrarConfirmacionAprobacion.set(false);
+
+        const id = publication.id;
         const { error } = await this.publicationService.updatePublicationStatus(id, 'activo');
         if (!error) {
             // Obtener datos de la publicación para notificar al autor
@@ -54,6 +73,8 @@ export class AdminPublications implements OnInit {
             }
             this.store.refresh();
         }
+
+        this.publicacionPendienteAprobacion.set(null);
     }
 
     async rejectPublication(id: string) {
@@ -225,4 +246,3 @@ export class AdminPublications implements OnInit {
         return status.charAt(0).toUpperCase() + status.slice(1);
     }
 }
-

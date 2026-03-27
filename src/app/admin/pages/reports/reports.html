@@ -40,17 +40,19 @@
                         <th>AUTOR</th>
                         <th>INFORMANTE</th>
                         <th>FECHA Y HORA</th>
+                        <th>MOTIVO</th>
                         <th>ESTADO</th>
+                        <th>ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (store.isLoading()) {
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px;">Cargando reportes...</td>
+                        <td colspan="8" style="text-align: center; padding: 40px;">Cargando reportes...</td>
                     </tr>
                     } @else if (store.items().length === 0) {
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px;">No hay reportes que coincidan con los
+                        <td colspan="8" style="text-align: center; padding: 40px;">No hay reportes que coincidan con los
                             filtros.</td>
                     </tr>
                     } @else {
@@ -68,9 +70,9 @@
                         </td>
                         <td>
                             <div class="type-badge" [ngClass]="reporte.publicaciones?.tipo">
-                                <app-icon [name]="reporte.publicaciones?.tipo === 'evento' ? 'calendar' : 'megaphone'"
+                                <app-icon [name]="reporte.publicaciones?.tipo === 'evento' ? 'calendar' : (reporte.publicaciones?.tipo === 'experiencia' ? 'briefcase' : 'megaphone')"
                                     [size]="14"></app-icon>
-                                <span>{{ reporte.publicaciones?.tipo | uppercase }}</span>
+                                <span>{{ mapTypeToLabel(reporte.publicaciones?.tipo) | uppercase }}</span>
                             </div>
                         </td>
                         <td>
@@ -103,9 +105,21 @@
                             </div>
                         </td>
                         <td>
-                            <span class="status-indicator" [ngClass]="reporte.estado">
-                                {{ reporte.motivo.slice(0, 10) }}...
-                            </span>
+                            <span class="reason-text" [title]="reporte.motivo">{{ reporte.motivo || 'Sin motivo' }}</span>
+                        </td>
+                        <td>
+                            <app-status-badge
+                                [text]="reporte.estado | uppercase"
+                                [type]="reporte.estado === 'pendiente' ? 'pending' : 'active'">
+                            </app-status-badge>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action outline" type="button" (click)="abrirModalReporte(reporte)">
+                                    <app-icon name="eye" [size]="16"></app-icon>
+                                    <span>Ver más</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     }

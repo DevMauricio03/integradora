@@ -226,6 +226,7 @@
     padding: 10px;
   }
 }
+
 /* --- Mobile Drawer and Search --- */
 .search-mobile-btn {
   display: none;
@@ -240,7 +241,8 @@
     display: block !important;
     position: fixed;
     top: 0;
-    left: -285px; /* Hidden by default */
+    left: -285px;
+    /* Hidden by default */
     width: 280px;
     height: 100vh;
     z-index: 2000;

@@ -11,10 +11,12 @@
   </div>
   } @else if (post(); as p) {
 
+  @if (isExperiencia()) {
   <div class="banner-warning">
     <svg width="20" height="20" fill="none" style="flex-shrink:0"><circle cx="10" cy="10" r="10" fill="#FDE68A"/><path d="M10 6v4m0 4h.01" stroke="#F59E1B" stroke-width="2" stroke-linecap="round"/></svg>
     <span>Esta experiencia refleja únicamente la opinión personal del estudiante.</span>
   </div>
+  }
 
   <app-post-card
     [id]="p.id"
