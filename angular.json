@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "new_integradora": {
+    "tuunka": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -63,10 +63,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "new_integradora:build:production"
+              "buildTarget": "tuunka:build:production"
             },
             "development": {
-              "buildTarget": "new_integradora:build:development"
+              "buildTarget": "tuunka:build:development"
             }
           },
           "defaultConfiguration": "development"
