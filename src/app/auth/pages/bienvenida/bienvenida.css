@@ -414,6 +414,55 @@ body {
 
 }
 
+/* ================= BOTÓN SCROLL MOBILE ================= */
+.btn-scroll-down {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .btn-scroll-down {
+    display: flex;
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--primary), var(--secondary-purple));
+    color: white;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px -4px rgba(19, 91, 236, 0.4);
+    animation: botonBounce 2s ease-in-out infinite;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    opacity: 1;
+  }
+
+  .btn-scroll-down.oculto {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    pointer-events: none;
+  }
+
+  .btn-scroll-down:active {
+    animation: none;
+    transform: translateX(-50%) scale(0.92);
+  }
+}
+
+@keyframes botonBounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
 /* ================= MODAL ACERCA DE ================= */
 .modal-overlay {
   position: fixed;

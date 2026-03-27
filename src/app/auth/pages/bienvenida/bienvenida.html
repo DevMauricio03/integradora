@@ -83,7 +83,7 @@
   </div>
 
   <!-- ================= PANEL DERECHO ================= -->
-  <div class="panel-derecho">
+  <div class="panel-derecho" id="seccionAuth">
 
     <div class="contenido-auth">
 
@@ -153,6 +153,13 @@
     </div>
 
   </div>
+
+  <!-- Botón scroll mobile -->
+  <button class="btn-scroll-down" [class.oculto]="ocultarBotonScroll()" (click)="scrollToAuth()" aria-label="Ir a iniciar sesión">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 
 </div>
 
